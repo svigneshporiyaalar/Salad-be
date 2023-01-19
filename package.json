@@ -1,0 +1,68 @@
+{
+  "name": "salad-be",
+  "version": "0.0.0",
+  "description": "vertx Node Js",
+  "main": "./src/app.js",
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.15.0",
+    "@koa/cors": "^3.1.0",
+    "aws-sdk": "^2.1263.0",
+    "bcryptjs": "^2.4.3",
+    "chalk": "^4.1.2",
+    "dotenv": "^11.0.0",
+    "fast-two-sms": "^3.0.0",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-compose": "^4.1.0",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^10.0.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.1",
+    "mysql2": "^2.3.3",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^2.6.1",
+    "node-modules": "^1.0.1",
+    "node-xml-stream": "^1.0.2",
+    "nodemailer": "^6.8.0",
+    "otp-generator": "^4.0.0",
+    "pbkdf2-hasher": "0.0.1",
+    "pdf-creator-node": "^2.2.4",
+    "pg": "^8.7.1",
+    "pg-hstore": "^2.3.4",
+    "request": "^2.88.2",
+    "s3-zip": "^3.2.0",
+    "sequelize": "^6.12.0-alpha.1",
+    "stream": "0.0.2",
+    "twilio": "^3.83.3",
+    "xml-stream": "^0.4.5"
+  },
+  "devDependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.4.0",
+    "nodemon": "^2.0.15",
+    "prettier": "^2.3.1",
+    "sequelize-cli": "^6.5.2"
+  },
+  "scripts": {
+    "dev": "nodemon ./src/app.js",
+    "start": "node ./src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Poriyaalar/vertx-be.git"
+  },
+  "keywords": [
+    "vertx"
+  ],
+  "author": "Poriyaalar Pvt Ltd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Poriyaalar/vertx-be/issues"
+  },
+  "homepage": "https://github.com/Poriyaalar/vertx-be#readme"
+}

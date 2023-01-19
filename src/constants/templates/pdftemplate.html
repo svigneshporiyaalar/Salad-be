@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 4px;
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>Time Sheet for {{user.firstname}}  {{user.lastname}}</h1>
+    <h2>candidateId: {{user?.candidateId}}</h2>
+    <h3>{{month}}/{{year}}</h3>
+    <div>
+      <div>emailId: {{user.email}}</div>
+    </div>
+    <div>
+        <br>
+        <table>
+          <tr>
+            {{#each dates}}
+              <th>{{this.day}}</th>
+            {{/each}}
+          </tr>
+          <tr>
+            {{#each dates}}
+              <th>{{this.value}}</th>
+            {{/each}}
+          </tr>
+        </table>
+        <br>
+        <br>
+        <br>
+        {{#each weeks}}
+          <div>
+            Week: {{this.week}} / {{this.year}}
+          </div>
+          <br>
+          <br>
+          <div>
+            <div>Weekly timesheet</div>
+            <img src={{this.proof1}} width="500px"/>
+          </div>
+          <div>
+            <div>Timesheet summary</div>
+            <img src={{this.proof2}} width="500px"/>
+          </div>
+        {{/each}}
+      </div>
+  </body>
+</html>
