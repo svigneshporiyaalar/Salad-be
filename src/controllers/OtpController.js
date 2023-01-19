@@ -37,9 +37,9 @@ const Otp_phone = async (ctx) => {
     token,otpMessage} = {};
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const { cc, phone_number, type } = ctx.request.body
+  const { cc, phoneNumber, type } = ctx.request.body
   try {
-    if (!phone_number) {
+    if (!phoneNumber) {
       ctx.throw(401, ERR_SBEE_0009);
       return;
     }
@@ -51,41 +51,36 @@ const Otp_phone = async (ctx) => {
     userData = await User.findOne({
       raw:true,
       where: {
-        contactNumber: phone_number,
+        contactNumber: phoneNumber,
       },
     });
     if(userData){
       console.log("User exists")
     } else{
-
-    // otp = otpGenerator.generate(6, {
-    //   alphabets: false,
-    //   upperCase: false,
-    //   specialChars: false,
-    // });
     // now = new Date();
     // expirationTime = AddMinutesToDate(now, 10);
     // console.log(otp, expirationTime);
     userData = await User.create({
-      contactNumber: phone_number,
+      contactNumber: phoneNumber,
     },
-    );
-  }
+    )}
     otpId = userData.id;
     userId = userData.userId;
     const payload = {
       cc:cc,
-      phone_number: phone_number,
+      phoneNumber: phoneNumber,
       id: otpId,
       userId: userId,
       type:type
     };
+    console.log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
+    console.log(client)
     otpResponse = await client.verify
       .services(serviceSid)
       .verifications.create({
         // customCode: `${otp}`,
-        to: `+${cc}${phone_number}`,
+        to: `+${cc}${phoneNumber}`,
         channel: "sms",
       });
     otpMessage = USR_SBEE_0001
@@ -130,7 +125,7 @@ const Otp_phoneVerify = async (ctx) => {
     if (verifiedResponse.valid) {
       console.log(verifiedResponse)
       otpMessage = USR_SBEE_0002
-      token = jwt.sign({id:id,userId:userId,phone_number:phoneNumber,
+      token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
       type:type}, secret, { expiresIn: "2h" });
     } else {
       otpMessage = ERR_SBEE_0005;
@@ -148,9 +143,9 @@ const Otp_partner = async (ctx) => {
     token,otpMessage} = {};
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const {cc ,phone_number, type } = ctx.request.body;
+  const {cc ,phoneNumber, type } = ctx.request.body;
   try {
-    if (!phone_number) {
+    if (!phoneNumber) {
       ctx.throw(401, ERR_SBEE_0009);
       return;
     }
@@ -160,21 +155,21 @@ const Otp_partner = async (ctx) => {
     }
     partnerData = await Partner.findOne({
       where: {
-        contactNumber: phone_number,
+        contactNumber: phoneNumber,
       },
     });
     if(partnerData){
       console.log("Partner account exists")
     } else{
     partnerData = await Partner.create({
-      contactNumber: phone_number,
+      contactNumber: phoneNumber,
     });
   }
     otpId = partnerData.id;
     partnerId = partnerData.partnerId;
     const payload = {
       cc:cc,
-      phone_number: phone_number,
+      phoneNumber: phoneNumber,
       id: otpId,
       otp:otp,
       partnerId: partnerId,
@@ -184,7 +179,7 @@ const Otp_partner = async (ctx) => {
     otpResponse = await client.verify
       .services(partner_serviceSid)
       .verifications.create({
-        to: `+${cc}${phone_number}`,
+        to: `+${cc}${phoneNumber}`,
         channel: "sms",
       });
     otpMessage = USR_SBEE_0001;
@@ -231,7 +226,7 @@ const Otp_partnerVerify = async (ctx) => {
     if(verifiedResponse.valid) {
       console.log(verifiedResponse)
       otpMessage = USR_SBEE_0002
-      token = jwt.sign({id:id,partnerId:partnerId,phone_number:phoneNumber,
+      token = jwt.sign({id:id,partnerId:partnerId,phoneNumber:phoneNumber,
       type:type}, partnerSecret, { expiresIn: "2h" });
     } else {
       otpMessage = ERR_SBEE_0005
