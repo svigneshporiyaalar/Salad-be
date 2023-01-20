@@ -105,8 +105,9 @@ const Otp_phoneVerify = async (ctx) => {
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
     const userId = _.get(ctx.request.key, "userId", "Bad Response");
-    const phoneNumber = _.get(ctx.request.key, "phone_number", "Bad Response");
+    const phoneNumber = _.get(ctx.request.key, "phoneNumber", "Bad Response");
     const type = _.get(ctx.request.key, "type", "Bad Response");
+    console.log(id,userId,phoneNumber,type)
     data = await User.findOne({
       where: {
         id: id,
@@ -204,7 +205,7 @@ const Otp_partnerVerify = async (ctx) => {
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
     const partnerId = _.get(ctx.request.key, "partnerId", "Bad Response");
-    const phoneNumber = _.get(ctx.request.key, "phone_number", "Bad Response");
+    const phoneNumber = _.get(ctx.request.key, "phoneNumber", "Bad Response");
     const type = _.get(ctx.request.key, "type", "Bad Response");
     data = await Partner.findOne({
       raw:true,
