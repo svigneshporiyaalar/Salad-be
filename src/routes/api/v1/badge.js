@@ -1,18 +1,19 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { newBadge, getBadges, getGoalbadge, badgeStatus } = require('../../../controllers/goalBadgeController');
+const { newBadge, getGoalbadge, badgeStatus, getAllBadges, 
+    getBadgeStatus } = require('../../../controllers/goalBadgeController');
 const router = new Router({ prefix: v1.badge });
 
 
-router.post("/newBadges" , newBadge );
+router.post("/new" , newBadge );
 
-router.get("/allBadges", getBadges)
+router.get("/allBadges", getAllBadges)
 
 router.get("/goalBadge", getGoalbadge)
 
 router.post("/status" , badgeStatus );
 
-
+router.get("/userstatus", getBadgeStatus)
 
 
 

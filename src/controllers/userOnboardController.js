@@ -33,14 +33,15 @@ const onboardDetails = async (ctx) => {
 const otherDetails = async (ctx) => {
   let data = {};
   let error = null;
-  const { height, weight,last_period,cycle } = ctx.request.body
+  const {age, height, weight,lastPeriod,cycle } = ctx.request.body
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.update({
       height:height,
       weight:weight,
-      lastPeriodDate: last_period,
-      menstrualcycle: cycle
+      lastPeriodDate: lastPeriod,
+      menstrualcycle: cycle,
+      age:age
     },{
       where :
       {

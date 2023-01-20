@@ -9,9 +9,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      name: {
-        type: Sequelize.STRING,
-      },
       badge: {
         type: Sequelize.STRING,
         allowNull: false
@@ -19,10 +16,27 @@ module.exports = (sequelize, Sequelize) => {
       goalId: {
         type: Sequelize.UUID,
       },
-      badgeProps: {
+      items: {
         type: Sequelize.JSON,
       },
-
+      daysFollowed: {
+        type: Sequelize.INTEGER,
+      },
+      grantPeriod: {
+        type: Sequelize.INTEGER,
+      },
+      runway: {
+        type: Sequelize.INTEGER,
+      },
+      dailyTimePeriod: {
+        type: Sequelize.TIME,
+      },
+      menstualPhase: {
+        type: Sequelize.STRING,
+      },
+      difficultyLevel: {
+        type: Sequelize.STRING,
+      },
     },{
       timestamps: true
     }

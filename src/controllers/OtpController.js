@@ -57,9 +57,6 @@ const Otp_phone = async (ctx) => {
     if(userData){
       console.log("User exists")
     } else{
-    // now = new Date();
-    // expirationTime = AddMinutesToDate(now, 10);
-    // console.log(otp, expirationTime);
     userData = await User.create({
       contactNumber: phoneNumber,
     },
@@ -75,12 +72,10 @@ const Otp_phone = async (ctx) => {
     };
     console.log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    console.log(client)
-    otpResponse = await client.verify
-      .services(serviceSid)
+    otpResponse = await client.verify.v2.services(serviceSid)
       .verifications.create({
         // customCode: `${otp}`,
-        to: `+${cc}${phoneNumber}`,
+        to: `+919384650810`,
         channel: "sms",
       });
     otpMessage = USR_SBEE_0001
@@ -117,7 +112,7 @@ const Otp_phoneVerify = async (ctx) => {
       ctx.throw(401, ERR_SBEE_0014);
       return; 
     }
-    verifiedResponse = await client.verify
+    verifiedResponse = await client.verify.v2
       .services(serviceSid)
       .verificationChecks.create({
         to: `+91${phoneNumber}`,
@@ -177,7 +172,7 @@ const Otp_partner = async (ctx) => {
       type:type
     };
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify
+    otpResponse = await client.verify.v2
       .services(partner_serviceSid)
       .verifications.create({
         to: `+${cc}${phoneNumber}`,
@@ -218,7 +213,7 @@ const Otp_partnerVerify = async (ctx) => {
       ctx.throw(401, ERR_SBEE_0014);
       return; 
     }
-    verifiedResponse = await client.verify
+    verifiedResponse = await client.verify.v2
       .services(partner_serviceSid)
       .verificationChecks.create({
         to: `+91${phoneNumber}`,
