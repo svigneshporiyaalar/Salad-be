@@ -4,6 +4,11 @@ const _ = require("lodash");
 const { ERR_SBEE_0001,ERR_SBEE_0998,
 } = require("../constants/ApplicationErrorConstants");
 const db = require("../models");
+const { ERR_SBEE_0012,ERR_SBEE_0017
+} = require("../constants/ApplicationErrorConstants");
+const HttpStatusCodes = require("../constants/HttpStatusCodes");
+const responseHelper = require("../helpers/responseHelper");
+const Admin = db.admin;
 const User = db.user;
 const signup_secret = process.env.JWT_SECRET
 const secret = process.env.JWT_SECRET1
@@ -55,6 +60,21 @@ const partnerToken = async (ctx, next) => {
   }
 };
 
+const isAdmin = async (ctx, next) => {
+  try {
+    const user = await Admin.findByPk(ctx.request.user.id);
+    const roles = await user.getRoles();
+    const roleNames = _.map(roles, (role) => role.name);
+    if (_.includes(roleNames, "admin")) {
+      await next();
+    } else {
+      ctx.throw(403, "Require Admin Role!");
+    }
+  } catch (err) {
+    ctx.throw(err.status || 403, err.text);
+  }
+};
+
 
 // const isPartner = async (ctx, next) => {
 //   try {
@@ -71,29 +91,46 @@ const partnerToken = async (ctx, next) => {
 //   }
 // };
 
-
-// const isAdmin = async (ctx, next) => {
-//   try {
-//     const user = await User.findByPk(ctx.request.userId.id);
-//     const roles = await user.getRoles();
-//     const roleNames = _.map(roles, (role) => role.name);
-//     if (_.includes(roleNames, "admin")) {
-//       await next();
-//     } else {
-//       ctx.throw(403, "Require Admin Role!");
-//     }
-//   } catch (err) {
-//     ctx.throw(err.status || 403, err.text);
-//   }
-// };
-
+const validateDuplicate = async (ctx, next) => {
+  const { email, contactNumber } = ctx.request.body;
+  try {
+    const emailExists = await Admin.findOne({
+      where: {
+        [Op.or]: [{ email: email || "" }],
+      },
+    });
+    const contactNumberExists = await Admin.findOne({
+      where: {
+        [Op.or]: [{ contactNumber: contactNumber || "" }],
+      },
+    });
+    if (emailExists) {
+      ctx.body = responseHelper.buildResponse({ message: ERR_SBEE_0012 });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
+    }
+    if (contactNumberExists) {
+      ctx.body = responseHelper.buildResponse({ message: ERR_SBEE_0017 });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
+    } else {
+      console.log("Creating user:", { email, contactNumber });
+      await next();
+    }
+  } catch (err) {
+    ctx.body = responseHelper.buildResponse(err);
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    return;
+  }
+};
 
 
 
 module.exports = {
   verifyToken: verifyToken,
   partnerToken: partnerToken,
-  // isAdmin: isAdmin,
+  isAdmin: isAdmin,
   verifyKey: verifyKey,
+  validateDuplicate:validateDuplicate
   // isPartner:isPartner
 };

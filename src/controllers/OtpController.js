@@ -44,7 +44,7 @@ const Otp_phone = async (ctx) => {
       return;
     }
     if (type!== "user") {
-      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
+      ctx.body = responseHelper.errorResponse(new Error());
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
@@ -72,10 +72,10 @@ const Otp_phone = async (ctx) => {
     };
     console.log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify.v2.services(serviceSid)
+    otpResponse = await client.verify.services(serviceSid)
       .verifications.create({
         // customCode: `${otp}`,
-        to: `+${cc}${phoneNumber}`,
+        to: `+919384650810`,
         channel: "sms",
       });
     otpMessage = USR_SBEE_0001
@@ -112,7 +112,7 @@ const Otp_phoneVerify = async (ctx) => {
       ctx.throw(401, ERR_SBEE_0014);
       return; 
     }
-    verifiedResponse = await client.verify.v2
+    verifiedResponse = await client.verify
       .services(serviceSid)
       .verificationChecks.create({
         to: `+91${phoneNumber}`,
@@ -172,7 +172,7 @@ const Otp_partner = async (ctx) => {
       type:type
     };
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify.v2
+    otpResponse = await client.verify
       .services(partner_serviceSid)
       .verifications.create({
         to: `+${cc}${phoneNumber}`,
@@ -213,7 +213,7 @@ const Otp_partnerVerify = async (ctx) => {
       ctx.throw(401, ERR_SBEE_0014);
       return; 
     }
-    verifiedResponse = await client.verify.v2
+    verifiedResponse = await client.verify
       .services(partner_serviceSid)
       .verificationChecks.create({
         to: `+91${phoneNumber}`,

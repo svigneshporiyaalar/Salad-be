@@ -9,19 +9,39 @@ const UserOnboard = db.userOnboard;
 
 module.exports={
    cronFile(){
-    Cron.schedule("06 23 16 * * *", async(ctx) => {
+    Cron.schedule("06 49 18 * * *", async(ctx) => {
     log(chalk.bgMagenta("Cron job running 🚀"))
-    let {data}={}
+    let {data, todayDate,date , periodDate ='',periodList,newdate ='' }={}
     let error = null
     try {
       data = await UserOnboard.findAll({
-        where: { 
-            lastPeriodDate: "2023-01-15",
-        }
+        raw:true,
         })
-        console.log(data)
-    //   todayDate = new Date
-    //   date = todayDate.getFullYear()+'-'+(todayDate.getMonth()+1)+'-'+(todayDate.getDate()-1); 
+      data.map((element) =>{
+        periodDate += element.lastPeriodDate.slice(8) + ","
+      })
+      // periodDate = data.lastPeriodDate
+      console.log(periodDate)
+      periodList= periodDate.split(",").slice(0,-1)
+      console.log( periodList)
+      newdate = periodList.map(function increment(number) {
+        return number + 12;
+      });
+      console.log(newdate)
+
+      // console.log(periodList)
+      // console.log(periodDate.getDate())
+      todayDate = new Date
+      date = todayDate.getFullYear()+'-'+(todayDate.getMonth()+1)+'-'+(todayDate.getDate()-1); 
+      console.log(todayDate)
+      console.log(date)
+      // newdate=date.getDate()
+      // console.log(newdate)
+      console.log(todayDate.toLocaleDateString('en-US', { day: '2-digit'}))
+      console.log(periodDate.getDate())
+
+
+
     //   today= Date.parse(date)
     //   log(chalk.blue(date ))
     //   data = await Booking.update(
