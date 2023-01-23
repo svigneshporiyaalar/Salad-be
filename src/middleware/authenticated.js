@@ -99,6 +99,7 @@ const validateDuplicate = async (ctx, next) => {
         [Op.or]: [{ email: email || "" }],
       },
     });
+    console.log(emailExists)
     const contactNumberExists = await Admin.findOne({
       where: {
         [Op.or]: [{ contactNumber: contactNumber || "" }],

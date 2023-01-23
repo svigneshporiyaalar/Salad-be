@@ -75,7 +75,7 @@ const Otp_phone = async (ctx) => {
     otpResponse = await client.verify.services(serviceSid)
       .verifications.create({
         // customCode: `${otp}`,
-        to: `+919384650810`,
+        to: `+${cc}${phoneNumber}`,
         channel: "sms",
       });
     otpMessage = USR_SBEE_0001
