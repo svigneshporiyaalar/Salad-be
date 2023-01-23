@@ -44,7 +44,8 @@ const Otp_phone = async (ctx) => {
       return;
     }
     if (type!== "user") {
-      ctx.body = responseHelper.errorResponse(new Error());
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
+      // ctx.body = responseHelper.errorResponse(new Error());
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
@@ -124,7 +125,9 @@ const Otp_phoneVerify = async (ctx) => {
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
       type:type}, secret, { expiresIn: "2h" });
     } else {
-      otpMessage = ERR_SBEE_0005;
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
     }
   } catch (err) {
     error = err;
@@ -225,7 +228,9 @@ const Otp_partnerVerify = async (ctx) => {
       token = jwt.sign({id:id,partnerId:partnerId,phoneNumber:phoneNumber,
       type:type}, partnerSecret, { expiresIn: "2h" });
     } else {
-      otpMessage = ERR_SBEE_0005
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
     }
   } catch (err) {
     error = err;

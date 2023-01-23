@@ -95,16 +95,19 @@ const validateDuplicate = async (ctx, next) => {
   const { email, contactNumber } = ctx.request.body;
   try {
     const emailExists = await Admin.findOne({
-      where: {
-        [Op.or]: [{ email: email || "" }],
+      raw:true,
+      where: 
+      {
+       email: email 
       },
-    });
+      });
     console.log(emailExists)
     const contactNumberExists = await Admin.findOne({
-      where: {
-        [Op.or]: [{ contactNumber: contactNumber || "" }],
+      where: 
+      {
+        contactNumber: contactNumber 
       },
-    });
+      });
     if (emailExists) {
       ctx.body = responseHelper.buildResponse({ message: ERR_SBEE_0012 });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -117,13 +120,11 @@ const validateDuplicate = async (ctx, next) => {
     } else {
       console.log("Creating user:", { email, contactNumber });
       await next();
+    } 
+    }catch (err) {
+      ctx.throw(err.status || 401, err.text);
     }
-  } catch (err) {
-    ctx.body = responseHelper.buildResponse(err);
-    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-    return;
   }
-};
 
 
 
