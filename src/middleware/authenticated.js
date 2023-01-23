@@ -109,12 +109,12 @@ const validateDuplicate = async (ctx, next) => {
       },
       });
     if (emailExists) {
-      ctx.body = responseHelper.buildResponse({ message: ERR_SBEE_0012 });
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0012" });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     if (contactNumberExists) {
-      ctx.body = responseHelper.buildResponse({ message: ERR_SBEE_0017 });
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0017" });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     } else {

@@ -1,7 +1,6 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const Admin = db.admin;
-const Role = db.role;
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
@@ -16,24 +15,22 @@ const adminSignup = async (ctx) => {
     let error= null
     let responseCode = HttpStatusCodes.SUCCESS;
     const { firstName,lastName, email,password,contactNumber} = ctx.request.body;
-    let user = {firstName,lastName,email, contactNumber,
+    let admin = {firstName,lastName,email, contactNumber,
       password: bcrypt.hashSync(password, 8)}
     try{
-      data = await Admin.create(user)
-      token = jwt.sign({ id: user.id ,
-        email:user.email, phoneNumber:user.contactNumber,
-        name:user.firstName + " " + user.lastName}, config.secret, {
+      data = await Admin.create(admin)
+      token = jwt.sign({ id: admin.id ,
+        email:admin.email, phoneNumber:admin.contactNumber,
+        name:admin.firstName + " " + admin.lastName}, config.secret, {
         expiresIn: "2h"
       });
       payload = {
-        user: {
-          id: user.id,
-          name: user.firstName + " " + user.lastName,
-          email: user.email,
-          phoneNumber:user.contactNumber,
-          roles: user.roles,
+        admin: {
+          id: admin.id,
+          name: admin.firstName + " " + admin.lastName,
+          email: admin.email,
+          phoneNumber:admin.contactNumber
         },
-        accessToken: token,
       };
     }catch (err) {
     error = err;
@@ -44,7 +41,7 @@ const adminSignup = async (ctx) => {
 }
 
    const adminSignin =async(ctx) => {
-    let {data , token ,payload , validPassword}={}
+    let {data, token, admin, validPassword}={}
     let error= null
     let responseCode = HttpStatusCodes.SUCCESS;
     const { email, password } = ctx.request.body;
@@ -65,7 +62,7 @@ const adminSignup = async (ctx) => {
       }
     token = jwt.sign({ id: data.id,email:data.email,firstname:data.firstName, 
       phoneNumber: data.contactNumber }, secret, { expiresIn: "2h"});
-    payload = { id: data.id,
+    admin = { id: data.id,
       name: data.firstName + " " + data.lastName,
       email: data.email,
       phoneNumber: data.contactNumber,
@@ -74,7 +71,7 @@ const adminSignup = async (ctx) => {
       error = err;
       responseCode = HttpStatusCodes.BAD_REQUEST;
      }
-    ctx.body = responseHelper.buildResponse(error, { payload, token });
+    ctx.body = responseHelper.buildResponse(error, { admin, token });
     ctx.response.status = responseCode;
   }
 

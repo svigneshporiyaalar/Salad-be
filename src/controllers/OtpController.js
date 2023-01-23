@@ -40,13 +40,14 @@ const Otp_phone = async (ctx) => {
   const { cc, phoneNumber, type } = ctx.request.body
   try {
     if (!phoneNumber) {
-      ctx.throw(401, ERR_SBEE_0009);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     if (type!== "user") {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
       // ctx.body = responseHelper.errorResponse(new Error());
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      ctx.response.status = HttpStatusCodes.UNAUTHORIZED
       return;
     }
     userData = await User.findOne({
@@ -96,7 +97,8 @@ const Otp_phoneVerify = async (ctx) => {
   const {  otp } = ctx.request.body;
   try {
     if (!otp) {
-      ctx.throw(403, ERR_SBEE_0010);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0010" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
@@ -110,7 +112,8 @@ const Otp_phoneVerify = async (ctx) => {
       },
     });
     if(data===null) {
-      ctx.throw(401, ERR_SBEE_0014);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return; 
     }
     verifiedResponse = await client.verify
@@ -145,11 +148,13 @@ const Otp_partner = async (ctx) => {
   const {cc ,phoneNumber, type } = ctx.request.body;
   try {
     if (!phoneNumber) {
-      ctx.throw(401, ERR_SBEE_0009);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     if (type!== "partner") {
-      ctx.throw(401, ERR_SBEE_0998);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
+      ctx.response.status = HttpStatusCodes.UNAUTHORIZED;
       return;
     }
     partnerData = await Partner.findOne({
@@ -198,7 +203,8 @@ const Otp_partnerVerify = async (ctx) => {
   const { otp } = ctx.request.body;
   try {
     if (!otp) {
-      ctx.throw(403, ERR_SBEE_0010);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0010" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
@@ -211,7 +217,6 @@ const Otp_partnerVerify = async (ctx) => {
         id: id,
       },
     });
-    console.log(data)
     if(data===null) {
       ctx.throw(401, ERR_SBEE_0014);
       return; 
@@ -239,6 +244,7 @@ const Otp_partnerVerify = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, {otpMessage,token});
   ctx.response.status = responseCode;
 };
+
 
 
 module.exports = {
