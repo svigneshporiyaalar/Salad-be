@@ -4,6 +4,10 @@ const Admin = db.admin;
 const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const User = db.user;
+const BadgeStatus = db.badgeStatus;
+const Badge = db.badge;
+const Goal = db.goal;
 const { ERR_SBEE_0016, ERR_SBEE_0999 } = require("../constants/ApplicationErrorConstants");
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
@@ -75,9 +79,84 @@ const adminSignup = async (ctx) => {
     ctx.response.status = responseCode;
   }
 
+  const allUsers = async (ctx) => {
+    let {data, userId ='',userList , newData} ={}
+    let error = null
+    const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+    try{
+      data = await User.findAll({
+        raw:true,
+      })
+      if (data===null){
+        ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0011" });
+        ctx.response.status = HttpStatusCodes.NOT_FOUND;
+        return; 
+      } 
+      data.map((element) =>{
+        userId += element.userId + ","
+      })
+      userList= userId.split(",").slice(0,-1)
+      newData = await BadgeStatus.findAll({
+        raw:true,
+        where:{
+          userId:userList,
+        },
+        order:[["createdAt", "DESC"]]
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, {data, newData});
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+  const newBadge = async (ctx) => {
+    let { data, message  } = {};
+    let error = null;
+    const {badgeId, badges ,goalId } = ctx.request.body
+    const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+    try {
+      data = await Badge.create({
+        badge: badges,
+        goalId:goalId,
+        badgeId:badgeId
+      }); 
+      message= "badge added"
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, {message});
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+  
+  const newGoal = async (ctx) => {
+      let {data , message} = {};
+      let error = null;
+      const { goal  } = ctx.request.body
+      const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+      try {
+          data = await Goal.create({
+            goal: goal,
+            });
+            message= "goal added"
+      } catch (err) {
+        error = err;
+        ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      }
+      ctx.body = responseHelper.buildResponse(error, {message});
+      ctx.response.status = HttpStatusCodes.SUCCESS;
+    };
+  
+
+
   
 
 module.exports = {
   adminSignup:adminSignup,
-  adminSignin:adminSignin
+  adminSignin:adminSignin,
+  allUsers:allUsers,
+  newGoal:newGoal,
+  newBadge:newBadge
 }

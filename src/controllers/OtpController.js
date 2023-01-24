@@ -113,7 +113,7 @@ const Otp_phoneVerify = async (ctx) => {
     });
     if(data===null) {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
     verifiedResponse = await client.verify
@@ -218,7 +218,8 @@ const Otp_partnerVerify = async (ctx) => {
       },
     });
     if(data===null) {
-      ctx.throw(401, ERR_SBEE_0014);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
+      ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
     verifiedResponse = await client.verify
