@@ -7,14 +7,13 @@ const router = new Router({ prefix: v1.adminAuth });
 
 router.post("/signin", adminSignin);
 
-router.post("/signup", validateDuplicate,adminSignup);
+router.post("/signup", validateDuplicate, adminSignup);
 
-router.get("/allUsers", isAdmin , allUsers )
+router.get("/allUsers", isAdmin, allUsers )
 
-router.post("/postGoal" , newGoal)
+router.post("/postGoal" , isAdmin, newGoal)
 
-router.post("/newBadge" , newBadge );
-
+router.post("/newBadge" , isAdmin, newBadge );
 
 
 

@@ -106,7 +106,7 @@ const getAllBadges = async (ctx) => {
   }
 
   const goalComplete = async (ctx) => {
-    let {data , reData } = {};
+    let {data, reData } = {};
     let error = null;
     const { goalId } = ctx.request.body
     const userId = _.get(ctx.request.user, "userId", "Bad Response");

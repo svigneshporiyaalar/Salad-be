@@ -55,12 +55,12 @@ const otherDetails = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   };
+
+  
   
 
 
  
-  
-
 module.exports = {
   onboardDetails:onboardDetails,
   otherDetails:otherDetails
