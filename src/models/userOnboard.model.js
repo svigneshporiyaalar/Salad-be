@@ -36,6 +36,9 @@ module.exports = (sequelize, Sequelize) => {
       integration: {
         type: Sequelize.STRING,
       },
+      allowReminder:{
+        type: Sequelize.BOOLEAN,
+      },
       onboardStatus:{
         type: Sequelize.STRING,
         defaultValue:"pending"

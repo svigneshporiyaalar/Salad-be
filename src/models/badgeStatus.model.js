@@ -12,6 +12,10 @@ module.exports = (sequelize, Sequelize) => {
       goalId: {
         type: Sequelize.UUID,
       },
+      goalStatus: {
+        type: Sequelize.STRING,
+        defaultValue:"inprogress"
+      },
       badgeId: {
         type: Sequelize.UUID,
       },
@@ -21,10 +25,6 @@ module.exports = (sequelize, Sequelize) => {
       },
       badgeStatus: {
         type: Sequelize.STRING,
-      },
-      goalStatus: {
-        type: Sequelize.STRING,
-        defaultValue:"inprogress"
       },
     },{
       timestamps: true

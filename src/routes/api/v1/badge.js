@@ -16,6 +16,4 @@ router.get("/userstatus", getBadgeStatus)
 
 
 
-
-
 module.exports = router;
