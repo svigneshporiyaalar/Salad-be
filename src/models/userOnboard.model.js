@@ -28,7 +28,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       lastPeriodDate: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
       },
       menstrualCycle: {
         type: Sequelize.INTEGER,

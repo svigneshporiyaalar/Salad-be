@@ -116,7 +116,7 @@ const menstrualDetails = async (ctx) => {
 };
 
 const completeOnboard = async (ctx) => {
-  let {data, userData} = {};
+  let {data, userData } = {};
   let error = null;
   const { userId } = ctx.request.body;
   // const userId = _.get(ctx.request.user, "userId", "Bad Response");
