@@ -9,9 +9,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      name: {
-        type: Sequelize.STRING,
-      },
       goal: {
         type: Sequelize.STRING,
         allowNull: false

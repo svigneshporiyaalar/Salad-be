@@ -3,7 +3,7 @@ const V1 = '/v1';
 
 module.exports = {
   v1: {
-    auth: `${API}${V1}/auth`,
+    adminAuth: `${API}${V1}/adminAuth`,
     userService: `${API}${V1}/userService`,
     partnerService: `${API}${V1}/partnerService`,
     goal: `${API}${V1}/goal`,

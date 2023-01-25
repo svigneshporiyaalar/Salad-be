@@ -9,10 +9,12 @@ const logger = require("koa-logger");
 const { cronFile } = require("./services/cronService");
 const PORT = 8030;
 
+
 const app = new Koa();
 app.use(logger());
 app.use(errorHandler);
 app.use(cors());
+
 
 db.sequelize.sync({ force: false});
 

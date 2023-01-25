@@ -12,54 +12,16 @@ const UserOnboard = db.userOnboard;
 
 
 
-const newBadge = async (ctx) => {
-  let {data , message  } = {};
-  let error = null;
-  const {badgeId, badges ,goalId } = ctx.request.body
-//   const userId = _.get(ctx.request.user, "partnerId", "Bad Response");
-  try {
-    data = await Badge.create({
-      badge: badges,
-      goalId:goalId,
-      badgeId:badgeId
-    }); 
-    message= "badge added"
+const getAllGoals = async (ctx) => {
+  let {data } ={}
+  let error = null
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try{
+    data = await Goal.findAll({
+    })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-  }
-  ctx.body = responseHelper.buildResponse(error, {message});
-  ctx.response.status = HttpStatusCodes.SUCCESS;
-};
-
-const newGoal = async (ctx) => {
-    let {data , message} = {};
-    let error = null;
-    const { goal  } = ctx.request.body
-  //   const userId = _.get(ctx.request.user, "partnerId", "Bad Response");
-    try {
-        data = await Goal.create({
-          goal: goal,
-          });
-          message= "goal added"
-    } catch (err) {
-      error = err;
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-    }
-    ctx.body = responseHelper.buildResponse(error, {message});
-    ctx.response.status = HttpStatusCodes.SUCCESS;
-  };
-
-  const getAllGoals = async (ctx) => {
-    let {data } ={}
-    let error = null
-    const userId = _.get(ctx.request.user, "userId", "Bad Response");
-    try{
-      data = await Goal.findAll({
-      })
-    } catch (err) {
-      error = err;
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
@@ -67,13 +29,13 @@ const newGoal = async (ctx) => {
 
 
 const getAllBadges = async (ctx) => {
-    let {data } ={}
-    let error = null
+  let {data } ={}
+  let error = null
     // const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
-    const userId = _.get(ctx.request.user, "userId", "Bad Response");
-    try{
-      data = await Badge.findAll({
-      })
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try{
+    data = await Badge.findAll({
+    })
     } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -144,7 +106,7 @@ const getAllBadges = async (ctx) => {
   }
 
   const goalComplete = async (ctx) => {
-    let {data , reData } = {};
+    let {data, reData } = {};
     let error = null;
     const { goalId } = ctx.request.body
     const userId = _.get(ctx.request.user, "userId", "Bad Response");
@@ -181,12 +143,8 @@ const getAllBadges = async (ctx) => {
 
 
   
- 
-  
 
 module.exports = {
-  newBadge:newBadge,
-  newGoal:newGoal,
   getAllBadges:getAllBadges,
   getGoalbadge:getGoalbadge,
   getAllGoals:getAllGoals,
