@@ -40,12 +40,14 @@ const Otp_phone = async (ctx) => {
   const { cc, phoneNumber, type } = ctx.request.body
   try {
     if (!phoneNumber) {
-      ctx.throw(401, ERR_SBEE_0009);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     if (type!== "user") {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      // ctx.body = responseHelper.errorResponse(new Error());
+      ctx.response.status = HttpStatusCodes.UNAUTHORIZED
       return;
     }
     userData = await User.findOne({
@@ -72,7 +74,7 @@ const Otp_phone = async (ctx) => {
     };
     console.log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify.v2.services(serviceSid)
+    otpResponse = await client.verify.services(serviceSid)
       .verifications.create({
         // customCode: `${otp}`,
         to: `+${cc}${phoneNumber}`,
@@ -95,7 +97,8 @@ const Otp_phoneVerify = async (ctx) => {
   const {  otp } = ctx.request.body;
   try {
     if (!otp) {
-      ctx.throw(403, ERR_SBEE_0010);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0010" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
@@ -109,10 +112,11 @@ const Otp_phoneVerify = async (ctx) => {
       },
     });
     if(data===null) {
-      ctx.throw(401, ERR_SBEE_0014);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
+      ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
-    verifiedResponse = await client.verify.v2
+    verifiedResponse = await client.verify
       .services(serviceSid)
       .verificationChecks.create({
         to: `+91${phoneNumber}`,
@@ -124,7 +128,9 @@ const Otp_phoneVerify = async (ctx) => {
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
       type:type}, secret, { expiresIn: "2h" });
     } else {
-      otpMessage = ERR_SBEE_0005;
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
     }
   } catch (err) {
     error = err;
@@ -142,11 +148,13 @@ const Otp_partner = async (ctx) => {
   const {cc ,phoneNumber, type } = ctx.request.body;
   try {
     if (!phoneNumber) {
-      ctx.throw(401, ERR_SBEE_0009);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     if (type!== "partner") {
-      ctx.throw(401, ERR_SBEE_0998);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
+      ctx.response.status = HttpStatusCodes.UNAUTHORIZED;
       return;
     }
     partnerData = await Partner.findOne({
@@ -172,7 +180,7 @@ const Otp_partner = async (ctx) => {
       type:type
     };
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify.v2
+    otpResponse = await client.verify
       .services(partner_serviceSid)
       .verifications.create({
         to: `+${cc}${phoneNumber}`,
@@ -195,7 +203,8 @@ const Otp_partnerVerify = async (ctx) => {
   const { otp } = ctx.request.body;
   try {
     if (!otp) {
-      ctx.throw(403, ERR_SBEE_0010);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0010" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
@@ -208,12 +217,12 @@ const Otp_partnerVerify = async (ctx) => {
         id: id,
       },
     });
-    console.log(data)
     if(data===null) {
-      ctx.throw(401, ERR_SBEE_0014);
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
+      ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
-    verifiedResponse = await client.verify.v2
+    verifiedResponse = await client.verify
       .services(partner_serviceSid)
       .verificationChecks.create({
         to: `+91${phoneNumber}`,
@@ -225,7 +234,9 @@ const Otp_partnerVerify = async (ctx) => {
       token = jwt.sign({id:id,partnerId:partnerId,phoneNumber:phoneNumber,
       type:type}, partnerSecret, { expiresIn: "2h" });
     } else {
-      otpMessage = ERR_SBEE_0005
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
     }
   } catch (err) {
     error = err;
@@ -234,6 +245,7 @@ const Otp_partnerVerify = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, {otpMessage,token});
   ctx.response.status = responseCode;
 };
+
 
 
 module.exports = {

@@ -9,28 +9,6 @@ const User = db.user;
 const Partner = db.partner;
 const Userpartner = db.userPartner;
 
-const updateProfile = async (ctx) => {
-  let { data, message } = {};
-  let error = null;
-  const { ...rest } = get(ctx.request, "body");
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  try {
-    data = await User.update(
-      { ...rest },
-      {
-        where: {
-          userId: userId,
-        },
-      }
-    );
-    message = USR_SBEE_0003;
-  } catch (err) {
-    error = err;
-    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-  }
-  ctx.body = responseHelper.buildResponse(error, { message });
-  ctx.response.status = HttpStatusCodes.SUCCESS;
-};
 
 const addPartner = async (ctx) => {
   let { data, userData, reData, partnerId, message } = {};
@@ -103,7 +81,6 @@ const removePartner = async (ctx) => {
 
 
 module.exports = {
-  updateProfile: updateProfile,
   addPartner: addPartner,
   removePartner:removePartner
 };

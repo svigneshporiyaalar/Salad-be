@@ -14,6 +14,8 @@ module.exports = {
   ERR_SBEE_0013: "Failed! Role does not exist.",
   ERR_SBEE_0014: "Error occured.Please try again",
   ERR_SBEE_0015: "Partner not found",
+  ERR_SBEE_0016: "Invalid password",
+  ERR_SBEE_0017: "Phone number already in use",
   ERR_SBEE_0997: "Link invalid or expired ",
   ERR_SBEE_0998: "UnAuthorized",
   ERR_SBEE_0999: "Email ID does not exist",

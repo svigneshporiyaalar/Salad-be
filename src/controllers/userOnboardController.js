@@ -1,26 +1,23 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const {  ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
+const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
-const { USR_SBEE_0004 } = require("../constants/userConstants");
 const User = db.user;
 const Badge = db.badge;
-const Goal = db.goal;
-const UserOnboard=db.userOnboard
+const UserOnboard = db.userOnboard;
 
-
-const onboardDetails = async (ctx) => {
+const primaryGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const {userId,goal ,goalId } = ctx.request.body
+  const { userId, goal, goalId } = ctx.request.body;
   // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.create({
       activeGoal: goal,
-      goalId:goalId,
-      userId:userId
+      goalId: goalId,
+      userId: userId,
     });
   } catch (err) {
     error = err;
@@ -30,38 +27,131 @@ const onboardDetails = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const otherDetails = async (ctx) => {
-  let data = {};
+const editProfile = async (ctx) => {
+  let {data, userData} = {};
   let error = null;
-  const {userId ,age, height, weight,lastPeriod,cycle } = ctx.request.body
+  const { userId, firstName, lastName, email, 
+    age, height, weight, allowReminder } = ctx.request.body;
   // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
-    data = await UserOnboard.update({
-      height:height,
-      weight:weight,
-      lastPeriodDate: lastPeriod,
-      menstrualCycle: cycle,
-      age:age
-    },{
-      where :
+    data = await UserOnboard.update(
       {
-      userId:userId,
+        height: height,
+        weight: weight,
+        age: age,
+        allowReminder: allowReminder
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      });
+    userData = await User.update(
+      {
+        firstName:firstName,
+        lastName:lastName,
+        email:email,
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const updateActiveGoal = async (ctx) => {
+  let data = {};
+  let error = null;
+  const { userId, goal, goalId } = ctx.request.body;
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try {
+    data = await UserOnboard.update(
+      {
+        activeGoal: goal,
+        goalId: goalId,
+      },
+      {
+        where: {
+          userId: userId,
+        },
       }
-    })
-    } catch (err) {
-      error = err;
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-    }
-    ctx.body = responseHelper.buildResponse(error, data);
-    ctx.response.status = HttpStatusCodes.SUCCESS;
-  };
-  
+    );
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
 
+const menstrualDetails = async (ctx) => {
+  let data = {};
+  let error = null;
+  const { userId,lastPeriod, cycle } = ctx.request.body;
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try {
+    data = await UserOnboard.update(
+      {
+        lastPeriodDate: lastPeriod,
+        menstrualCycle: cycle,
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      }
+    );
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
 
- 
-  
+const completeOnboard = async (ctx) => {
+  let {data, userData } = {};
+  let error = null;
+  const { userId } = ctx.request.body;
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try {
+    data = await UserOnboard.update(
+      {
+        onboardStatus: "completed",
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      });
+    userData = await User.update(
+      {
+        onboardingComplete : "true",
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
 
 module.exports = {
-  onboardDetails:onboardDetails,
-  otherDetails:otherDetails
+  primaryGoal: primaryGoal,
+  editProfile: editProfile,
+  menstrualDetails: menstrualDetails,
+  updateActiveGoal: updateActiveGoal,
+  completeOnboard:completeOnboard
 };

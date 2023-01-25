@@ -28,13 +28,16 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       lastPeriodDate: {
-        type: Sequelize.DATEONLY,
+        type: Sequelize.DATE,
       },
       menstrualCycle: {
         type: Sequelize.INTEGER,
       },
       integration: {
         type: Sequelize.STRING,
+      },
+      allowReminder:{
+        type: Sequelize.BOOLEAN,
       },
       onboardStatus:{
         type: Sequelize.STRING,
