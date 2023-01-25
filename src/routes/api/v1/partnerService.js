@@ -2,9 +2,9 @@ const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const HttpStatusCodes = require('../../../constants/HttpStatusCodes');
 const responseHelper = require('../../../helpers/responseHelper');
-const {  Otp_partner, Otp_partnerVerify } = require('../../../controllers/OtpController');
+const {  Otp_partner, Otp_partnerVerify } = require('../../../controllers/otpController');
 const { partnerToken, verifyKey } = require('../../../middleware/authenticated');
-const { updateProfile, getUsers } = require('../../../controllers/PartnerController');
+const { updateProfile, getUsers } = require('../../../controllers/partnerController');
 const router = new Router({ prefix: v1.partnerService });
 
 

@@ -5,6 +5,13 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         autoIncrement: true,
       },
+      userId: {
+        type: Sequelize.INTEGER,
+        allowNull:false
+      },
+      goalId: {
+        type: Sequelize.UUID,
+      },
       badgeId: {
         type: Sequelize.UUID,
       },
@@ -12,11 +19,12 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
-      userId: {
-        type: Sequelize.INTEGER,
-      },
       badgeStatus: {
         type: Sequelize.STRING,
+      },
+      goalStatus: {
+        type: Sequelize.STRING,
+        defaultValue:"inprogress"
       },
     },{
       timestamps: true

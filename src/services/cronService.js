@@ -9,15 +9,15 @@ const UserOnboard = db.userOnboard;
 
 module.exports={
    cronFile(){
-    Cron.schedule("06 44 16 * * *", async(ctx) => {
+    Cron.schedule("06 23 16 * * *", async(ctx) => {
     log(chalk.bgMagenta("Cron job running 🚀"))
     let {data}={}
     let error = null
     try {
       data = await UserOnboard.findAll({
         where: { 
-            lastPeriodDate,
-        },
+            lastPeriodDate: "2023-01-15",
+        }
         })
         console.log(data)
     //   todayDate = new Date

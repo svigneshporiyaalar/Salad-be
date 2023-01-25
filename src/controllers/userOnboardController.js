@@ -14,8 +14,8 @@ const UserOnboard=db.userOnboard
 const onboardDetails = async (ctx) => {
   let data = {};
   let error = null;
-  const {goal ,goalId } = ctx.request.body
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {userId,goal ,goalId } = ctx.request.body
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.create({
       activeGoal: goal,
@@ -33,14 +33,15 @@ const onboardDetails = async (ctx) => {
 const otherDetails = async (ctx) => {
   let data = {};
   let error = null;
-  const { height, weight,last_period,cycle  } = ctx.request.body
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {userId ,age, height, weight,lastPeriod,cycle } = ctx.request.body
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.update({
       height:height,
       weight:weight,
-      lastPeriodDate: last_period,
-      menstrualcycle: cycle
+      lastPeriodDate: lastPeriod,
+      menstrualCycle: cycle,
+      age:age
     },{
       where :
       {
