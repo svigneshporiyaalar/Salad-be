@@ -1,18 +1,14 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
-const { Op } = require("sequelize");
 const _ = require("lodash");
-const { user } = require("../models");
 const User = db.user;
-const Badge = db.badge;
 const UserOnboard = db.userOnboard;
 
-const primaryGoal = async (ctx) => {
+const everyDayTracking = async (ctx) => {
   let data = {};
   let error = null;
-  const { goal, goalId } = ctx.request.body;
+  const { description, badgeId, day, time, level, preMood,postMood } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.create({
@@ -92,18 +88,11 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let {data , userData} = {};
+  let data = {};
   let error = null;
   const { lastPeriod, cycle } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
-    userData = await UserOnboard.findOne({
-      where :
-      { 
-        userId : userId
-      }
-    })
-    if(userData){
     data = await UserOnboard.update(
       {
         lastPeriodDate: lastPeriod,
@@ -114,14 +103,7 @@ const menstrualDetails = async (ctx) => {
           userId: userId,
         },
       }
-    )} 
-    else{
-    data = await UserOnboard.create({
-      lastPeriodDate: lastPeriod,
-      menstrualCycle: cycle,
-      userId: userId,
-      });
-    }
+    );
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -163,9 +145,7 @@ const completeOnboard = async (ctx) => {
 
 
 module.exports = {
-  primaryGoal: primaryGoal,
-  editProfile: editProfile,
-  menstrualDetails: menstrualDetails,
+  everyDayTracking:everyDayTracking,
   updateActiveGoal: updateActiveGoal,
   completeOnboard:completeOnboard
 };
