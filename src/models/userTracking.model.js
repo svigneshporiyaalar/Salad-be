@@ -8,14 +8,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       badgeId: {
         type: Sequelize.UUID,
       },
       description: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       day: {
         type: Sequelize.DATEONLY,
@@ -31,7 +29,6 @@ module.exports = (sequelize, Sequelize) => {
       },
       postWorkoutMood: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
       badgeStatus: {
         type: Sequelize.STRING,

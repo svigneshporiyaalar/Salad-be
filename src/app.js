@@ -7,6 +7,7 @@ const { errorHandler } = require('./middleware');
 const cors = require('@koa/cors');
 const logger = require("koa-logger");
 const { cronFile } = require("./services/cronService");
+const { TrustProductsEntityAssignmentsList } = require('twilio/lib/rest/trusthub/v1/trustProducts/trustProductsEntityAssignments');
 const PORT = 8030;
 
 

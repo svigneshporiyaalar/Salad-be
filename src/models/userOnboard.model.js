@@ -22,7 +22,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       height: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
       },
       weight: {
         type: Sequelize.INTEGER,

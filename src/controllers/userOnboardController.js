@@ -96,6 +96,7 @@ const menstrualDetails = async (ctx) => {
   let error = null;
   const { lastPeriod, cycle } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  console.log(lastPeriod , cycle, userId)
   try {
     userData = await UserOnboard.findOne({
       where :

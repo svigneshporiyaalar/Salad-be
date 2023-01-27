@@ -3,19 +3,26 @@ const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
 const _ = require("lodash");
 const User = db.user;
-const UserOnboard = db.userOnboard;
+const UserTracking = db.userTracking;
 
 const everyDayTracking = async (ctx) => {
   let data = {};
   let error = null;
-  const { description, badgeId, day, time, level, preMood,postMood } = ctx.request.body;
+  const { description, badgeId, day, time,
+     level, preMood,postMood } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
-    data = await UserOnboard.create({
-      activeGoal: goal,
-      goalId: goalId,
+    data = await UserTracking.create({
       userId: userId,
+      description:description,
+      badgeId: badgeId,
+      day:day,
+      time:time,
+      difficultyLevel:level,
+      preWorkoutMood: preMood,
+      postWorkoutMood: postMood
     });
+    console.log(data.createdAt)
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
