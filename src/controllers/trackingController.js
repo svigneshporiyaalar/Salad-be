@@ -1,9 +1,12 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
+const moment = require('moment')
 const _ = require("lodash");
 const User = db.user;
 const UserTracking = db.userTracking;
+const PeriodTracking = db.periodTracking
+
 
 const everyDayTracking = async (ctx) => {
   let data = {};
@@ -31,36 +34,17 @@ const everyDayTracking = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const editProfile = async (ctx) => {
-  let {data, userData} = {};
+const periodSymptoms = async (ctx) => {
+  let data = {};
   let error = null;
-  const { firstName, lastName, email, 
-    age, height, weight, allowReminder } = ctx.request.body;
+  const { date , symptoms } = ctx.request.query;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
-    data = await UserOnboard.update(
-      {
-        height: height,
-        weight: weight,
-        age: age,
-        allowReminder: allowReminder
-      },
-      {
-        where: {
-          userId: userId,
-        },
-      });
-    userData = await User.update(
-      {
-        firstName:firstName,
-        lastName:lastName,
-        email:email,
-      },
-      {
-        where: {
-          userId: userId,
-        },
-      })
+    data = await PeriodTracking.create({
+      userId: userId,
+      date: date,
+      symptoms: symptoms
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -68,6 +52,33 @@ const editProfile = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
+const trackPeriod = async (ctx) => {
+  let data = {}
+  let error = null;
+  let condition = {}
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  let {  startDate, endDate } = ctx.request.query;
+  if (startDate && endDate) {
+    let betweenDates = {
+      [Op.lte]: moment(endDate).unix(),
+      [Op.gte]: moment(startDate).unix(),
+    }
+    condition.where.date = betweenDates
+  }
+  console.log(betweenDates)
+  try {
+    data = await Booking.findAll(condition)
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+
 
 const updateActiveGoal = async (ctx) => {
   let data = {};
@@ -94,30 +105,6 @@ const updateActiveGoal = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const menstrualDetails = async (ctx) => {
-  let data = {};
-  let error = null;
-  const { lastPeriod, cycle } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  try {
-    data = await UserOnboard.update(
-      {
-        lastPeriodDate: lastPeriod,
-        menstrualCycle: cycle,
-      },
-      {
-        where: {
-          userId: userId,
-        },
-      }
-    );
-  } catch (err) {
-    error = err;
-    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-  }
-  ctx.body = responseHelper.buildResponse(error, data);
-  ctx.response.status = HttpStatusCodes.SUCCESS;
-};
 
 const completeOnboard = async (ctx) => {
   let {data, userData } = {};
@@ -154,5 +141,7 @@ const completeOnboard = async (ctx) => {
 module.exports = {
   everyDayTracking:everyDayTracking,
   updateActiveGoal: updateActiveGoal,
-  completeOnboard:completeOnboard
+  completeOnboard:completeOnboard,
+  periodSymptoms:periodSymptoms,
+  trackPeriod: trackPeriod
 };

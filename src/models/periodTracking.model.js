@@ -10,34 +10,11 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      lastPeriodDate: {
-        type: Sequelize.DATE,
+      date: {
+        type: Sequelize.DATEONLY,
       },
-      menstrualCycle: {
-        type: Sequelize.INTEGER,
-      },
-      day1: {
+      symptoms: {
         type: Sequelize.STRING,
       },
-      day2: {
-        type: Sequelize.STRING,
-      },
-      day3: {
-        type: Sequelize.STRING,
-      },
-      day4: {
-        type: Sequelize.STRING,
-      },
-      day5: {
-        type: Sequelize.STRING,
-      },
-      badgeStatus: {
-        type: Sequelize.STRING,
-        defaultValue: "inprogress"
-      },
-    },
-    {
-      timestamps: true,
-    }
-  );
+    });
 };
