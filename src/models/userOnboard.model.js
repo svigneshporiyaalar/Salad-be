@@ -25,7 +25,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.FLOAT,
       },
       weight: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
       },
       lastPeriodDate: {
         type: Sequelize.DATE,
