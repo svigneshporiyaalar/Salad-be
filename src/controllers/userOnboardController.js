@@ -66,6 +66,32 @@ const editProfile = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const getProfile = async (ctx) => {
+  let {data, userData} = {};
+  let error = null;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try {
+    data = await UserOnboard.findOne(
+      {
+        where: {
+          userId: userId,
+        },
+      });
+    userData = await User.findOne(
+      {
+        where: {
+          userId: userId,
+        },
+      })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, {data , userData});
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 const updateActiveGoal = async (ctx) => {
   let data = {};
   let error = null;
@@ -168,5 +194,6 @@ module.exports = {
   editProfile: editProfile,
   menstrualDetails: menstrualDetails,
   updateActiveGoal: updateActiveGoal,
-  completeOnboard:completeOnboard
+  completeOnboard:completeOnboard,
+  getProfile:getProfile
 };
