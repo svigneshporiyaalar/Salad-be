@@ -11,8 +11,8 @@ const UserOnboard = db.userOnboard;
 const primaryGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const { userId, goal, goalId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { goal, goalId } = ctx.request.body;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.create({
       activeGoal: goal,
@@ -30,9 +30,9 @@ const primaryGoal = async (ctx) => {
 const editProfile = async (ctx) => {
   let {data, userData} = {};
   let error = null;
-  const { userId, firstName, lastName, email, 
+  const { firstName, lastName, email, 
     age, height, weight, allowReminder } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.update(
       {
@@ -68,8 +68,8 @@ const editProfile = async (ctx) => {
 const updateActiveGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const { userId, goal, goalId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { goal, goalId } = ctx.request.body;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.update(
       {
@@ -93,8 +93,8 @@ const updateActiveGoal = async (ctx) => {
 const menstrualDetails = async (ctx) => {
   let data = {};
   let error = null;
-  const { userId,lastPeriod, cycle } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { lastPeriod, cycle } = ctx.request.body;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.update(
       {
@@ -118,8 +118,7 @@ const menstrualDetails = async (ctx) => {
 const completeOnboard = async (ctx) => {
   let {data, userData } = {};
   let error = null;
-  const { userId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await UserOnboard.update(
       {

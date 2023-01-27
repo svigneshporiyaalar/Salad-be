@@ -15,7 +15,7 @@ const UserOnboard = db.userOnboard;
 const getAllGoals = async (ctx) => {
   let {data } ={}
   let error = null
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try{
     data = await Goal.findAll({
     })
@@ -32,7 +32,7 @@ const getAllBadges = async (ctx) => {
   let {data } ={}
   let error = null
     // const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try{
     data = await Badge.findAll({
     })

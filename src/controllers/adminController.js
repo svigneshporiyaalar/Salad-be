@@ -175,7 +175,7 @@ const newGoal = async (ctx) => {
 const getAllGoals = async (ctx) => {
   let { data } = {};
   let error = null;
-  const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  // const adminId = _.get(ctx.request.admin, "id", "Bad Response");
   try {
     data = await Goal.findAll({});
   } catch (err) {
