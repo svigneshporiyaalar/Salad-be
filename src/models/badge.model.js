@@ -31,7 +31,7 @@ module.exports = (sequelize, Sequelize) => {
       dailyTimePeriod: {
         type: Sequelize.TIME,
       },
-      menstualPhase: {
+      menstrualPhase: {
         type: Sequelize.STRING,
       },
       difficultyLevel: {
