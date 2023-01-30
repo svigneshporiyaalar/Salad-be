@@ -3,9 +3,31 @@ const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
 const moment = require('moment')
 const _ = require("lodash");
+const { Op } = require("sequelize");
 const User = db.user;
 const UserTracking = db.userTracking;
 const PeriodTracking = db.periodTracking
+
+const dailyTrack = async (ctx) => {
+  let data = {};
+  let error = null;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  let { date } = ctx.request.query;
+  try {
+    data = await UserTracking.findAll(
+      {
+        where: {
+          userId: userId,
+          date : date
+        },
+      });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
 
 
 const everyDayTracking = async (ctx) => {
@@ -37,7 +59,7 @@ const everyDayTracking = async (ctx) => {
 const periodSymptoms = async (ctx) => {
   let data = {};
   let error = null;
-  const { date , symptoms } = ctx.request.query;
+  const { date , symptoms } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
     data = await PeriodTracking.create({
@@ -53,23 +75,28 @@ const periodSymptoms = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+
 const trackPeriod = async (ctx) => {
   let data = {}
   let error = null;
   let condition = {}
   let responseCode = HttpStatusCodes.SUCCESS;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  let {  startDate, endDate } = ctx.request.query;
+  let { startDate, endDate  } = ctx.request.query;
   if (startDate && endDate) {
-    let betweenDates = {
-      [Op.lte]: moment(endDate).unix(),
-      [Op.gte]: moment(startDate).unix(),
+    condition = {
+      where : {
+        userId: userId,
+        date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
+      }
     }
-    condition.where.date = betweenDates
+  } else {
+    condition= {
+      where: { userId: userId },
+   }
   }
-  console.log(betweenDates)
   try {
-    data = await Booking.findAll(condition)
+    data = await PeriodTracking.findAll(condition)
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -78,57 +105,19 @@ const trackPeriod = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
-
-
-const updateActiveGoal = async (ctx) => {
+const trackPeriodDay = async (ctx) => {
   let data = {};
   let error = null;
-  const { goal, goalId } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  let { date } = ctx.request.query;
   try {
-    data = await UserOnboard.update(
-      {
-        activeGoal: goal,
-        goalId: goalId,
-      },
+    data = await PeriodTracking.findOne(
       {
         where: {
           userId: userId,
-        },
-      }
-    );
-  } catch (err) {
-    error = err;
-    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-  }
-  ctx.body = responseHelper.buildResponse(error, data);
-  ctx.response.status = HttpStatusCodes.SUCCESS;
-};
-
-
-const completeOnboard = async (ctx) => {
-  let {data, userData } = {};
-  let error = null;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  try {
-    data = await UserOnboard.update(
-      {
-        onboardStatus: "completed",
-      },
-      {
-        where: {
-          userId: userId,
+          date : date
         },
       });
-    userData = await User.update(
-      {
-        onboardingComplete : "true",
-      },
-      {
-        where: {
-          userId: userId,
-        },
-      })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -136,12 +125,17 @@ const completeOnboard = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
+
+
+
+
 
 
 module.exports = {
   everyDayTracking:everyDayTracking,
-  updateActiveGoal: updateActiveGoal,
-  completeOnboard:completeOnboard,
+  dailyTrack: dailyTrack,
   periodSymptoms:periodSymptoms,
-  trackPeriod: trackPeriod
+  trackPeriod: trackPeriod,
+  trackPeriodDay: trackPeriodDay
 };
