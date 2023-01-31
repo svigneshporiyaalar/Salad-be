@@ -24,6 +24,8 @@ db.badgeStatus = require("./badgeStatus.model.js")(sequelize, Sequelize);
 db.userOnboard = require("./userOnboard.model.js")(sequelize, Sequelize);
 db.userTracking = require("./userTracking.model.js")(sequelize, Sequelize);
 db.periodTracking = require("./periodTracking.model.js")(sequelize, Sequelize);
+db.mood = require("./mood.model.js")(sequelize, Sequelize);
+
 
 
 
