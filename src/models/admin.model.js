@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
     },
     contactNumber: {
-      type: Sequelize.BIGINT,
+      type: Sequelize.STRING,
     },
   });
 };
