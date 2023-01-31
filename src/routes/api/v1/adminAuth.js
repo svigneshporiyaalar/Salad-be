@@ -17,5 +17,4 @@ router.get("/allUsers", isAdmin, allUsers )
 
 
 
-
 module.exports = router;

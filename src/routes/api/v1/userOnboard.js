@@ -17,8 +17,6 @@ router.put("/switchGoal" , verifyToken, updateActiveGoal );
 
 router.put("/menstrualDetails" , verifyToken, menstrualDetails );
 
-router.get("/goalBadge", verifyToken, getGoalbadge)
-
 router.put("/complete" , verifyToken, completeOnboard );
 
 

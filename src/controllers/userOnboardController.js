@@ -4,7 +4,7 @@ const db = require("../models");
 const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
-const { user } = require("../models");
+const badgeConstants = require("../constants/badgeConstants");
 const User = db.user;
 const Badge = db.badge;
 const UserOnboard = db.userOnboard;
@@ -29,7 +29,7 @@ const primaryGoal = async (ctx) => {
 };
 
 const editProfile = async (ctx) => {
-  let {data, userData} = {};
+  let {data, userData } = {};
   let error = null;
   const { firstName, lastName, email, 
     age, height, weight, allowReminder } = ctx.request.body;
@@ -120,7 +120,7 @@ const updateActiveGoal = async (ctx) => {
 const menstrualDetails = async (ctx) => {
   let {data , userData} = {};
   let error = null;
-  const { lastPeriod, cycle } = ctx.request.body;
+  const { startDate, endDate, cycle } = ctx.request.body;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   console.log(lastPeriod , cycle, userId)
   try {
@@ -133,7 +133,8 @@ const menstrualDetails = async (ctx) => {
     if(userData){
     data = await UserOnboard.update(
       {
-        lastPeriodDate: lastPeriod,
+        lastPeriodStart: startDate,
+        lastPeriodEnd: endDate,
         menstrualCycle: cycle,
       },
       {
@@ -144,7 +145,8 @@ const menstrualDetails = async (ctx) => {
     )} 
     else{
     data = await UserOnboard.create({
-      lastPeriodDate: lastPeriod,
+      lastPeriodStart: startDate,
+      lastPeriodEnd: endDate,
       menstrualCycle: cycle,
       userId: userId,
       });
@@ -164,7 +166,7 @@ const completeOnboard = async (ctx) => {
   try {
     data = await UserOnboard.update(
       {
-        onboardStatus: "completed",
+        onboardStatus: badgeConstants.COMPLETED
       },
       {
         where: {
@@ -173,7 +175,7 @@ const completeOnboard = async (ctx) => {
       });
     userData = await User.update(
       {
-        onboardingComplete : "true",
+        onboardingComplete : badgeConstants.TRUE
       },
       {
         where: {

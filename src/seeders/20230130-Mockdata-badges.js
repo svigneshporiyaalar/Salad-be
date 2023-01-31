@@ -6,13 +6,13 @@ module.exports = {
     return queryInterface.bulkInsert('badges', [{
       goalId: '1b16eae5-5073-4966-978f-79569af028bd',
       badgeId: '4b16eae5-5073-4966-978f-79569af028bd',
-      badge: 'average',
+      badge: 'a',
       daysFollowed: "5",
       runway: "3",
       grantPeriod : "30",
       dailyTimePeriod : "09:00",
       menstrualPhase : "",
-      difficultyLevel: "low",
+      difficultyLevel: "1",
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -25,7 +25,7 @@ module.exports = {
       grantPeriod : "20",
       dailyTimePeriod : "07:00",
       menstrualPhase : "",
-      difficultyLevel: "low",
+      difficultyLevel: "1",
       createdAt: new Date(),
       updatedAt: new Date()
     },

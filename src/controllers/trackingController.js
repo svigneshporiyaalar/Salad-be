@@ -29,6 +29,34 @@ const dailyTrack = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const dateTrack = async (ctx) => {
+  let data = {}
+  let error = null;
+  let condition = {}
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  let { startDate, endDate  } = ctx.request.query;
+  if (startDate && endDate) {
+    condition = {
+      where : {
+        userId: userId,
+        date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
+      }
+    }
+  } else {
+    condition= {
+      where: { userId: userId },
+   }
+  }
+  try {
+    data = await UserTracking.findAll(condition)
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
 
 const everyDayTracking = async (ctx) => {
   let data = {};
@@ -135,6 +163,7 @@ const trackPeriodDay = async (ctx) => {
 module.exports = {
   everyDayTracking:everyDayTracking,
   dailyTrack: dailyTrack,
+  dateTrack: dateTrack,
   periodSymptoms:periodSymptoms,
   trackPeriod: trackPeriod,
   trackPeriodDay: trackPeriodDay

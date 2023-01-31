@@ -15,8 +15,6 @@ router.post("/addpartner", verifyToken, addPartner)
 
 router.delete("/removepartner", verifyToken, removePartner)
 
-router.put("/updateGoal" , goalComplete);
-
 
 
 

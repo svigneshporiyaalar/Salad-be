@@ -16,7 +16,6 @@ module.exports = {
      })
      await queryInterface.renameColumn("badges", "menstualPhase", "menstrualPhase")
      
-
   },
 
 

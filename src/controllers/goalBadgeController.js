@@ -5,6 +5,7 @@ const {  ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
 const { USR_SBEE_0004 } = require("../constants/userConstants");
+const badgeConstants = require("../constants/badgeConstants");
 const Badge = db.badge;
 const Goal = db.goal;
 const BadgeStatus = db.badgeStatus;
@@ -105,6 +106,32 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 
+  const badgeComplete = async (ctx) => {
+    let data = {};
+    let error = null;
+    const { badgeId } = ctx.request.body
+    const userId = _.get(ctx.request.user, "userId", "Bad Response");
+    try {
+      data = await BadgeStatus.update(
+      { 
+        badgeStatus: badgeConstants.COMPLETED
+      },
+      {
+        where:
+        {
+          userId:userId,
+          badgeId:badgeId
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
+
   const goalComplete = async (ctx) => {
     let {data, reData } = {};
     let error = null;
@@ -113,7 +140,7 @@ const getAllBadges = async (ctx) => {
     try {
       data = await BadgeStatus.update(
       { 
-        goalStatus: "completed"
+        goalStatus: badgeConstants.COMPLETED
       },
       {
         where:
@@ -124,7 +151,7 @@ const getAllBadges = async (ctx) => {
       })
       reData = await UserOnboard.update(
         { 
-          goalStatus: "completed"
+          goalStatus: badgeConstants.COMPLETED
         },
         {
           where:
@@ -150,5 +177,6 @@ module.exports = {
   getAllGoals:getAllGoals,
   badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
+  badgeComplete:badgeComplete,
   goalComplete:goalComplete
 };

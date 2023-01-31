@@ -11,7 +11,7 @@ module.exports = {
     },
     {
       goalId: '2b16eae5-5073-4966-978f-79569af028bd',
-      goal: 'height gain',
+      goal: 'weight loss',
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -21,6 +21,19 @@ module.exports = {
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  {
+    goalId: '4b16eae5-5073-4966-978f-79569af028bd',
+    goal: 'less period cramps',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    goalId: '5b16eae5-5073-4966-978f-79569af028bd',
+    goal: 'improve flexibility',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  
   ]);
   },
 
