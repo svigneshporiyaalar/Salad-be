@@ -2,38 +2,34 @@
 
 module.exports = {
   async up (queryInterface, Sequelize) {
-    /**
-     * Add altering commands here.
-     *
-     * Example:
-     * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
-     */
+    
     await queryInterface.changeColumn("userOnboards", "height", {
       type: Sequelize.FLOAT,
      })
     await queryInterface.changeColumn("userOnboards", "weight", {
       type: Sequelize.FLOAT,
      })
-     await queryInterface.renameColumn("badges", "menstualPhase", "menstrualPhase")
-     
+    await queryInterface.renameColumn("userOnboards", "lastPeriodDate", "lastPeriodStart")
+    await queryInterface.addColumn("userOnboards", "lastPeriodEnd", {
+      type: Sequelize.Date,
+    });
+    await queryInterface.renameColumn("badges", "menstualPhase", "menstrualPhase")
   },
 
 
   async down (queryInterface, Sequelize) {
-    /**
-     * Add reverting commands here.
-     *
-     * Example:
-     * await queryInterface.dropTable('users');
-     */
+
     await queryInterface.changeColumn("userOnboards", "height", {
       type: Sequelize.INTEGER,
      })
     await queryInterface.changeColumn("userOnboards", "weight", {
       type: Sequelize.INTEGER,
      })
-     await queryInterface.renameColumn("badges", "menstrualPhase", "menstualPhase")
-
+    await queryInterface.renameColumn("userOnboards", "lastPeriodStart", "lastPeriodDate")
+    await queryInterface.removeColumn("userOnboards", "lastPeriodEnd", {
+      type: Sequelize.Date,
+    });
+    await queryInterface.renameColumn("badges", "menstrualPhase", "menstualPhase")
   }
 };
 
