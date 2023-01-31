@@ -15,6 +15,7 @@ module.exports = {
       type: Sequelize.FLOAT,
      })
      await queryInterface.renameColumn("badges", "menstualPhase", "menstrualPhase")
+     
 
   },
 

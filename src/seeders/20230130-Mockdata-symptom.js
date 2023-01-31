@@ -3,45 +3,39 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('moods', [{
-      moodId: '1',
-      mood: 'happy',
+    return queryInterface.bulkInsert('symptoms', [{
+      symptomId: '1',
+      symptom: 'stomach cramps',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      moodId: '2',
-      mood: 'tired',
+      symptomId: '2',
+      symptom: 'back pain',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      moodId: '3',
-      mood: 'exhausted',
+      symptomId: '3',
+      symptom: 'swollen feet',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      moodId: '4',
-      mood: 'energetic',
+      symptomId: '4',
+      symptom: 'leg pain',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      moodId: '5',
-      mood: 'sick',
+      symptomId: '5',
+      symptom: 'feverish',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      moodId: '6',
-      mood: 'hyperactive',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    },
-    {
-      moodId: '7',
-      mood: 'torn-out',
+      symptomId: '6',
+      symptom: 'stomach bloat',
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -49,7 +43,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('moods', null, {});
+    return queryInterface.bulkDelete('symptoms', null, {});
 
   }
 };

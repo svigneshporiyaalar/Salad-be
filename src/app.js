@@ -17,7 +17,7 @@ app.use(errorHandler);
 app.use(cors());
 
 
-db.sequelize.sync({ force: false});
+db.sequelize.sync({ force: false });
 
 app.use(koaBody());
 routes.createRoute(app);

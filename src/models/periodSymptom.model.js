@@ -1,11 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
     return sequelize.define("symptom", {
-      symptomsId: {
+      symptomId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      symptoms: {
+      symptom: {
         type: Sequelize.STRING,
         allowNull: false
       },
