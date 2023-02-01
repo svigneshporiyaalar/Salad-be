@@ -31,8 +31,6 @@ db.symptom = require("./periodSymptom.model")(sequelize, Sequelize);
 
 
 
-
-
 // db.goal.hasMany(db.badge);
 // db.badge.belongsTo(db.goal);
 

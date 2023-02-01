@@ -14,7 +14,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATEONLY,
       },
       symptoms: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
     });
 };

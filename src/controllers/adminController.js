@@ -106,7 +106,7 @@ const adminSignin = async (ctx) => {
 };
 
 const allUsers = async (ctx) => {
-  let { data, userId = "", userList, newData } = {};
+  let data = {};
   let error = null;
   let adminId = _.get(ctx.request.admin, "id", "Bad Response");
   console.log(adminId)
@@ -119,14 +119,25 @@ const allUsers = async (ctx) => {
       ctx.response.status = HttpStatusCodes.NOT_FOUND;
       return;
     }
-    data.map((element) => {
-      userId += element.userId + ",";
-    });
-    userList = userId.split(",").slice(0, -1);
-    newData = await BadgeStatus.findAll({
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const userBadges = async (ctx) => {
+  let data = {};
+  let error = null;
+  let adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  console.log(adminId)
+  const { userId } = ctx.request.query;
+  try {
+    data = await BadgeStatus.findAll({
       raw: true,
       where: {
-        userId: userList,
+        userId: userId,
       },
       order: [["createdAt", "DESC"]],
     });
@@ -134,9 +145,10 @@ const allUsers = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, { data, newData });
+  ctx.body = responseHelper.buildResponse(error,  data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
 
 const newBadge = async (ctx) => {
   let { data, message } = {};
@@ -251,6 +263,7 @@ module.exports = {
   adminSignup: adminSignup,
   adminSignin: adminSignin,
   allUsers: allUsers,
+  userBadges:userBadges,
   newGoal: newGoal,
   newBadge: newBadge,
   getAllBadges:getAllBadges,

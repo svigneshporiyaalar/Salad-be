@@ -18,6 +18,4 @@ router.put("/complete", verifyToken , goalComplete )
 
 
 
-
-
 module.exports = router;

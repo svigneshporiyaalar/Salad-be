@@ -22,13 +22,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.TIME,
       },
       difficultyLevel: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       preWorkoutMood: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       postWorkoutMood: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       badgeStatus: {
         type: Sequelize.STRING,
