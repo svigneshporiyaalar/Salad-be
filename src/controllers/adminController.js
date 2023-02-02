@@ -16,6 +16,7 @@ const {
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const { isEmpty } = require("lodash");
+const badgeConstants = require("../constants/badgeConstants");
 const secret = process.env.JWT_SECRET3;
 
 const adminSignup = async (ctx) => {
@@ -128,7 +129,7 @@ const allUsers = async (ctx) => {
 };
 
 const userBadges = async (ctx) => {
-  let data = {};
+  let {data, goalId ='', goalList, goalData, goalAndBadges } = {};
   let error = null;
   let adminId = _.get(ctx.request.admin, "id", "Bad Response");
   console.log(adminId)
@@ -138,14 +139,29 @@ const userBadges = async (ctx) => {
       raw: true,
       where: {
         userId: userId,
+        goalStatus: badgeConstants.INPROGRESS,
+        badgeStatus: badgeConstants.INPROGRESS
       },
       order: [["createdAt", "DESC"]],
     });
+    console.log(data)
+    data.forEach(element => {
+      goalId += element.goalId + ","
+    });
+    goalList= goalId.split(",").slice(0,-1)
+    goalData = await Goal.findAll({
+      raw:true,
+        where: {
+          goalId: goalList,
+        },
+      });
+    goalAndBadges = data.map((item) => 
+    ({...item, ...goalData.find(itm => itm.goalId == item.goalId)}));  
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error,  data);
+  ctx.body = responseHelper.buildResponse(error, goalAndBadges);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 

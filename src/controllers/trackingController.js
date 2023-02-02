@@ -137,6 +137,26 @@ const periodSymptoms = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const removeSymptoms = async (ctx) => {
+  let data = {};
+  let error = null;
+  const { date , symptoms, userId } = ctx.request.body;
+  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try {
+    data = await PeriodTracking.destroy({
+      userId: userId,
+      date: moment(date),
+      symptoms: symptoms
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 
 const trackPeriod = async (ctx) => {
   let {data, symptom='' , periodData, symptomList , mergedData} = {};
@@ -221,6 +241,7 @@ module.exports = {
   dailyTrack: dailyTrack,
   dateTrack: dateTrack,
   periodSymptoms:periodSymptoms,
+  removeSymptoms:removeSymptoms,
   trackPeriod: trackPeriod,
   trackPeriodDay: trackPeriodDay
 };

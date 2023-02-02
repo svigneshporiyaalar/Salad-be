@@ -68,15 +68,17 @@ const getAllBadges = async (ctx) => {
   const badgeStatus = async (ctx) => {
     let {data } = {};
     let error = null;
-    const { badgeStatus , badgeId, badge } = ctx.request.body
-    const userId = _.get(ctx.request.user, "userId", "Bad Response");
+    const { badgeId, badge , userId , goalId } = ctx.request.body
+    // const userId = _.get(ctx.request.user, "userId", "Bad Response");
     try {
         data = await BadgeStatus.create(
           { 
             badgeId:badgeId,
-            badgeStatus: badgeStatus,
+            goalId: goalId,
             userId:userId,
-            badge:badge
+            badge:badge,
+            badgeStatus: badgeConstants.INPROGRESS,
+            goalStatus: badgeConstants.INPROGRESS
           })
     } catch (err) {
       error = err;

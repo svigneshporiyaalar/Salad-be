@@ -1,7 +1,8 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const { everyDayTracking, periodSymptoms, trackPeriod,
-     trackPeriodDay,dateTrack,dailyTrack, updateDayTracking} = require('../../../controllers/trackingController');
+     trackPeriodDay,dateTrack,dailyTrack, updateDayTracking, 
+     removeSymptoms} = require('../../../controllers/trackingController');
 const { verifyToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
@@ -15,6 +16,8 @@ router.get("/dailyTrack" , verifyToken, dailyTrack );
 router.get("/dateTrack" , verifyToken, dateTrack );
 
 router.post("/periodSymptoms" ,verifyToken, periodSymptoms );
+
+router.delete("/remove/symptom" ,verifyToken, removeSymptoms );
 
 router.get("/periodTrack" , verifyToken, trackPeriod );
 
