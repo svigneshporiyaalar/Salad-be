@@ -140,7 +140,6 @@ const userBadges = async (ctx) => {
       where: {
         userId: userId,
         goalStatus: badgeConstants.INPROGRESS,
-        badgeStatus: badgeConstants.INPROGRESS
       },
       order: [["createdAt", "DESC"]],
     });

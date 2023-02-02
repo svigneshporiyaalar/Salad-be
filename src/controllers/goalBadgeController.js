@@ -89,7 +89,7 @@ const getAllBadges = async (ctx) => {
   };
 
 
-  const getBadgeStatus = async (ctx) => {
+  const getAllBadgeStatus = async (ctx) => {
     let {data } ={}
     let error = null
     const userId = _.get(ctx.request.user, "userId", "Bad response");
@@ -107,6 +107,28 @@ const getAllBadges = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
+
+  const getBadgeStatus = async (ctx) => {
+    let {data } ={}
+    let error = null
+    const userId = _.get(ctx.request.user, "userId", "Bad response");
+    const { badgeId } = ctx.request.query
+    try{
+      data = await BadgeStatus.findOne({
+        where:
+        { 
+          userId: userId,
+          badgeId:badgeId
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
 
   const badgeComplete = async (ctx) => {
     let data = {};
@@ -179,6 +201,7 @@ module.exports = {
   getAllGoals:getAllGoals,
   badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
+  getAllBadgeStatus:getAllBadgeStatus,
   badgeComplete:badgeComplete,
   goalComplete:goalComplete
 };

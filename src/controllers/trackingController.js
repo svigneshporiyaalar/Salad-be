@@ -9,6 +9,8 @@ const User = db.user;
 const Symptom = db.symptom;
 const UserTracking = db.userTracking;
 const PeriodTracking = db.periodTracking
+const UserOnboard = db.userOnboard;
+
 
 
 const dailyTrack = async (ctx) => {
@@ -231,6 +233,28 @@ const trackPeriodDay = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const lastPeriod = async (ctx) => {
+  let {data, userData} = {};
+  let error = null;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  try {
+    data = await UserOnboard.findOne(
+      {
+        where: {
+          userId: userId,
+        },
+        attributes: [ ['lastPeriodEnd', 'lastPeriod'] , 'menstrualCycle', 'createdAt', 'updatedAt'] ,
+
+      });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, {data , userData});
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 
 
 
@@ -243,5 +267,6 @@ module.exports = {
   periodSymptoms:periodSymptoms,
   removeSymptoms:removeSymptoms,
   trackPeriod: trackPeriod,
+  lastPeriod:lastPeriod,
   trackPeriodDay: trackPeriodDay
 };
