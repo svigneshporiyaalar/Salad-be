@@ -1,10 +1,9 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const { getBadgeStatus } = require('../../../controllers/goalBadgeController');
-const { everyDayTracking, periodSymptoms, trackPeriod,
-     trackPeriodDay,dateTrack,dailyTrack, updateDayTracking, 
-     removeSymptoms,
-     lastPeriod} = require('../../../controllers/trackingController');
+const { everyDayTracking,dateTrack,dailyTrack, updateDayTracking, 
+     removeSymptoms,lastPeriod,postSymptoms,trackMood,
+     trackDailyMood} = require('../../../controllers/trackingController');
 const { verifyToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
@@ -17,13 +16,13 @@ router.get("/dailytrack" , verifyToken, dailyTrack );
 
 router.get("/datetrack" , verifyToken, dateTrack );
 
-router.post("/periodsymptoms" ,verifyToken, periodSymptoms );
+router.post("/symptoms" ,verifyToken, postSymptoms );
 
 router.delete("/remove/symptom" ,verifyToken, removeSymptoms );
 
-router.get("/periodtrack" , verifyToken, trackPeriod );
+router.get("/moodtrack" , verifyToken, trackMood );
 
-router.get("/daily/periodtrack" ,  verifyToken, trackPeriodDay );
+router.get("/daily/moodtrack" ,  verifyToken, trackDailyMood );
 
 router.get("/lastperiod" , verifyToken, lastPeriod );
 

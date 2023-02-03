@@ -155,7 +155,7 @@ const userBadges = async (ctx) => {
         },
       });
     goalAndBadges = data.map((item) => 
-    ({...item, ...goalData.find(itm => itm.goalId == item.goalId)}));  
+    ({...item, ...goalData.find(itm => itm.goalId === item.goalId)}));  
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;

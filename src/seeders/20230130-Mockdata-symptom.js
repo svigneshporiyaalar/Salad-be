@@ -5,37 +5,61 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('symptoms', [{
       symptomId: '1',
-      symptom: 'stomach cramps',
+      symptom: 'feeling on the low side',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       symptomId: '2',
-      symptom: 'back pain',
+      symptom: 'feeling on the high side',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       symptomId: '3',
-      symptom: 'swollen feet',
+      symptom: 'soreness from last workout',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       symptomId: '4',
-      symptom: 'leg pain',
+      symptom: 'not sore from last workout',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       symptomId: '5',
-      symptom: 'feverish',
+      symptom: 'not enough sleep last night',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       symptomId: '6',
-      symptom: 'stomach bloat',
+      symptom: 'enough sleep last night',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      symptomId: '7',
+      symptom: 'Difficulty of workout was high',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      symptomId: '8',
+      symptom: 'Difficulty of workout was low',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      symptomId: '9',
+      symptom: 'Did not like the workout',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      symptomId: '10',
+      symptom: 'Like the workout',
       createdAt: new Date(),
       updatedAt: new Date()
     },

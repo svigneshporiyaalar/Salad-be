@@ -23,10 +23,10 @@ db.goal = require("./goal.model.js")(sequelize, Sequelize);
 db.badgeStatus = require("./badgeStatus.model.js")(sequelize, Sequelize);
 db.userOnboard = require("./userOnboard.model.js")(sequelize, Sequelize);
 db.userTracking = require("./userTracking.model.js")(sequelize, Sequelize);
-db.periodTracking = require("./periodTracking.model.js")(sequelize, Sequelize);
+db.moodTracking = require("./moodTracking.model.js")(sequelize, Sequelize);
 db.mood = require("./mood.model.js")(sequelize, Sequelize);
 db.difficultyLevel = require("./difficultyLevel.model")(sequelize, Sequelize);
-db.symptom = require("./periodSymptom.model")(sequelize, Sequelize);
+db.symptom = require("./symptom.model")(sequelize, Sequelize);
 
 
 

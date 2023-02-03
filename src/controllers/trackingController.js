@@ -8,7 +8,7 @@ const log = console.log
 const User = db.user;
 const Symptom = db.symptom;
 const UserTracking = db.userTracking;
-const PeriodTracking = db.periodTracking
+const MoodTracking = db.moodTracking
 const UserOnboard = db.userOnboard;
 
 
@@ -80,7 +80,7 @@ const everyDayTracking = async (ctx) => {
       preWorkoutMood: preMood,
       postWorkoutMood: postMood
     });
-    console.log(data.createdAt)
+   log(data.createdAt)
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -120,13 +120,13 @@ const updateDayTracking = async (ctx) => {
 };
 
 
-const periodSymptoms = async (ctx) => {
+const postSymptoms = async (ctx) => {
   let data = {};
   let error = null;
-  const { date , symptoms, userId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { date , symptoms } = ctx.request.body;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
-    data = await PeriodTracking.create({
+    data = await MoodTracking.create({
       userId: userId,
       date: moment(date),
       symptoms: symptoms
@@ -142,10 +142,10 @@ const periodSymptoms = async (ctx) => {
 const removeSymptoms = async (ctx) => {
   let data = {};
   let error = null;
-  const { date , symptoms, userId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { date , symptoms } = ctx.request.body;
+  const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
-    data = await PeriodTracking.destroy({
+    data = await MoodTracking.destroy({
       userId: userId,
       date: moment(date),
       symptoms: symptoms
@@ -160,8 +160,8 @@ const removeSymptoms = async (ctx) => {
 
 
 
-const trackPeriod = async (ctx) => {
-  let {data, symptom='' , periodData, symptomList , mergedData} = {};
+const trackMood = async (ctx) => {
+  let {data, symptom='' , moodData, symptomList , mergedData} = {};
   let error = null;
   let condition = {}
   let responseCode = HttpStatusCodes.SUCCESS;
@@ -183,12 +183,12 @@ const trackPeriod = async (ctx) => {
    }
   }
   try {
-    data = await PeriodTracking.findAll(condition)
+    data = await MoodTracking.findAll(condition)
     data.forEach(element => {
       symptom += element.symptomId + ","
     });
     symptomList= symptom.split(",").slice(0,-1)
-    periodData = await Symptom.findAll({
+    moodData = await Symptom.findAll({
       raw:true,
         where: {
           symptomId: symptomList,
@@ -205,13 +205,13 @@ const trackPeriod = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
-const trackPeriodDay = async (ctx) => {
-  let {data, symptomId , periodSymptom} = {};
+const trackDailyMood = async (ctx) => {
+  let {data, symptomId , symptom} = {};
   let error = null;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   let { date } = ctx.request.query;
   try {
-    data = await PeriodTracking.findOne(
+    data = await MoodTracking.findOne(
       {
         where: {
           userId: userId,
@@ -219,7 +219,7 @@ const trackPeriodDay = async (ctx) => {
         },
       });
       symptomId = data.symptoms
-    periodSymptom = await Symptom.findOne(
+    symptom = await Symptom.findOne(
         {
           where: {
             symptomId: symptomId,
@@ -229,12 +229,12 @@ const trackPeriodDay = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, periodSymptom );
+  ctx.body = responseHelper.buildResponse(error, symptom );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
 const lastPeriod = async (ctx) => {
-  let {data, userData} = {};
+  let data = {};
   let error = null;
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try {
@@ -250,7 +250,7 @@ const lastPeriod = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data , userData});
+  ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
@@ -264,9 +264,9 @@ module.exports = {
   updateDayTracking:updateDayTracking,
   dailyTrack: dailyTrack,
   dateTrack: dateTrack,
-  periodSymptoms:periodSymptoms,
+  postSymptoms:postSymptoms,
   removeSymptoms:removeSymptoms,
-  trackPeriod: trackPeriod,
+  trackMood: trackMood,
   lastPeriod:lastPeriod,
-  trackPeriodDay: trackPeriodDay
+  trackDailyMood: trackDailyMood
 };

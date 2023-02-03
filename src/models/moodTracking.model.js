@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  return sequelize.define("periodTracking",
+  return sequelize.define("moodTracking",
     {
       id: {
         type: Sequelize.INTEGER,
