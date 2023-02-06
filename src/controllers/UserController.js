@@ -83,6 +83,7 @@ const partnerList = async (ctx) => {
   let {data, partnerId ='',partnerIds , newData} ={}
   let error = null
   const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  console.log(userId)
   try{
     data = await Userpartner.findAll({
       raw:true,
@@ -90,6 +91,7 @@ const partnerList = async (ctx) => {
         userId:userId,
       }
     })
+    console.log(data)
     if (data===null){
       ctx.throw(404, ERR_SBEE_0015);
       return; 
