@@ -13,8 +13,9 @@ const Userpartner = db.userPartner;
 const addPartner = async (ctx) => {
   let { data, userData, reData, partnerId, message } = {};
   let error = null;
-  const { partner_number , relation } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { partner_number , relation } = body;
+  const userId = _.get(user, "userId" );
   try {
     data = await Partner.findOne({
       raw: true,
@@ -58,8 +59,9 @@ const addPartner = async (ctx) => {
 const removePartner = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { partnerId } = ctx.request.query;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { user, query }=ctx.request;
+  const { partnerId } = query;
+  const userId = _.get(user, "userId" );
   try {
     data = await Userpartner.destroy({
       where: {
@@ -80,10 +82,11 @@ const removePartner = async (ctx) => {
 };
 
 const partnerList = async (ctx) => {
-  let {data, partnerId ='',partnerIds , newData} ={}
+  let {data, partnerIds, partnerData} ={}
   let error = null
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  console.log(userId)
+  const { user } = ctx.request;
+  const userId = _.get(user, "userId");
+  console.log("userId:" ,userId)
   try{
     data = await Userpartner.findAll({
       raw:true,
@@ -96,14 +99,15 @@ const partnerList = async (ctx) => {
       ctx.throw(404, ERR_SBEE_0015);
       return; 
     } 
-    data.map((element) =>{
-      partnerId += element.partnerId + ","
+    partnerIds= data.map((element) =>{
+      return element.partnerId
     })
-    partnerIds= partnerId.split(",").slice(0,-1)
-    newData = await Partner.findAll({
+    console.log("partnerIds List:" ,partnerIds)
+    partnerData = await Partner.findAll({
       raw:true,
       where:{
-        partnerId: partnerIds
+        partnerId: partnerIds,
+        onboardingComplete: "true"
       },
       order:[["createdAt", "DESC"]]
     })
@@ -111,7 +115,7 @@ const partnerList = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, newData);
+  ctx.body = responseHelper.buildResponse(error, partnerData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 

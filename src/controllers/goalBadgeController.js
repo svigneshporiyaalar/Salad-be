@@ -16,7 +16,6 @@ const UserOnboard = db.userOnboard;
 const getAllGoals = async (ctx) => {
   let {data } ={}
   let error = null
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try{
     data = await Goal.findAll({
     })
@@ -32,8 +31,6 @@ const getAllGoals = async (ctx) => {
 const getAllBadges = async (ctx) => {
   let {data } ={}
   let error = null
-    // const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
   try{
     data = await Badge.findAll({
     })
@@ -48,9 +45,10 @@ const getAllBadges = async (ctx) => {
  const getGoalbadge = async (ctx) => {
     let {data } ={}
     let error = null
-    const { goalId  } = ctx.request.query
-    const userId = _.get(ctx.request.user, "userId", "Bad response");
-    // const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
+    const { user, query }=ctx.request;
+    const { goalId  } = query
+    const userId = _.get(user, "userId");
+    console.log( "userId :" , userId)
     try{
       data = await Badge.findAll({
         where:
@@ -68,8 +66,10 @@ const getAllBadges = async (ctx) => {
   const badgeStatus = async (ctx) => {
     let {data } = {};
     let error = null;
-    const { badgeId, badge , userId , goalId } = ctx.request.body
-    // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+    const { user, body }=ctx.request;
+    const { badgeId, badge , goalId } = body
+    const userId = _.get(user, "userId");
+    console.log( "userId :" , userId)
     try {
         data = await BadgeStatus.create(
           { 
@@ -92,8 +92,8 @@ const getAllBadges = async (ctx) => {
   const getAllBadgeStatus = async (ctx) => {
     let {data } ={}
     let error = null
-    const userId = _.get(ctx.request.user, "userId", "Bad response");
-    // const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
+    const { user }=ctx.request;
+    const userId = _.get(user, "userId");
     try{
       data = await BadgeStatus.findAll({
         where:
@@ -111,8 +111,9 @@ const getAllBadges = async (ctx) => {
   const getBadgeStatus = async (ctx) => {
     let {data } ={}
     let error = null
-    const userId = _.get(ctx.request.user, "userId", "Bad response");
-    const { badgeId } = ctx.request.query
+    const { user, query }=ctx.request;
+    const userId = _.get(user, "userId");
+    const { badgeId } = query
     try{
       data = await BadgeStatus.findOne({
         where:
@@ -133,8 +134,9 @@ const getAllBadges = async (ctx) => {
   const badgeComplete = async (ctx) => {
     let data = {};
     let error = null;
-    const { badgeId } = ctx.request.body
-    const userId = _.get(ctx.request.user, "userId", "Bad Response");
+    const { user, body }=ctx.request;
+    const { badgeId } = body
+    const userId = _.get(user, "userId");
     try {
       data = await BadgeStatus.update(
       { 
@@ -159,8 +161,9 @@ const getAllBadges = async (ctx) => {
   const goalComplete = async (ctx) => {
     let {data, reData } = {};
     let error = null;
-    const { goalId } = ctx.request.body
-    const userId = _.get(ctx.request.user, "userId", "Bad Response");
+    const { user, body }=ctx.request;
+    const { goalId } = body
+    const userId = _.get(user, "userId" );
     try {
       data = await BadgeStatus.update(
       { 

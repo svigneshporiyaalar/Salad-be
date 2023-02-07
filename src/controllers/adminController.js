@@ -109,8 +109,9 @@ const adminSignin = async (ctx) => {
 const allUsers = async (ctx) => {
   let data = {};
   let error = null;
-  let adminId = _.get(ctx.request.admin, "id", "Bad Response");
-  console.log(adminId)
+  const { admin }=ctx.request;
+  let adminId = _.get(admin, "id", "Bad Response");
+  console.log("adminId :",adminId)
   try {
     data = await User.findAll({
       raw: true,
@@ -131,9 +132,10 @@ const allUsers = async (ctx) => {
 const userBadges = async (ctx) => {
   let {data, goalId ='', goalList, goalData, goalAndBadges } = {};
   let error = null;
-  let adminId = _.get(ctx.request.admin, "id", "Bad Response");
-  console.log(adminId)
-  const { userId } = ctx.request.query;
+  const { admin ,query }=ctx.request;
+  let adminId = _.get(admin, "id", "Bad Response");
+  console.log("adminId :",adminId)
+  const { userId } = query;
   try {
     data = await BadgeStatus.findAll({
       raw: true,
@@ -168,8 +170,10 @@ const userBadges = async (ctx) => {
 const newBadge = async (ctx) => {
   let { data, message } = {};
   let error = null;
+  const { admin } = ctx.request;
   const { ...rest } = get(ctx.request, "body");
-  const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  const adminId = _.get(admin, "id", "Bad Response");
+  console.log("adminId :",adminId)
   try {
     data = await Badge.create({...rest});
     message = "badge added";
@@ -184,8 +188,10 @@ const newBadge = async (ctx) => {
 const newGoal = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { goal } = ctx.request.body;
-  const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  const { admin, body } = ctx.request;
+  const { goal } = body;
+  const adminId = _.get(admin, "id", "Bad Response");
+  console.log("adminId :",adminId)
   try {
     data = await Goal.create({
       goal: goal,
@@ -216,7 +222,9 @@ const getAllGoals = async (ctx) => {
 const getAllBadges = async (ctx) => {
   let { data } = {};
   let error = null;
-  const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  const { admin } = ctx.request;
+  const adminId = _.get(admin, "id", "Bad Response");
+  console.log("adminId :",adminId)
   try {
     data = await Badge.findAll({});
   } catch (err) {
@@ -232,7 +240,7 @@ const getGoalbadges = async (ctx) => {
   let error = null
   const { goalId  } = ctx.request.query
   const adminId = _.get(ctx.request.admin, "id", "Bad Response");
-  // const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
+  console.log("adminId :",adminId)
   try{
     data = await Badge.findAll({
       where:
@@ -251,9 +259,11 @@ const getGoalbadges = async (ctx) => {
 const removeBadge = async (ctx) => {
   let data = {}
   let error = null;
+  const { admin, query } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const  adminId  = _.get(ctx.request.admin, "id", "Bad Response")
-  const { badgeId } = ctx.request.query;
+  const  adminId  = _.get(admin, "id", "Bad Response")
+  const { badgeId } = query;
+  console.log("adminId :",adminId)
   try {
     data = Badge.destroy({
       where: 
@@ -273,8 +283,10 @@ const updateBadge = async (ctx) => {
   let data = {}
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const  adminId  = _.get(ctx.request.admin, "id", "Bad Response")
+  const { admin } = ctx.request;
+  const  adminId  = _.get(admin, "id", "Bad Response")
   const { badgeId, ...rest } = get(ctx.request, "body");
+  console.log("adminId :",adminId)
   try {
     data = Badge.update({...rest},
       {

@@ -12,8 +12,9 @@ const UserOnboard = db.userOnboard;
 const primaryGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const { goal, goalId } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { goal, goalId } = body;
+  const userId = _.get(user, "userId" );
   try {
     data = await UserOnboard.create({
       activeGoal: goal,
@@ -31,9 +32,10 @@ const primaryGoal = async (ctx) => {
 const editProfile = async (ctx) => {
   let {data, userData } = {};
   let error = null;
-  const { firstName, lastName, email, 
-    age, height, weight, allowReminder } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { name, email, age, height, 
+    weight, allowReminder } = body;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.update(
       {
@@ -49,8 +51,7 @@ const editProfile = async (ctx) => {
       });
     userData = await User.update(
       {
-        firstName:firstName,
-        lastName:lastName,
+        name:name,
         email:email,
       },
       {
@@ -69,7 +70,8 @@ const editProfile = async (ctx) => {
 const getProfile = async (ctx) => {
   let {data, userData} = {};
   let error = null;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.findOne(
       {
@@ -95,8 +97,9 @@ const getProfile = async (ctx) => {
 const updateActiveGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const { goal, goalId } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { goal, goalId } = body;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.update(
       {
@@ -120,8 +123,9 @@ const updateActiveGoal = async (ctx) => {
 const menstrualDetails = async (ctx) => {
   let {data , userData} = {};
   let error = null;
-  const { startDate, endDate, cycle } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { startDate, endDate, cycle } = body;
+  const userId = _.get(user, "userId");
   console.log(lastPeriod , cycle, userId)
   try {
     userData = await UserOnboard.findOne({
@@ -162,7 +166,8 @@ const menstrualDetails = async (ctx) => {
 const completeOnboard = async (ctx) => {
   let {data, userData } = {};
   let error = null;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.update(
       {

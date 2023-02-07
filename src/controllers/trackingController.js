@@ -16,8 +16,9 @@ const UserOnboard = db.userOnboard;
 const dailyTrack = async (ctx) => {
   let data = {};
   let error = null;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  let { date } = ctx.request.query;
+  const { user, query }=ctx.request;
+  const userId = _.get(user, "userId");
+  let { date } = query;
   try {
     data = await UserTracking.findAll(
       {
@@ -38,9 +39,10 @@ const dateTrack = async (ctx) => {
   let data = {}
   let error = null;
   let condition = {}
+  const {user, query}=ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  let { startDate, endDate  } = ctx.request.query;
+  const userId = _.get(user, "userId");
+  let { startDate, endDate  } = query;
   if (startDate && endDate) {
     condition = {
       where : {
@@ -66,9 +68,10 @@ const dateTrack = async (ctx) => {
 const everyDayTracking = async (ctx) => {
   let data = {};
   let error = null;
+  const {user, body}=ctx.request;
   const { description, badgeId, day, time,
-     level, preMood,postMood } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+     level, preMood,postMood } = body;
+  const userId = _.get(user, "userId");
   try {
     data = await UserTracking.create({
       userId: userId,
@@ -92,9 +95,10 @@ const everyDayTracking = async (ctx) => {
 const updateDayTracking = async (ctx) => {
   let data = {};
   let error = null;
+  const {user, body}=ctx.request;
   const { description, badgeId, day, time,
-     level, preMood,postMood } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+     level, preMood,postMood } = body;
+  const userId = _.get(user, "userId");
   try {
     data = await UserTracking.update({
       description:description,
@@ -123,8 +127,9 @@ const updateDayTracking = async (ctx) => {
 const postSymptoms = async (ctx) => {
   let data = {};
   let error = null;
-  const { date , symptoms } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { date , symptoms } = body;
+  const userId = _.get(user, "userId");
   try {
     data = await MoodTracking.create({
       userId: userId,
@@ -142,8 +147,9 @@ const postSymptoms = async (ctx) => {
 const removeSymptoms = async (ctx) => {
   let data = {};
   let error = null;
-  const { date , symptoms } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { date , symptoms } = body;
+  const userId = _.get( user, "userId");
   try {
     data = await MoodTracking.destroy({
       userId: userId,
@@ -164,9 +170,10 @@ const trackMood = async (ctx) => {
   let {data, symptom='' , moodData, symptomList , mergedData} = {};
   let error = null;
   let condition = {}
+  const {user, query}=ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  let { startDate, endDate  } = ctx.request.query;
+  const userId = _.get(user, "userId");
+  let { startDate, endDate  } = query;
   if (startDate && endDate) {
     condition = {
       raw:true,
@@ -208,8 +215,9 @@ const trackMood = async (ctx) => {
 const trackDailyMood = async (ctx) => {
   let {data, symptomId , symptom} = {};
   let error = null;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
-  let { date } = ctx.request.query;
+  const {user, query}=ctx.request;
+  const userId = _.get(user, "userId", "Bad Response");
+  let { date } = query;
   try {
     data = await MoodTracking.findOne(
       {
@@ -236,7 +244,8 @@ const trackDailyMood = async (ctx) => {
 const lastPeriod = async (ctx) => {
   let data = {};
   let error = null;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.findOne(
       {
