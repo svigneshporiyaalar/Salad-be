@@ -9,6 +9,9 @@ module.exports = {
     goal: `${API}${V1}/goal`,
     badge: `${API}${V1}/badge`,
     userOnboard: `${API}${V1}/userOnboard`,
+    userTracking: `${API}${V1}/userTracking`,
+
+
 
 
   },

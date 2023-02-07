@@ -9,37 +9,47 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
       },
-      badge: {
+      name: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      description: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      item: {
+        type: Sequelize.JSON,
+      },
+      quantity: {
+        type: Sequelize.INTEGER,
+      },
+      unit: {
+        type: Sequelize.STRING,
+      },
+      frequency: {
+        type: Sequelize.STRING,
+      },
+      phase: {
+        type: Sequelize.STRING,
+      },
+      type : {
+        type: Sequelize.STRING, 
+      },
+      cycleDays: {
+        type: Sequelize.STRING,
+      },
+      naturalProgressionIntermediate: {
+        type: Sequelize.STRING,
+      },
+      naturalProgressionAdvanced: {
+        type: Sequelize.STRING,
+      },
+      naturalRegression: {
+        type: Sequelize.STRING,
       },
       goalId: {
         type: Sequelize.UUID,
       },
-      items: {
-        type: Sequelize.JSON,
-      },
-      daysFollowed: {
-        type: Sequelize.INTEGER,
-      },
-      grantPeriod: {
-        type: Sequelize.INTEGER,
-      },
-      runway: {
-        type: Sequelize.INTEGER,
-      },
-      dailyTimePeriod: {
-        type: Sequelize.TIME,
-      },
-      menstualPhase: {
-        type: Sequelize.STRING,
-      },
-      difficultyLevel: {
-        type: Sequelize.STRING,
-      },
-    },{
-      timestamps: true
-    }
-    );
+    });
   }
   

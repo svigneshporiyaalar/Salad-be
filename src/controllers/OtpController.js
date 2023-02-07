@@ -27,6 +27,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const serviceSid = process.env.TWILIO_SERVICE_SID;
 const partner_serviceSid = process.env.TWILIO_PARTNER_SERVICE_SID;
 const client = new twilio(accountSid, authToken);
+const tempOtp = process.env.otp
 
 function AddMinutesToDate(date, minutes) {
   return new Date(date.getTime() + minutes * 60000);
@@ -74,14 +75,14 @@ const Otp_phone = async (ctx) => {
     };
     console.log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify.services(serviceSid)
-      .verifications.create({
-        // customCode: `${otp}`,
-        to: `+${cc}${phoneNumber}`,
-        channel: "sms",
-      });
+    // otpResponse = await client.verify.services(serviceSid)
+    //   .verifications.create({
+    //     // customCode: `${otp}`,
+    //     to: `+${cc}${phoneNumber}`,
+    //     channel: "sms",
+    //   });
     otpMessage = USR_SBEE_0001
-    console.log(otpResponse);
+    // console.log(otpResponse);
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -116,14 +117,15 @@ const Otp_phoneVerify = async (ctx) => {
       ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
-    verifiedResponse = await client.verify
-      .services(serviceSid)
-      .verificationChecks.create({
-        to: `+91${phoneNumber}`,
-        code: otp,
-      });
-    if (verifiedResponse.valid) {
-      console.log(verifiedResponse)
+    // verifiedResponse = await client.verify
+    //   .services(serviceSid)
+    //   .verificationChecks.create({
+    //     to: `+91${phoneNumber}`,
+    //     code: otp,
+    //   });
+    // if (verifiedResponse.valid) {
+    //   console.log(verifiedResponse)
+      if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
       type:type}, secret, { expiresIn: "2h" });
@@ -180,14 +182,14 @@ const Otp_partner = async (ctx) => {
       type:type
     };
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify
-      .services(partner_serviceSid)
-      .verifications.create({
-        to: `+${cc}${phoneNumber}`,
-        channel: "sms",
-      });
+    // otpResponse = await client.verify
+    //   .services(partner_serviceSid)
+    //   .verifications.create({
+    //     to: `+${cc}${phoneNumber}`,
+    //     channel: "sms",
+    //   });
     otpMessage = USR_SBEE_0001;
-    console.log(otpResponse);
+    // console.log(otpResponse);
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -222,14 +224,15 @@ const Otp_partnerVerify = async (ctx) => {
       ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
-    verifiedResponse = await client.verify
-      .services(partner_serviceSid)
-      .verificationChecks.create({
-        to: `+91${phoneNumber}`,
-        code: otp,
-      });
-    if(verifiedResponse.valid) {
-      console.log(verifiedResponse)
+    // verifiedResponse = await client.verify
+    //   .services(partner_serviceSid)
+    //   .verificationChecks.create({
+    //     to: `+91${phoneNumber}`,
+    //     code: otp,
+    //   });
+    // if(verifiedResponse.valid) {
+    //   console.log(verifiedResponse)
+     if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,partnerId:partnerId,phoneNumber:phoneNumber,
       type:type}, partnerSecret, { expiresIn: "2h" });
