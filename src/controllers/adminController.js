@@ -257,7 +257,7 @@ const getGoalbadges = async (ctx) => {
 
 
 const removeBadge = async (ctx) => {
-  let data = {}
+  let {data , badgeData} = {}
   let error = null;
   const { admin, query } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
@@ -265,12 +265,25 @@ const removeBadge = async (ctx) => {
   const { badgeId } = query;
   console.log("adminId :",adminId)
   try {
+    badgeData = await BadgeStatus.findOne({
+      raw: true,
+      where: {
+        badgeId: badgeId,
+        badgeStatus: badgeConstants.INPROGRESS
+      },
+    });
+    if(badgeData) {
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0019" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
+    } else {
     data = Badge.destroy({
       where: 
       {
         badgeId: badgeId,
       },
     })
+  }
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -303,6 +316,43 @@ const updateBadge = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
+const removeGoal = async (ctx) => {
+  let {data ,goalData} = {}
+  let error = null;
+  const { admin, query } = ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const  adminId  = _.get(admin, "id", "Bad Response")
+  const { goalId } = query;
+  console.log("adminId :",adminId)
+  try {
+    goalData = await BadgeStatus.findOne({
+      raw: true,
+      where: {
+        goalId: goalId,
+        goalStatus: badgeConstants.INPROGRESS
+      },
+    });
+    if (goalData) {
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0018" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
+    } else {
+    data = Goal.destroy({
+      where: 
+      {
+        goalId: goalId,
+      },
+    })
+  } 
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+
 
 
 
@@ -318,6 +368,6 @@ module.exports = {
   getAllBadges:getAllBadges,
   getAllGoals:getAllGoals,
   updateBadge:updateBadge,
-  removeBadge:removeBadge
-
+  removeBadge:removeBadge,
+  removeGoal:removeGoal
 };
