@@ -30,14 +30,14 @@ const primaryGoal = async (ctx) => {
 };
 
 const editProfile = async (ctx) => {
-  let {data, userData } = {};
+  let {data, userData , uptData } = {};
   let error = null;
   const {user, body}=ctx.request;
   const { name, email, age, height, 
     weight, allowReminder } = body;
   const userId = _.get(user, "userId");
   try {
-    data = await UserOnboard.update(
+    uptData = await UserOnboard.update(
       {
         height: height,
         weight: weight,
@@ -59,6 +59,12 @@ const editProfile = async (ctx) => {
           userId: userId,
         },
       })
+    data = await UserOnboard.findOne({
+      where :
+        { 
+          userId : userId
+        }
+      }) 
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -121,12 +127,11 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let {data , userData} = {};
+  let {data , userData, uptData} = {};
   let error = null;
   const {user, body}=ctx.request;
   const { startDate, endDate, cycle } = body;
   const userId = _.get(user, "userId");
-  console.log(lastPeriod , cycle, userId)
   try {
     userData = await UserOnboard.findOne({
       where :
@@ -135,7 +140,7 @@ const menstrualDetails = async (ctx) => {
       }
     })
     if(userData){
-    data = await UserOnboard.update(
+    uptData = await UserOnboard.update(
       {
         lastPeriodStart: startDate,
         lastPeriodEnd: endDate,
@@ -145,8 +150,14 @@ const menstrualDetails = async (ctx) => {
         where: {
           userId: userId,
         },
-      }
-    )} 
+      })
+    data = await UserOnboard.findOne({
+      where :
+        { 
+          userId : userId
+        }
+      })
+    } 
     else{
     data = await UserOnboard.create({
       lastPeriodStart: startDate,
@@ -159,7 +170,7 @@ const menstrualDetails = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, data );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
