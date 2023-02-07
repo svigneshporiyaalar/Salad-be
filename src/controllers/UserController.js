@@ -45,7 +45,8 @@ const addPartner = async (ctx) => {
       userData = await Userpartner.create({
         userId: userId,
         partnerId: partnerId,
-        relation: relation
+        relation: relation,
+        shortName: name
       });
       message = "Partner added";
     }

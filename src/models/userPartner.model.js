@@ -14,6 +14,9 @@ module.exports = (sequelize, Sequelize) => {
       relation: {
         type: Sequelize.STRING,
       }, 
+      shortName: {
+        type: Sequelize.STRING,
+      }, 
     },{
       timestamps: true
     }
