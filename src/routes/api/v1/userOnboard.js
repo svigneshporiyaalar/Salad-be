@@ -1,23 +1,23 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { getAllGoals } = require('../../../controllers/goalBadgeController');
+const { getAllGoals, getAllBadges, getGoalbadge } = require('../../../controllers/goalBadgeController');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
-    completeOnboard } = require('../../../controllers/userOnboardController');
+    completeOnboard, getProfile} = require('../../../controllers/userOnboardController');
+const { verifyToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
 
-router.post("/primaryGoal" , primaryGoal );
+router.post("/primaryGoal" , verifyToken, primaryGoal );
 
-router.put("/editProfile" , editProfile );
+router.put("/editProfile" , verifyToken, editProfile );
 
-router.put("/switchGoal" , updateActiveGoal );
+router.get("/getProfile" , verifyToken, getProfile );
 
-router.put("/menstrualDetails" , menstrualDetails );
+router.put("/switchGoal" , verifyToken, updateActiveGoal );
 
-router.get("/allGoals" , getAllGoals);
+router.put("/menstrualDetails" , verifyToken, menstrualDetails );
 
-router.put("/complete" , completeOnboard );
-
+router.put("/complete" , verifyToken, completeOnboard );
 
 
 

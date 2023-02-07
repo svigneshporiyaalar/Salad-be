@@ -14,8 +14,9 @@ const Userpartner = db.userPartner;
 const updateProfile = async (ctx) => {
   let {data , message} = {};
   let error = null;
+  const { partner }=ctx.request;
   const { ...rest } = get(ctx.request, "body");
-  const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
+  const partnerId = _.get(partner, "partnerId");
   try {
       data = await Partner.update({ ...rest },
         {
@@ -33,9 +34,10 @@ const updateProfile = async (ctx) => {
 };
 
 const getUsers = async (ctx) => {
-    let {data, userId ='',userList , newData} ={}
+    let {data, userList, userData} ={}
     let error = null
-    const partnerId = _.get(ctx.request.partner, "partnerId", "Bad Response");
+    const { partner }=ctx.request;
+    const partnerId = _.get(partner, "partnerId" );
     try{
       data = await Userpartner.findAll({
         raw:true,
@@ -47,11 +49,10 @@ const getUsers = async (ctx) => {
         ctx.throw(404, ERR_SBEE_0011);
         return; 
       } 
-      data.map((element) =>{
-        userId += element.userId + ","
+       userList= data.map((element) =>{
+        return element.userId
       })
-      userList= userId.split(",").slice(0,-1)
-      newData = await User.findAll({
+      userData = await User.findAll({
         raw:true,
         where:{
           userId:userList,
@@ -62,7 +63,7 @@ const getUsers = async (ctx) => {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
-    ctx.body = responseHelper.buildResponse(error, newData);
+    ctx.body = responseHelper.buildResponse(error, userData);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
   

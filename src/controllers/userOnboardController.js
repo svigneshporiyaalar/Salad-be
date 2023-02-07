@@ -4,6 +4,7 @@ const db = require("../models");
 const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
+const badgeConstants = require("../constants/badgeConstants");
 const User = db.user;
 const Badge = db.badge;
 const UserOnboard = db.userOnboard;
@@ -11,8 +12,9 @@ const UserOnboard = db.userOnboard;
 const primaryGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const { userId, goal, goalId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { goal, goalId } = body;
+  const userId = _.get(user, "userId" );
   try {
     data = await UserOnboard.create({
       activeGoal: goal,
@@ -28,13 +30,14 @@ const primaryGoal = async (ctx) => {
 };
 
 const editProfile = async (ctx) => {
-  let {data, userData} = {};
+  let {data, userData , uptData } = {};
   let error = null;
-  const { userId, firstName, lastName, email, 
-    age, height, weight, allowReminder } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { name, email, age, height, 
+    weight, allowReminder } = body;
+  const userId = _.get(user, "userId");
   try {
-    data = await UserOnboard.update(
+    uptData = await UserOnboard.update(
       {
         height: height,
         weight: weight,
@@ -48,10 +51,41 @@ const editProfile = async (ctx) => {
       });
     userData = await User.update(
       {
-        firstName:firstName,
-        lastName:lastName,
+        name:name,
         email:email,
       },
+      {
+        where: {
+          userId: userId,
+        },
+      })
+    data = await UserOnboard.findOne({
+      where :
+        { 
+          userId : userId
+        }
+      }) 
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const getProfile = async (ctx) => {
+  let {data, userData} = {};
+  let error = null;
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  try {
+    data = await UserOnboard.findOne(
+      {
+        where: {
+          userId: userId,
+        },
+      });
+    userData = await User.findOne(
       {
         where: {
           userId: userId,
@@ -61,15 +95,17 @@ const editProfile = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, {data , userData});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
 
 const updateActiveGoal = async (ctx) => {
   let data = {};
   let error = null;
-  const { userId, goal, goalId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { goal, goalId } = body;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.update(
       {
@@ -91,39 +127,62 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let data = {};
+  let {data , userData, uptData} = {};
   let error = null;
-  const { userId,lastPeriod, cycle } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { startDate, endDate, cycle } = body;
+  const userId = _.get(user, "userId");
   try {
-    data = await UserOnboard.update(
+    userData = await UserOnboard.findOne({
+      where :
+      { 
+        userId : userId
+      }
+    })
+    if(userData){
+    uptData = await UserOnboard.update(
       {
-        lastPeriodDate: lastPeriod,
+        lastPeriodStart: startDate,
+        lastPeriodEnd: endDate,
         menstrualCycle: cycle,
       },
       {
         where: {
           userId: userId,
         },
-      }
-    );
+      })
+    data = await UserOnboard.findOne({
+      where :
+        { 
+          userId : userId
+        }
+      })
+    } 
+    else{
+    data = await UserOnboard.create({
+      lastPeriodStart: startDate,
+      lastPeriodEnd: endDate,
+      menstrualCycle: cycle,
+      userId: userId,
+      });
+    }
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, data );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
 const completeOnboard = async (ctx) => {
   let {data, userData } = {};
   let error = null;
-  const { userId } = ctx.request.body;
-  // const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.update(
       {
-        onboardStatus: "completed",
+        onboardStatus: badgeConstants.COMPLETED
       },
       {
         where: {
@@ -132,7 +191,7 @@ const completeOnboard = async (ctx) => {
       });
     userData = await User.update(
       {
-        onboardingComplete : "true",
+        onboardingComplete : badgeConstants.TRUE
       },
       {
         where: {
@@ -153,5 +212,6 @@ module.exports = {
   editProfile: editProfile,
   menstrualDetails: menstrualDetails,
   updateActiveGoal: updateActiveGoal,
-  completeOnboard:completeOnboard
+  completeOnboard:completeOnboard,
+  getProfile:getProfile
 };

@@ -1,10 +1,10 @@
-const get = require("lodash/get");
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
 const { Op } = require("sequelize");
 const _ = require("lodash");
 const { USR_SBEE_0003, USR_SBEE_0005 } = require("../constants/userConstants");
+const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
 const User = db.user;
 const Partner = db.partner;
 const Userpartner = db.userPartner;
@@ -13,8 +13,9 @@ const Userpartner = db.userPartner;
 const addPartner = async (ctx) => {
   let { data, userData, reData, partnerId, message } = {};
   let error = null;
-  const { partner_number } = ctx.request.body;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const {user, body}=ctx.request;
+  const { partner_number , relation } = body;
+  const userId = _.get(user, "userId" );
   try {
     data = await Partner.findOne({
       raw: true,
@@ -43,6 +44,7 @@ const addPartner = async (ctx) => {
       userData = await Userpartner.create({
         userId: userId,
         partnerId: partnerId,
+        relation: relation
       });
       message = "Partner added";
     }
@@ -57,8 +59,9 @@ const addPartner = async (ctx) => {
 const removePartner = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { partnerId } = ctx.request.query;
-  const userId = _.get(ctx.request.user, "userId", "Bad Response");
+  const { user, query }=ctx.request;
+  const { partnerId } = query;
+  const userId = _.get(user, "userId" );
   try {
     data = await Userpartner.destroy({
       where: {
@@ -78,9 +81,49 @@ const removePartner = async (ctx) => {
   ctx.response.status = HttpStatusCodes.CREATED;
 };
 
+const partnerList = async (ctx) => {
+  let {data, partnerIds, partnerData} ={}
+  let error = null
+  const { user } = ctx.request;
+  const userId = _.get(user, "userId");
+  console.log("userId:" ,userId)
+  try{
+    data = await Userpartner.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+      }
+    })
+    console.log(data)
+    if (data===null){
+      ctx.throw(404, ERR_SBEE_0015);
+      return; 
+    } 
+    partnerIds= data.map((element) =>{
+      return element.partnerId
+    })
+    console.log("partnerIds List:" ,partnerIds)
+    partnerData = await Partner.findAll({
+      raw:true,
+      where:{
+        partnerId: partnerIds,
+        onboardingComplete: "true"
+      },
+      order:[["createdAt", "DESC"]]
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, partnerData);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+}
+
+
 
 
 module.exports = {
   addPartner: addPartner,
-  removePartner:removePartner
+  removePartner:removePartner,
+  partnerList: partnerList
 };

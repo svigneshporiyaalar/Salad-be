@@ -1,22 +1,20 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("userPartner", {
+  return sequelize.define("moodTracking",
+    {
       id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         primaryKey: true,
+        autoIncrement: true,
       },
       userId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
       },
-      partnerId: {
+      date: {
+        type: Sequelize.DATEONLY,
+      },
+      symptoms: {
         type: Sequelize.INTEGER,
-      }, 
-      relation: {
-        type: Sequelize.STRING,
-      }, 
-    },{
-      timestamps: true
-    }
-    );
-  }
-  
+      },
+    });
+};
