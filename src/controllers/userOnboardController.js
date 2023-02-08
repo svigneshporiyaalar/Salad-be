@@ -129,7 +129,7 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let { data , userData, uptData} = {};
+  let { data , userData, uptData } = {};
   let error = null;
   let {user, body}=ctx.request;
   let { startDate, endDate, cycle } = body;
@@ -144,9 +144,7 @@ const menstrualDetails = async (ctx) => {
     if(!endDate){
       endDate = new Date;
     }
-    console.log(moment(endDate).valueOf())
-    console.log(moment.unix(1675850812987).format('L'))
-
+    console.log(`milliseconds : ${moment(endDate).valueOf()}`)
     if(userData){
     uptData = await UserOnboard.update(
       {
