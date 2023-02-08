@@ -110,7 +110,7 @@ const allUsers = async (ctx) => {
   let data = {};
   let error = null;
   const { admin }=ctx.request;
-  let adminId = _.get(admin, "id", "Bad Response");
+  let adminId = _.get(admin, "id" );
   console.log("adminId :",adminId)
   try {
     data = await User.findAll({
@@ -133,7 +133,7 @@ const userBadges = async (ctx) => {
   let {data, goalId ='', goalList, goalData, goalAndBadges } = {};
   let error = null;
   const { admin ,query }=ctx.request;
-  let adminId = _.get(admin, "id", "Bad Response");
+  let adminId = _.get(admin, "id" );
   console.log("adminId :",adminId)
   const { userId } = query;
   try {
@@ -172,7 +172,7 @@ const newBadge = async (ctx) => {
   let error = null;
   const { admin } = ctx.request;
   const { ...rest } = get(ctx.request, "body");
-  const adminId = _.get(admin, "id", "Bad Response");
+  const adminId = _.get(admin, "id" );
   console.log("adminId :",adminId)
   try {
     data = await Badge.create({...rest});
@@ -190,7 +190,7 @@ const newGoal = async (ctx) => {
   let error = null;
   const { admin, body } = ctx.request;
   const { goal } = body;
-  const adminId = _.get(admin, "id", "Bad Response");
+  const adminId = _.get(admin, "id" );
   console.log("adminId :",adminId)
   try {
     data = await Goal.create({
@@ -209,7 +209,7 @@ const getAllGoals = async (ctx) => {
   let { data } = {};
   let error = null;
   const { admin } = ctx.request;
-  const adminId = _.get(admin, "id", "Bad Response");
+  const adminId = _.get(admin, "id" );
   console.log("adminId :",adminId)
   try {
     data = await Goal.findAll({
@@ -229,7 +229,7 @@ const getAllBadges = async (ctx) => {
   let { data } = {};
   let error = null;
   const { admin } = ctx.request;
-  const adminId = _.get(admin, "id", "Bad Response");
+  const adminId = _.get(admin, "id" );
   console.log("adminId :",adminId)
   try {
     data = await Badge.findAll({
@@ -249,7 +249,7 @@ const getGoalbadges = async (ctx) => {
   let {data } ={}
   let error = null
   const { goalId  } = ctx.request.query
-  const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  const adminId = _.get(ctx.request.admin, "id" );
   console.log("adminId :",adminId)
   try{
     data = await Badge.findAll({
@@ -273,7 +273,7 @@ const removeBadge = async (ctx) => {
   let error = null;
   const { admin, query } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const  adminId  = _.get(admin, "id", "Bad Response")
+  const  adminId  = _.get(admin, "id" )
   const { badgeId } = query;
   console.log("adminId :",adminId)
   try {
@@ -285,7 +285,7 @@ const removeBadge = async (ctx) => {
       },
     });
     if(badgeData) {
-      data = Badge.update({
+      data =  await Badge.update({
         status: badgeConstants.ARCHIVED
       },{
         where: 
@@ -294,7 +294,7 @@ const removeBadge = async (ctx) => {
         },
       })
       } else {
-    data = Badge.update({
+    data = await Badge.update({
       status: badgeConstants.INACTIVE
     },{
       where: 
@@ -316,7 +316,7 @@ const removeGoal = async (ctx) => {
   let error = null;
   const { admin, query } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const  adminId  = _.get(admin, "id", "Bad Response")
+  const  adminId  = _.get(admin, "id" )
   const { goalId } = query;
   console.log("adminId :",adminId)
   try {
@@ -328,7 +328,7 @@ const removeGoal = async (ctx) => {
       },
     });
     if(goalData) {
-      data = Goal.update({
+      data =  await Goal.update({
         status: badgeConstants.ARCHIVED
       },{
         where: 
@@ -337,7 +337,7 @@ const removeGoal = async (ctx) => {
         },
       })
       } else {
-    data = Goal.update({
+    data =  await Goal.update({
       status: badgeConstants.INACTIVE
     },{
       where: 
@@ -346,6 +346,31 @@ const removeGoal = async (ctx) => {
       },
     })
   }
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+const updateGoal = async (ctx) => {
+  let data  = {}
+  let error = null;
+  const { admin, body } = ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const  adminId  = _.get(admin, "id")
+  const { goalId , goal } = body;
+  console.log("adminId :",adminId)
+  try {
+     data = await  Goal.update({
+        goal: goal
+      },{
+        where: 
+        {
+          goalId: goalId,
+        },
+      })
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -367,5 +392,6 @@ module.exports = {
   getAllBadges:getAllBadges,
   getAllGoals:getAllGoals,
   removeBadge:removeBadge,
-  removeGoal:removeGoal
+  removeGoal:removeGoal,
+  updateGoal:updateGoal
 };

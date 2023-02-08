@@ -4,7 +4,9 @@ const db = require("../models");
 const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
+const moment = require('moment')
 const badgeConstants = require("../constants/badgeConstants");
+const { DATE } = require("sequelize");
 const User = db.user;
 const Badge = db.badge;
 const UserOnboard = db.userOnboard;
@@ -127,10 +129,10 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let {data , userData, uptData} = {};
+  let { data , userData, uptData} = {};
   let error = null;
-  const {user, body}=ctx.request;
-  const { startDate, endDate, cycle } = body;
+  let {user, body}=ctx.request;
+  let { startDate, endDate, cycle } = body;
   const userId = _.get(user, "userId");
   try {
     userData = await UserOnboard.findOne({
@@ -139,6 +141,12 @@ const menstrualDetails = async (ctx) => {
         userId : userId
       }
     })
+    if(!endDate){
+      endDate = new Date;
+    }
+    console.log(moment(endDate).valueOf())
+    console.log(moment.unix(1675850812987).format('L'))
+
     if(userData){
     uptData = await UserOnboard.update(
       {
