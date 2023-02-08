@@ -1,7 +1,7 @@
 const { verify } = require('jsonwebtoken');
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { newBadge, updateBadge, removeBadge, getGoalbadges } = require('../../../controllers/adminController');
+const { newBadge, removeBadge, getGoalbadges } = require('../../../controllers/adminController');
 const { getGoalbadge, badgeStatus, getAllBadges, 
   badgeComplete, getAllBadgeStatus} = require('../../../controllers/goalBadgeController');
 const { isAdmin, verifyToken } = require('../../../middleware/authenticated');
@@ -24,9 +24,7 @@ router.get("/allBadges/admin", isAdmin, getAllBadges)
 
 router.get("/goal/admin", isAdmin, getGoalbadges)
 
-router.put("/update", isAdmin , updateBadge )
-
-router.delete("/remove", isAdmin , removeBadge )
+router.put("/remove", isAdmin , removeBadge )
 
 
 

@@ -208,9 +208,15 @@ const newGoal = async (ctx) => {
 const getAllGoals = async (ctx) => {
   let { data } = {};
   let error = null;
-  // const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  const { admin } = ctx.request;
+  const adminId = _.get(admin, "id", "Bad Response");
+  console.log("adminId :",adminId)
   try {
-    data = await Goal.findAll({});
+    data = await Goal.findAll({
+      where :{
+        status : badgeConstants.ACTIVE
+      }
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -226,7 +232,11 @@ const getAllBadges = async (ctx) => {
   const adminId = _.get(admin, "id", "Bad Response");
   console.log("adminId :",adminId)
   try {
-    data = await Badge.findAll({});
+    data = await Badge.findAll({
+      where :{
+        status : badgeConstants.ACTIVE
+      }
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -244,7 +254,9 @@ const getGoalbadges = async (ctx) => {
   try{
     data = await Badge.findAll({
       where:
-      { goalId: goalId
+      { 
+        goalId: goalId,
+        status : badgeConstants.ACTIVE
       }
     })
   } catch (err) {
@@ -273,41 +285,24 @@ const removeBadge = async (ctx) => {
       },
     });
     if(badgeData) {
-      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0019" });
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-      return;
-    } else {
-    data = Badge.destroy({
+      data = Badge.update({
+        status: badgeConstants.ARCHIVED
+      },{
+        where: 
+        {
+          badgeId: badgeId,
+        },
+      })
+      } else {
+    data = Badge.update({
+      status: badgeConstants.INACTIVE
+    },{
       where: 
       {
         badgeId: badgeId,
       },
     })
   }
-  } catch (err) {
-    error = err;
-    responseCode = HttpStatusCodes.BAD_REQUEST;
-  }
-  ctx.body = responseHelper.buildResponse(error, data);
-  ctx.response.status = responseCode;
-}
-
-const updateBadge = async (ctx) => {
-  let data = {}
-  let error = null;
-  let responseCode = HttpStatusCodes.SUCCESS;
-  const { admin } = ctx.request;
-  const  adminId  = _.get(admin, "id", "Bad Response")
-  const { badgeId, ...rest } = get(ctx.request, "body");
-  console.log("adminId :",adminId)
-  try {
-    data = Badge.update({...rest},
-      {
-      where: 
-      {
-        badgeId: badgeId,
-      },
-    })
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -317,7 +312,7 @@ const updateBadge = async (ctx) => {
 }
 
 const removeGoal = async (ctx) => {
-  let {data ,goalData} = {}
+  let {data, goalData}  = {}
   let error = null;
   const { admin, query } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
@@ -332,18 +327,25 @@ const removeGoal = async (ctx) => {
         goalStatus: badgeConstants.INPROGRESS
       },
     });
-    if (goalData) {
-      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0018" });
-      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-      return;
-    } else {
-    data = Goal.destroy({
+    if(goalData) {
+      data = Goal.update({
+        status: badgeConstants.ARCHIVED
+      },{
+        where: 
+        {
+          goalId: goalId,
+        },
+      })
+      } else {
+    data = Goal.update({
+      status: badgeConstants.INACTIVE
+    },{
       where: 
       {
         goalId: goalId,
       },
     })
-  } 
+  }
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -351,9 +353,6 @@ const removeGoal = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = responseCode;
 }
-
-
-
 
 
 
@@ -367,7 +366,6 @@ module.exports = {
   newBadge: newBadge,
   getAllBadges:getAllBadges,
   getAllGoals:getAllGoals,
-  updateBadge:updateBadge,
   removeBadge:removeBadge,
   removeGoal:removeGoal
 };

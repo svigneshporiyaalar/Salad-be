@@ -18,6 +18,9 @@ const getAllGoals = async (ctx) => {
   let error = null
   try{
     data = await Goal.findAll({
+      where :{
+        status : badgeConstants.ACTIVE
+      }
     })
   } catch (err) {
     error = err;
@@ -33,6 +36,9 @@ const getAllBadges = async (ctx) => {
   let error = null
   try{
     data = await Badge.findAll({
+      where :{
+        status : badgeConstants.ACTIVE
+      }
     })
     } catch (err) {
       error = err;
@@ -52,7 +58,9 @@ const getAllBadges = async (ctx) => {
     try{
       data = await Badge.findAll({
         where:
-        { goalId: goalId
+        { 
+          goalId: goalId,
+          status : badgeConstants.ACTIVE
         }
       })
     } catch (err) {

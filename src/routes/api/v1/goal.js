@@ -14,7 +14,7 @@ router.get("/allGoals" , verifyToken, getAllGoals);
 
 router.put("/complete", verifyToken , goalComplete )
 
-router.delete("/remove", isAdmin , removeGoal )
+router.put("/remove", isAdmin , removeGoal )
 
 
 

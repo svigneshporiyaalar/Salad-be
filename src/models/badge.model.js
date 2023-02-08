@@ -50,6 +50,10 @@ module.exports = (sequelize, Sequelize) => {
       goalId: {
         type: Sequelize.UUID,
       },
+      status: {
+        type: Sequelize.STRING,
+        defaultValue: "active"
+      },
     });
   }
   
