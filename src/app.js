@@ -24,5 +24,5 @@ cronFile()
 
 
 app.listen(process.env.PORT || PORT, () => {
-  console.log('Server up in %s', process.env.PORT || PORT);
+  console.log('Server listening in PORT:%s', process.env.PORT || PORT);
 });

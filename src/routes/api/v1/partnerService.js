@@ -6,7 +6,6 @@ const { updateProfile, getUsers, completeOnboard } = require('../../../controlle
 const router = new Router({ prefix: v1.partnerService });
 
 
-
 router.post("/partnerOtp" , Otp_partner);
 
 router.post("/verifypartnerOtp" ,verifyKey, Otp_partnerVerify);
@@ -16,7 +15,6 @@ router.put("/updateprofile", partnerToken, updateProfile)
 router.put("/complete" , partnerToken, completeOnboard );
 
 router.get("/getusers",partnerToken, getUsers)
-
 
 
 

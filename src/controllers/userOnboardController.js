@@ -10,6 +10,7 @@ const { DATE } = require("sequelize");
 const User = db.user;
 const Badge = db.badge;
 const UserOnboard = db.userOnboard;
+const log = console.log
 
 const primaryGoal = async (ctx) => {
   let data = {};
@@ -144,7 +145,7 @@ const menstrualDetails = async (ctx) => {
     if(!endDate){
       endDate = new Date;
     }
-    console.log(`milliseconds : ${moment(endDate).valueOf()}`)
+    log(`milliseconds : ${moment(endDate).valueOf()}`)
     if(userData){
     uptData = await UserOnboard.update(
       {

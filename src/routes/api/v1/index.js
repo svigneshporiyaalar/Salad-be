@@ -7,6 +7,7 @@ const badge = require("./badge");
 const userOnboard = require("./userOnboard");
 const adminAuth = require("./adminAuth");
 const userTracking = require("./userTracking");
+const firebasePush = require("./firebasePush");
 const app = new Router();
 
 app.get("/", (ctx) => {
@@ -23,4 +24,5 @@ module.exports = {
   badge,
   userOnboard,
   userTracking,
+  firebasePush
 };

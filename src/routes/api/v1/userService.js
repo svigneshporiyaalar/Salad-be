@@ -1,6 +1,5 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { goalComplete } = require('../../../controllers/goalBadgeController');
 const { Otp_phone , Otp_phoneVerify } = require('../../../controllers/otpController');
 const { addPartner, removePartner, partnerList } = require('../../../controllers/userController');
 const { verifyKey, verifyToken } = require('../../../middleware/authenticated');

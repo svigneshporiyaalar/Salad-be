@@ -1,10 +1,9 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const {  ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
-const { USR_SBEE_0004 } = require("../constants/userConstants");
+const log =console.log
 const badgeConstants = require("../constants/badgeConstants");
 const Badge = db.badge;
 const Goal = db.goal;
@@ -13,9 +12,12 @@ const UserOnboard = db.userOnboard;
 
 
 
-const getAllGoals = async (ctx) => {
+const getAllUserGoals = async (ctx) => {
   let {data } ={}
   let error = null
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  log( "userId :" , userId)
   try{
     data = await Goal.findAll({
       where :{
@@ -209,7 +211,7 @@ const getAllBadges = async (ctx) => {
 module.exports = {
   getAllBadges:getAllBadges,
   getGoalbadge:getGoalbadge,
-  getAllGoals:getAllGoals,
+  getAllUserGoals:getAllUserGoals,
   badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
   getAllBadgeStatus:getAllBadgeStatus,

@@ -8,7 +8,10 @@ var bcrypt = require("bcryptjs");
 const User = db.user;
 const BadgeStatus = db.badgeStatus;
 const Badge = db.badge;
+const BadgeGoal = db.badgeGoal;
 const Goal = db.goal;
+const chalk = require("chalk");
+const log= console.log
 const {
   ERR_SBEE_0016,
   ERR_SBEE_0999,
@@ -17,6 +20,7 @@ const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const { isEmpty } = require("lodash");
 const badgeConstants = require("../constants/badgeConstants");
+const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008 } = require("../constants/userConstants");
 const secret = process.env.JWT_SECRET3;
 
 const adminSignup = async (ctx) => {
@@ -92,6 +96,7 @@ const adminSignin = async (ctx) => {
       secret,
       { expiresIn: "2h" }
     );
+    log(chalk.green.underline.bold('-- Admin signing in --'))
     admin = {
       id: data.id,
       name: data.firstName + " " + data.lastName,
@@ -111,7 +116,7 @@ const allUsers = async (ctx) => {
   let error = null;
   const { admin }=ctx.request;
   let adminId = _.get(admin, "id" );
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await User.findAll({
       raw: true,
@@ -134,7 +139,7 @@ const userBadges = async (ctx) => {
   let error = null;
   const { admin ,query }=ctx.request;
   let adminId = _.get(admin, "id" );
-  console.log("adminId :",adminId)
+  log("adminId :",adminId)
   const { userId } = query;
   try {
     data = await BadgeStatus.findAll({
@@ -145,7 +150,6 @@ const userBadges = async (ctx) => {
       },
       order: [["createdAt", "DESC"]],
     });
-    console.log(data)
     data.forEach(element => {
       goalId += element.goalId + ","
     });
@@ -173,7 +177,7 @@ const newBadge = async (ctx) => {
   const { admin } = ctx.request;
   const { ...rest } = get(ctx.request, "body");
   const adminId = _.get(admin, "id" );
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await Badge.create({...rest});
     message = "badge added";
@@ -185,13 +189,35 @@ const newBadge = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const addToGoal = async (ctx) => {
+  let { data, message } = {};
+  let error = null;
+  const { admin , body } = ctx.request;
+  const { badgeId, goalId } = body
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
+  try {
+    data = await BadgeGoal.create({
+      goalId: goalId,
+      badgeId: badgeId
+    });
+    message = USR_SBEE_0007;
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, { message });
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 const newGoal = async (ctx) => {
   let { data, message } = {};
   let error = null;
   const { admin, body } = ctx.request;
   const { goal } = body;
   const adminId = _.get(admin, "id" );
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await Goal.create({
       goal: goal,
@@ -210,7 +236,7 @@ const getAllGoals = async (ctx) => {
   let error = null;
   const { admin } = ctx.request;
   const adminId = _.get(admin, "id" );
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await Goal.findAll({
       where :{
@@ -230,7 +256,7 @@ const getAllBadges = async (ctx) => {
   let error = null;
   const { admin } = ctx.request;
   const adminId = _.get(admin, "id" );
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await Badge.findAll({
       where :{
@@ -250,7 +276,7 @@ const getGoalbadges = async (ctx) => {
   let error = null
   const { goalId  } = ctx.request.query
   const adminId = _.get(ctx.request.admin, "id" );
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try{
     data = await Badge.findAll({
       where:
@@ -275,7 +301,7 @@ const removeBadge = async (ctx) => {
   let responseCode = HttpStatusCodes.SUCCESS;
   const  adminId  = _.get(admin, "id" )
   const { badgeId } = query;
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     badgeData = await BadgeStatus.findOne({
       raw: true,
@@ -318,7 +344,7 @@ const removeGoal = async (ctx) => {
   let responseCode = HttpStatusCodes.SUCCESS;
   const  adminId  = _.get(admin, "id" )
   const { goalId } = query;
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
     goalData = await BadgeStatus.findOne({
       raw: true,
@@ -361,7 +387,7 @@ const updateGoal = async (ctx) => {
   let responseCode = HttpStatusCodes.SUCCESS;
   const  adminId  = _.get(admin, "id")
   const { goalId , goal } = body;
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
      data = await  Goal.update({
         goal: goal
@@ -379,6 +405,35 @@ const updateGoal = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
+const delinkGoal = async (ctx) => {
+  let {data, message}  = {}
+  let error = null;
+  const { admin, query} = ctx.request;
+  const  adminId  = _.get(admin, "id")
+  const { goalId , badgeId } = query;
+  log(chalk.bold("adminId :",adminId))
+  try {
+    data = await BadgeGoal.destroy({
+      where: {
+        goalId: goalId,
+        badgeId: badgeId
+      },
+    });
+    console.log(data);
+    if(data===1){
+      message = USR_SBEE_0006
+    } else{
+      message = USR_SBEE_0008
+    }
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, message);
+  ctx.response.status = HttpStatusCodes.SUCCESS
+};
+
+
 
 
 module.exports = {
@@ -389,9 +444,11 @@ module.exports = {
   getGoalbadges:getGoalbadges,
   newGoal: newGoal,
   newBadge: newBadge,
+  addToGoal:addToGoal,
   getAllBadges:getAllBadges,
   getAllGoals:getAllGoals,
   removeBadge:removeBadge,
   removeGoal:removeGoal,
-  updateGoal:updateGoal
+  updateGoal:updateGoal,
+  delinkGoal:delinkGoal
 };

@@ -1,6 +1,5 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { getAllGoals, getAllBadges, getGoalbadge } = require('../../../controllers/goalBadgeController');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile} = require('../../../controllers/userOnboardController');
 const { verifyToken } = require('../../../middleware/authenticated');
