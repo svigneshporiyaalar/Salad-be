@@ -4,15 +4,14 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('badges', [{
-      goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-      badgeId: '4b16eae5-5073-4966-978f-79569af028bd',
+      badgeId: '1b16eae5-5073-4966-978f-79569af028bd',
       name: 'Add omega 3 rich foods to diet',
       description: '"Add omega 3 rich foods: seafood, flax,sabja,chia seeds (1-2tbsp/day) fish oil capsule (1000mg/day)"',
       quantity: null,
       unit: null,
       frequency : "daily",
       phase : "follicular1",
-      type : "nutrtion",
+      type : "nutrition",
       cycleDays: "5 - 10",
       naturalProgressionIntermediate: "",
       naturalProgressionAdvanced: "",
@@ -21,8 +20,7 @@ module.exports = {
       updatedAt: new Date()
     },
     {
-      goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-      badgeId: '5b16eae5-5073-4966-978f-79569af028bd',
+      badgeId: '2b16eae5-5073-4966-978f-79569af028bd',
       name: 'Cardio',
       description: "walk 10k steps",
       quantity: null,
@@ -38,8 +36,7 @@ module.exports = {
       updatedAt: new Date()
     },
     {
-      goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-      badgeId: '6b16eae5-5073-4966-978f-79569af028bd',
+      badgeId: '3b16eae5-5073-4966-978f-79569af028bd',
       name: 'S&C',
       description: "Strenght & Conditioning Routine1 (medium intensity)",
       quantity: null,
@@ -55,8 +52,7 @@ module.exports = {
       updatedAt: new Date()
   },
   {
-    goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-    badgeId: '6b26eae5-5073-4966-978f-79569af028bd',
+    badgeId: '4b16eae5-5073-4966-978f-79569af028bd',
     name: 'S&C',
     description: "Strenght & Conditioning Routine2 (high intensity)",
     quantity: null,
@@ -71,8 +67,7 @@ module.exports = {
     createdAt: new Date(),
     updatedAt: new Date()
 },{
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-  badgeId: '6b36eae5-5073-4966-978f-79569af028bd',
+  badgeId: '5b16eae5-5073-4966-978f-79569af028bd',
   name: 'S&C',
   description: "HIIT Routine 0 (low difficulty)",
   quantity: null,
@@ -88,8 +83,7 @@ module.exports = {
   updatedAt: new Date()
 },
 {
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-  badgeId: '6b46eae5-5073-4966-978f-79569af028bd',
+  badgeId: '6b16eae5-5073-4966-978f-79569af028bd',
   name: 'S&C',
   description: "Strenght & Conditioning Routine0 (low intensity)",
   quantity: null,
@@ -105,7 +99,6 @@ module.exports = {
   updatedAt: new Date()
 },
   {
-    goalId: '1b16eae5-5073-4966-978f-79569af028bd',
     badgeId: '7b16eae5-5073-4966-978f-79569af028bd',
     name: 'dark chocolate daily',
     description: "Dark chocolate (low added sugar) - 1 square per day",
@@ -122,7 +115,6 @@ module.exports = {
     updatedAt: new Date()
 },
 {
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
   badgeId: '8b16eae5-5073-4966-978f-79569af028bd',
   name: 'Take b-complex capsule',
   description: "1 B-complex supplement daily ",
@@ -139,7 +131,6 @@ module.exports = {
   updatedAt: new Date()
 },
 {
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
   badgeId: '9b16eae5-5073-4966-978f-79569af028bd',
   name: 'Yoga',
   description: "Core Yoga Exercises Routine1 (medium intensity)",
@@ -156,8 +147,7 @@ module.exports = {
   updatedAt: new Date()
 },
 {
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-  badgeId: '2c16eae5-5073-4966-978f-79569af028bd',
+  badgeId: '1c16eae5-5073-4966-978f-79569af028bd',
   name: 'Cardio',
   description: "walk 15k steps",
   quantity: null,
@@ -173,8 +163,7 @@ module.exports = {
   updatedAt: new Date()
 },
 {
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-  badgeId: '2d16eae5-5073-4966-978f-79569af028bd',
+  badgeId: '2c16eae5-5073-4966-978f-79569af028bd',
   name: 'Cardio',
   description: "walk 20k steps",
   quantity: null,
@@ -190,8 +179,7 @@ module.exports = {
   updatedAt: new Date()
 },
 {
-  goalId: '1b16eae5-5073-4966-978f-79569af028bd',
-  badgeId: '2e16eae5-5073-4966-978f-79569af028bd',
+  badgeId: '3c16eae5-5073-4966-978f-79569af028bd',
   name: 'Cardio',
   description: "walk 5k steps",
   quantity: null,
@@ -206,7 +194,6 @@ module.exports = {
   createdAt: new Date(),
   updatedAt: new Date()
 },
-
   ]);
   },
 

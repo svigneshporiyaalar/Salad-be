@@ -47,9 +47,6 @@ module.exports = (sequelize, Sequelize) => {
       naturalRegression: {
         type: Sequelize.STRING,
       },
-      goalId: {
-        type: Sequelize.UUID,
-      },
       status: {
         type: Sequelize.STRING,
         defaultValue: "active"
