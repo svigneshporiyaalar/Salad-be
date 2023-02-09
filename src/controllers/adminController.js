@@ -272,24 +272,32 @@ const getAllBadges = async (ctx) => {
 };
 
 const getGoalbadges = async (ctx) => {
-  let {data } ={}
+  let {data , badgeIds , badgeData } ={}
   let error = null
   const { goalId  } = ctx.request.query
   const adminId = _.get(ctx.request.admin, "id" );
   log(chalk.bold("adminId :",adminId))
   try{
-    data = await Badge.findAll({
+    data = await BadgeGoal.findAll({
       where:
       { 
         goalId: goalId,
-        status : badgeConstants.ACTIVE
+      }
+    })
+    badgeIds= data.map((element) =>{
+      return element.badgeId
+    })
+    badgeData = await Badge.findAll({
+      raw:true,
+      where:{
+        badgeId: badgeIds,
       }
     })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, badgeData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
