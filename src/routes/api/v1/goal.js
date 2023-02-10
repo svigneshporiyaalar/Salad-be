@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { newGoal, getAllGoals, removeGoal, updateGoal } = require('../../../controllers/adminController');
+const { newGoal, getAllGoals, removeGoal, updateGoal, inactiveGoals } = require('../../../controllers/adminController');
 const { goalComplete, getAllUserGoals } = require('../../../controllers/goalBadgeController');
 const { isAdmin, verifyToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.goal });
@@ -9,6 +9,8 @@ const router = new Router({ prefix: v1.goal });
 router.post("/postGoal" , isAdmin, newGoal)
 
 router.get("/allGoals/admin" , isAdmin, getAllGoals);
+
+router.get("/inactive" , isAdmin, inactiveGoals);
 
 router.get("/allGoals" , verifyToken, getAllUserGoals);
 

@@ -251,7 +251,28 @@ const getAllGoals = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const getAllBadges = async (ctx) => {
+const inactiveGoals = async (ctx) => {
+  let { data } = {};
+  let error = null;
+  const { admin } = ctx.request;
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
+  try {
+    data = await Goal.findAll({
+      where :{
+        status : badgeConstants.INACTIVE
+      }
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
+const activeBadges = async (ctx) => {
   let { data } = {};
   let error = null;
   const { admin } = ctx.request;
@@ -270,6 +291,41 @@ const getAllBadges = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
+const inactiveBadges = async (ctx) => {
+  let {data } ={}
+  let error = null
+  try{
+    data = await Badge.findAll({
+      where :{
+        status : badgeConstants.INACTIVE
+      }
+    })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+ const archivedBadges = async (ctx) => {
+  let {data } ={}
+  let error = null
+  try{
+    data = await Badge.findAll({
+      where :{
+        status : badgeConstants.ARCHIVED
+      }
+    })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
 
 const getGoalbadges = async (ctx) => {
   let {data , badgeIds , badgeData } ={}
@@ -291,6 +347,7 @@ const getGoalbadges = async (ctx) => {
       raw:true,
       where:{
         badgeId: badgeIds,
+        status:badgeConstants.ACTIVE
       }
     })
   } catch (err) {
@@ -453,8 +510,11 @@ module.exports = {
   newGoal: newGoal,
   newBadge: newBadge,
   addToGoal:addToGoal,
-  getAllBadges:getAllBadges,
+  activeBadges:activeBadges,
+  inactiveBadges:inactiveBadges,
+  archivedBadges:archivedBadges,
   getAllGoals:getAllGoals,
+  inactiveGoals:inactiveGoals,
   removeBadge:removeBadge,
   removeGoal:removeGoal,
   updateGoal:updateGoal,
