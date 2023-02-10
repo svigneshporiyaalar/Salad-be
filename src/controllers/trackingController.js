@@ -243,7 +243,7 @@ const trackDailyMood = async (ctx) => {
 
 const lastPeriod = async (ctx) => {
   let {data, periodStart,  periodEnd, cycle, ovulationPeak, periodData, 
-    nextPeriodStart, periodPredict,follicularStart, follicularEnd, 
+    nextPeriodStart, periodStatus,follicularStart, follicularEnd, 
     ovulationStart , ovulationEnd,lutealStart, lutealEnd } = {};
   let error = null;
   const { user }=ctx.request;
@@ -261,22 +261,23 @@ const lastPeriod = async (ctx) => {
       periodStart = data.lastPeriodStart
       periodEnd = data.lastPeriodEnd
       cycle= data.periodCycle
-      follicularStart = moment(periodEnd).add(1,'d').format('YYYY-MM-DD')
-      follicularEnd = moment(periodEnd).add(8,'d').format('YYYY-MM-DD')
-      ovulationStart = moment(periodEnd).add(5,'d').format('YYYY-MM-DD')
-      ovulationPeak = moment(periodEnd).add(9,'d').format('YYYY-MM-DD')
-      ovulationEnd = moment(periodEnd).add(10,'d').format('YYYY-MM-DD')
-      lutealStart = moment(periodEnd).add(10,'d').format('YYYY-MM-DD')
-      lutealEnd = moment(periodEnd).add(22,'d').format('YYYY-MM-DD')
       if(cycle === 0 ){
         log(chalk.red.bold("irregular periods"))
-        nextPeriodStart = "irregular periods"
-        periodPredict =moment(periodEnd).add(23,'d').format('YYYY-MM-DD')
+        nextPeriodStart = moment(periodStart).add(28,'d').format('YYYY-MM-DD')
+        periodStatus = "irregular"
       } else{
         nextPeriodStart = moment(periodStart).add(cycle,'d').format('YYYY-MM-DD')
+        periodStatus = "normal"
       }
+      follicularStart = moment(periodEnd).add(1,'d').format('YYYY-MM-DD')
+      follicularEnd = moment(nextPeriodStart).subtract(19,'d').format('YYYY-MM-DD')
+      ovulationStart = moment(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD')
+      ovulationPeak = moment(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD')
+      ovulationEnd = moment(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD')
+      lutealStart = moment(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD')
+      lutealEnd = moment(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD')
       periodData = {...data, follicularStart, follicularEnd, ovulationStart, 
-     ovulationPeak, ovulationEnd,lutealStart, lutealEnd, nextPeriodStart, periodPredict}
+     ovulationPeak, ovulationEnd,lutealStart, lutealEnd, nextPeriodStart, periodStatus}
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
