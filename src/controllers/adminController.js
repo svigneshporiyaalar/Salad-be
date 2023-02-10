@@ -471,7 +471,7 @@ const updateGoal = async (ctx) => {
 }
 
 const delinkGoal = async (ctx) => {
-  let {data, message}  = {}
+  let {data, message }  = {}
   let error = null;
   const { admin, query} = ctx.request;
   const  adminId  = _.get(admin, "id")

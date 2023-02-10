@@ -32,5 +32,4 @@ router.get("/badgeStatus", verifyToken, getBadgeStatus)
 
 
 
-
 module.exports = router;

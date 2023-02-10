@@ -88,17 +88,17 @@ const getAllBadges = async (ctx) => {
     const { user, body }=ctx.request;
     const { badgeId, badge , goalId } = body
     const userId = _.get(user, "userId");
-    console.log( "userId :" , userId)
+    log( "userId :" , userId)
     try {
-        data = await BadgeStatus.create(
-          { 
-            badgeId:badgeId,
-            goalId: goalId,
-            userId:userId,
-            badge:badge,
-            badgeStatus: badgeConstants.INPROGRESS,
-            goalStatus: badgeConstants.INPROGRESS
-          })
+     data = await BadgeStatus.create(
+      { 
+        badgeId:badgeId,
+        goalId: goalId,
+        userId:userId,
+        badge:badge,
+        badgeStatus: badgeConstants.INPROGRESS,
+        goalStatus: badgeConstants.INPROGRESS
+      })
     } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -108,7 +108,7 @@ const getAllBadges = async (ctx) => {
   };
 
 
-  const getAllBadgeStatus = async (ctx) => {
+  const activeBadgeStatus = async (ctx) => {
     let {data } ={}
     let error = null
     const { user }=ctx.request;
@@ -116,7 +116,9 @@ const getAllBadges = async (ctx) => {
     try{
       data = await BadgeStatus.findAll({
         where:
-        { userId: userId
+        { 
+          userId: userId,
+          badgeStatus:badgeConstants.ACTIVE
         }
       })
     } catch (err) {
@@ -126,6 +128,28 @@ const getAllBadges = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
+
+  const completedBadges = async (ctx) => {
+    let {data } ={}
+    let error = null
+    const { user }=ctx.request;
+    const userId = _.get(user, "userId");
+    try{
+      data = await BadgeStatus.findAll({
+        where:
+        { 
+          userId: userId,
+          badgeStatus:badgeConstants.COMPLETED
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
 
   const getBadgeStatus = async (ctx) => {
     let {data } ={}
@@ -223,7 +247,8 @@ module.exports = {
   getAllUserGoals:getAllUserGoals,
   badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
-  getAllBadgeStatus:getAllBadgeStatus,
+  activeBadgeStatus:activeBadgeStatus,
+  completedBadges:completedBadges,
   badgeComplete:badgeComplete,
   goalComplete:goalComplete
 };

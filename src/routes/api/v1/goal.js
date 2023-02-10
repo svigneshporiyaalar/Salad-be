@@ -24,6 +24,4 @@ router.put("/update", isAdmin , updateGoal )
 
 
 
-
-
 module.exports = router;

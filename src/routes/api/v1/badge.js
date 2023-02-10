@@ -3,7 +3,7 @@ const { v1 } = require('../../../constants/RouterConstants');
 const { newBadge, removeBadge, getGoalbadges, addToGoal, delinkGoal, 
   activeBadges,inactiveBadges, archivedBadges } = require('../../../controllers/adminController');
 const { getGoalbadge, badgeStatus, getAllBadges, badgeComplete, 
-  getAllBadgeStatus } = require('../../../controllers/goalBadgeController');
+  completedBadges, activeBadgeStatus} = require('../../../controllers/goalBadgeController');
 const { isAdmin, verifyToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.badge });
 
@@ -14,7 +14,9 @@ router.get("/goalBadge", verifyToken, getGoalbadge)
 
 router.post("/status" , verifyToken, badgeStatus );
 
-router.get("/userStatus", verifyToken, getAllBadgeStatus)
+router.get("/completed-badges", verifyToken, completedBadges)
+
+router.get("/active-badges", verifyToken, activeBadgeStatus)
 
 router.put("/complete", verifyToken , badgeComplete )
 
