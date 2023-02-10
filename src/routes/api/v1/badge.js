@@ -2,8 +2,8 @@ const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const { newBadge, removeBadge, getGoalbadges, addToGoal, delinkGoal, 
   activeBadges,inactiveBadges, archivedBadges } = require('../../../controllers/adminController');
-const { getGoalbadge, badgeStatus, getAllBadges, 
-  badgeComplete, getAllBadgeStatus, inactiveBadges} = require('../../../controllers/goalBadgeController');
+const { getGoalbadge, badgeStatus, getAllBadges, badgeComplete, 
+  getAllBadgeStatus } = require('../../../controllers/goalBadgeController');
 const { isAdmin, verifyToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.badge });
 
