@@ -7,6 +7,8 @@ const User = db.user;
 const Partner = db.partner;
 var otpGenerator = require("otp-generator");
 const twilio = require("twilio");
+const log = console.log
+const chalk = require("chalk");
 const { USR_SBEE_0001, USR_SBEE_0002 } = require("../constants/userConstants");
 const signup_secret = process.env.JWT_SECRET;
 const secret = process.env.JWT_SECRET1;
@@ -16,18 +18,18 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const serviceSid = process.env.TWILIO_SERVICE_SID;
 const partner_serviceSid = process.env.TWILIO_PARTNER_SERVICE_SID;
 const client = new twilio(accountSid, authToken);
-// const tempOtp = process.env.otp
+const tempOtp = process.env.otp
 
 function AddMinutesToDate(date, minutes) {
   return new Date(date.getTime() + minutes * 60000);
 }
 
 const Otp_phone = async (ctx) => {
-  let { userData, otpResponse, userId, otpId,
-    token,otpMessage} = {};
+  let { userData, channelResp, userId, otpId,
+    token, otpMessage , smsResp, whatsappResp} = {};
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  let { name, phoneNumber, type, channel } = ctx.request.body
+  let  { name, phoneNumber, type, channel } = ctx.request.body
   try {
     if (!phoneNumber) {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
@@ -47,9 +49,9 @@ const Otp_phone = async (ctx) => {
       },
     });
     if(userData){
-      console.log("User exists")
+      log(chalk.green.bold("User exists"))
     } else{
-      console.log("--> Creating new user")
+      log(chalk.yellow.bold("--> Creating new user"))
       userData = await User.create({
       contactNumber: phoneNumber,
       name: name
@@ -64,16 +66,31 @@ const Otp_phone = async (ctx) => {
       userId: userId,
       type:type
     };
-    console.log(payload)
+    log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    otpResponse = await client.verify.services(serviceSid)
+    if(channel){
+    channelResp = await client.verify.services(serviceSid)
       .verifications.create({
         // customCode: `${otp}`,
         to: `+91${phoneNumber}`,
         channel: `${channel}`,
       });
+    log(chalk.yellow(`Verification status :${channelResp.status}`))
+    } else {
+    smsResp = await client.verify.services(serviceSid)
+      .verifications.create({
+        to: `+91${phoneNumber}`,
+        channel: "sms",
+      });
+    log(chalk.yellow(`Verification status :${smsResp.status}`))  
+    whatsappResp = await client.verify.services(serviceSid)
+      .verifications.create({
+        to: `+91${phoneNumber}`,
+        channel: "whatsapp",
+      });
+    log(chalk.yellow(`Verification status :${whatsappResp.status}`))
+      }
     otpMessage = USR_SBEE_0001
-    console.log(otpResponse);
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -116,7 +133,7 @@ const Otp_phoneVerify = async (ctx) => {
         code: otp,
       });
     if (verifiedResponse.valid) {
-      console.log(verifiedResponse)
+      log(verifiedResponse)
       // if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
@@ -157,7 +174,7 @@ const Otp_partner = async (ctx) => {
       },
     });
     if(partnerData){
-      console.log("Partner account exists")
+      log("Partner account exists")
     } else{
     partnerData = await Partner.create({
       contactNumber: phoneNumber,
