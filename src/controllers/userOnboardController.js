@@ -152,6 +152,7 @@ const menstrualDetails = async (ctx) => {
         lastPeriodStart: startDate,
         lastPeriodEnd: endDate,
         menstrualCycle: cycle,
+        birthControlId: birthControlId
       },
       {
         where: {
@@ -170,6 +171,7 @@ const menstrualDetails = async (ctx) => {
       lastPeriodStart: startDate,
       lastPeriodEnd: endDate,
       menstrualCycle: cycle,
+      birthControlId: birthControlId,
       userId: userId,
       });
     }

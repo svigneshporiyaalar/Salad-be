@@ -1,17 +1,6 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
-const {
-  ERR_SBEE_0010,
-  ERR_SBEE_0003,
-  ERR_SBEE_0006,
-  ERR_SBEE_0005,
-  ERR_SBEE_0009,
-  ERR_SBEE_0014,
-  ERR_SBEE_0998,
-} = require("../constants/ApplicationErrorConstants");
-const fetch = require("node-fetch");
 const jwt = require("jsonwebtoken");
-const { Op } = require("sequelize");
 const _ = require("lodash");
 const db = require("../models");
 const User = db.user;
@@ -27,7 +16,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const serviceSid = process.env.TWILIO_SERVICE_SID;
 const partner_serviceSid = process.env.TWILIO_PARTNER_SERVICE_SID;
 const client = new twilio(accountSid, authToken);
-const tempOtp = process.env.otp
+// const tempOtp = process.env.otp
 
 function AddMinutesToDate(date, minutes) {
   return new Date(date.getTime() + minutes * 60000);
@@ -38,7 +27,7 @@ const Otp_phone = async (ctx) => {
     token,otpMessage} = {};
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const { cc, phoneNumber, type } = ctx.request.body
+  let { name, phoneNumber, type, channel } = ctx.request.body
   try {
     if (!phoneNumber) {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
@@ -60,14 +49,16 @@ const Otp_phone = async (ctx) => {
     if(userData){
       console.log("User exists")
     } else{
-    userData = await User.create({
+      console.log("--> Creating new user")
+      userData = await User.create({
       contactNumber: phoneNumber,
+      name: name
     },
     )}
     otpId = userData.id;
     userId = userData.userId;
     const payload = {
-      cc:cc,
+      name:name,
       phoneNumber: phoneNumber,
       id: otpId,
       userId: userId,
@@ -75,14 +66,14 @@ const Otp_phone = async (ctx) => {
     };
     console.log(payload)
     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-    // otpResponse = await client.verify.services(serviceSid)
-    //   .verifications.create({
-    //     // customCode: `${otp}`,
-    //     to: `+${cc}${phoneNumber}`,
-    //     channel: "sms",
-    //   });
+    otpResponse = await client.verify.services(serviceSid)
+      .verifications.create({
+        // customCode: `${otp}`,
+        to: `+91${phoneNumber}`,
+        channel: `${channel}`,
+      });
     otpMessage = USR_SBEE_0001
-    // console.log(otpResponse);
+    console.log(otpResponse);
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -104,9 +95,10 @@ const Otp_phoneVerify = async (ctx) => {
     }
     const id = _.get(ctx.request.key, "id", "Bad Response");
     const userId = _.get(ctx.request.key, "userId", "Bad Response");
+    const name = _.get(ctx.request.key, "name", "Bad Response");
     const phoneNumber = _.get(ctx.request.key, "phoneNumber", "Bad Response");
     const type = _.get(ctx.request.key, "type", "Bad Response");
-    console.log(id,userId,phoneNumber,type)
+    console.log(id, name,userId,phoneNumber,type)
     data = await User.findOne({
       where: {
         id: id,
@@ -117,18 +109,18 @@ const Otp_phoneVerify = async (ctx) => {
       ctx.response.status = HttpStatusCodes.NOT_FOUND
       return; 
     }
-    // verifiedResponse = await client.verify
-    //   .services(serviceSid)
-    //   .verificationChecks.create({
-    //     to: `+91${phoneNumber}`,
-    //     code: otp,
-    //   });
-    // if (verifiedResponse.valid) {
-    //   console.log(verifiedResponse)
-      if( tempOtp === otp){
+    verifiedResponse = await client.verify
+      .services(serviceSid)
+      .verificationChecks.create({
+        to: `+91${phoneNumber}`,
+        code: otp,
+      });
+    if (verifiedResponse.valid) {
+      console.log(verifiedResponse)
+      // if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
-      type:type}, secret, { expiresIn: "2h" });
+      name:name, type:type}, secret, { expiresIn: "2h" });
     } else {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;

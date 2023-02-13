@@ -265,7 +265,13 @@ const lastPeriod = async (ctx) => {
         log(chalk.red.bold("irregular periods"))
         nextPeriodStart = moment(periodStart).add(28,'d').format('YYYY-MM-DD')
         periodStatus = "irregular"
-      } else{
+      } else if(cycle === -1){
+        log(chalk.magenta.bold("Dont have periods"))
+        nextPeriodStart = moment(periodEnd).add(23,'d').format('YYYY-MM-DD')
+        periodStatus = "Dont have periods"
+      }
+       else{
+        log(chalk.green.bold("normal"))
         nextPeriodStart = moment(periodStart).add(cycle,'d').format('YYYY-MM-DD')
         periodStatus = "normal"
       }

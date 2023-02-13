@@ -36,6 +36,9 @@ module.exports = (sequelize, Sequelize) => {
       menstrualCycle: {
         type: Sequelize.INTEGER,
       },
+      birthControlId: {
+        type: Sequelize.INTEGER,
+      },
       integration: {
         type: Sequelize.STRING,
       },

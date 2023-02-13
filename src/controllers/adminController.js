@@ -174,18 +174,18 @@ const userBadges = async (ctx) => {
 const newBadge = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { admin } = ctx.request;
-  const { ...rest } = get(ctx.request, "body");
-  const adminId = _.get(admin, "id" );
+  let { admin }= ctx.request
+  let badgeData = {...ctx.request.body}
+  let adminId = _.get(admin, "id" );
   log(chalk.bold("adminId :",adminId))
   try {
-    data = await Badge.create({...rest});
+    data = await Badge.create(badgeData);
     message = "badge added";
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, { message });
+  ctx.body = responseHelper.buildResponse(error,  message );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
