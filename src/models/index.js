@@ -27,9 +27,8 @@ db.moodTracking = require("./moodTracking.model.js")(sequelize, Sequelize);
 db.badgeGoal = require("./badgeGoal.model")(sequelize, Sequelize);
 db.symptom = require("./symptom.model")(sequelize, Sequelize);
 db.birthControl = require("./birthControl.model")(sequelize, Sequelize);
-
-
-
+db.userIntegration = require("./userIntegration.model")(sequelize, Sequelize);
+db.integration = require("./integration.model")(sequelize, Sequelize);
 
 
 // db.goal.hasMany(db.badge);

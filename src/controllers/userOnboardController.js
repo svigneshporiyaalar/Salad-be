@@ -9,7 +9,9 @@ const badgeConstants = require("../constants/badgeConstants");
 const { DATE } = require("sequelize");
 const User = db.user;
 const Badge = db.badge;
+const BirthControl = db.birthControl
 const UserOnboard = db.userOnboard;
+const UserIntegration = db.userIntegration
 const log = console.log
 
 const primaryGoal = async (ctx) => {
@@ -32,11 +34,56 @@ const primaryGoal = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const addIntegration = async (ctx) => {
+  let data = {};
+  let error = null;
+  const { user, body }=ctx.request;
+  const { integration } = body;
+  const userId = _.get(user, "userId" );
+  try {
+    data = await UserIntegration.create({
+      userId: userId,
+      integration: integration,
+      status: "active",
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const removeIntegration = async (ctx) => {
+  let data = {};
+  let error = null;
+  const { user, body }=ctx.request;
+  const { integration } = body;
+  const userId = _.get(user, "userId" );
+  try {
+    data = await UserIntegration.update({
+      status: "inactive",
+    },{
+      where :
+      {
+        userId: userId,
+        integration: integration,  
+      }
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 const editProfile = async (ctx) => {
   let {data, userData , uptData } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { name, email, age, height, 
+  const { name, email, age, height,medicalHistoryId, 
     weight, allowReminder } = body;
   const userId = _.get(user, "userId");
   try {
@@ -45,6 +92,7 @@ const editProfile = async (ctx) => {
         height: height,
         weight: weight,
         age: age,
+        medicalHistoryId:medicalHistoryId,
         allowReminder: allowReminder
       },
       {
@@ -133,7 +181,7 @@ const menstrualDetails = async (ctx) => {
   let { data , userData, uptData } = {};
   let error = null;
   let {user, body}=ctx.request;
-  let { startDate, endDate, cycle } = body;
+  let { startDate, endDate, cycle , birthControlId } = body;
   const userId = _.get(user, "userId");
   try {
     userData = await UserOnboard.findOne({
@@ -183,6 +231,50 @@ const menstrualDetails = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const birthControlList = async (ctx) => {
+  let {data } ={}
+  let error = null
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  log( "userId :" , userId)
+  try{
+    data = await BirthControl.findAll({
+      where :{
+        tag : "birth control"
+      },
+      attributes:['id', 'description' , 'tag']
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+  const medicalHistoryList = async (ctx) => {
+    let {data } ={}
+    let error = null
+    const { user }=ctx.request;
+    const userId = _.get(user, "userId");
+    log( "userId :" , userId)
+    try{
+      data = await BirthControl.findAll({
+        where :{
+          tag : "medical history"
+        },
+        attributes:['id', 'description' , 'tag']
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      }
+      ctx.body = responseHelper.buildResponse(error, data);
+      ctx.response.status = HttpStatusCodes.SUCCESS;
+    }
+  
+
+
 const completeOnboard = async (ctx) => {
   let {data, userData } = {};
   let error = null;
@@ -222,5 +314,9 @@ module.exports = {
   menstrualDetails: menstrualDetails,
   updateActiveGoal: updateActiveGoal,
   completeOnboard:completeOnboard,
-  getProfile:getProfile
+  getProfile:getProfile,
+  birthControlList:birthControlList,
+  medicalHistoryList:medicalHistoryList,
+  addIntegration:addIntegration,
+  removeIntegration:removeIntegration
 };

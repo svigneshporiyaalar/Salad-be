@@ -470,6 +470,34 @@ const updateGoal = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
+const updateBadge = async (ctx) => {
+  let data  = {}
+  let error = null;
+  const { admin, body } = ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const  adminId  = _.get(admin, "id")
+  const { badgeId, intermediate, advanced,regression } = body;
+  log(chalk.bold("adminId :",adminId))
+  try {
+     data = await  Badge.update({
+      naturalProgressionIntermediate:intermediate,
+      naturalProgressionAdvanced: advanced,
+      naturalRegression: regression
+      },{
+        where: 
+        {
+          badgeId: badgeId,
+        },
+      })
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+
 const delinkGoal = async (ctx) => {
   let {data, message }  = {}
   let error = null;
@@ -518,5 +546,6 @@ module.exports = {
   removeBadge:removeBadge,
   removeGoal:removeGoal,
   updateGoal:updateGoal,
+  updateBadge:updateBadge,
   delinkGoal:delinkGoal
 };

@@ -39,8 +39,8 @@ module.exports = (sequelize, Sequelize) => {
       birthControlId: {
         type: Sequelize.INTEGER,
       },
-      integration: {
-        type: Sequelize.STRING,
+      medicalHistoryId: {
+        type: Sequelize.INTEGER,
       },
       allowReminder:{
         type: Sequelize.BOOLEAN,

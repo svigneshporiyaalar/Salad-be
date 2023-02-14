@@ -1,14 +1,18 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("birthControl", {
+    return sequelize.define("userIntegration", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      description: {
-        type: Sequelize.STRING,
+      userId: {
+        type: Sequelize.INTEGER,
       },
-      tag: {
+      integrationId: {
+        type: Sequelize.INTEGER,
+        allowNull:false
+      },
+      status: {
         type: Sequelize.STRING,
       },
     });
