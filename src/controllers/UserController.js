@@ -1,12 +1,10 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const { Op } = require("sequelize");
 const _ = require("lodash");
-const { USR_SBEE_0003, USR_SBEE_0005 } = require("../constants/userConstants");
+const {  USR_SBEE_0005 } = require("../constants/userConstants");
 const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
 const User = db.user;
-const Partner = db.partner;
 const Userpartner = db.userPartner;
 
 
@@ -17,14 +15,13 @@ const addPartner = async (ctx) => {
   const { name, partner_number , relation } = body;
   const userId = _.get(user, "userId" );
   try {
-    data = await Partner.findOne({
+    data = await User.findOne({
       raw: true,
       where: {
         contactNumber: partner_number,
         onboardingComplete: "true"
       },
     });
-    console.log(data);
     if (data === null) {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0015" });
       ctx.response.status = HttpStatusCodes.NOT_FOUND;
@@ -105,10 +102,10 @@ const partnerList = async (ctx) => {
       return element.partnerId
     })
     console.log("partnerIds List:" ,partnerIds )
-    partnerData = await Partner.findAll({
+    partnerData = await User.findAll({
       raw:true,
       where:{
-        partnerId: partnerIds,
+        userId: partnerIds,
       }
     })
      relation = await Userpartner.findAll({

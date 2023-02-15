@@ -21,7 +21,7 @@ const responseHelper = require("../helpers/responseHelper");
 const { isEmpty } = require("lodash");
 const badgeConstants = require("../constants/badgeConstants");
 const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008 } = require("../constants/userConstants");
-const secret = process.env.JWT_SECRET3;
+const secret = process.env.JWT_SECRET4;
 
 const adminSignup = async (ctx) => {
   let { data, token, payload } = {};

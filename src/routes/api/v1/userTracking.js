@@ -4,29 +4,29 @@ const { getBadgeStatus } = require('../../../controllers/goalBadgeController');
 const { everyDayTracking,dateTrack,dailyTrack, updateDayTracking, 
      removeSymptoms,lastPeriod,postSymptoms,trackMood,
      trackDailyMood} = require('../../../controllers/trackingController');
-const { verifyToken } = require('../../../middleware/authenticated');
+const { verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
 
-router.post("/everyday" , verifyToken, everyDayTracking );
+router.post("/everyday" , userToken, everyDayTracking );
 
-router.put("/updatetrack" , verifyToken, updateDayTracking );
+router.put("/updatetrack" , userToken, updateDayTracking );
 
-router.get("/dailytrack" , verifyToken, dailyTrack );
+router.get("/dailytrack" , userToken, dailyTrack );
 
-router.get("/datetrack" , verifyToken, dateTrack );
+router.get("/datetrack" , userToken, dateTrack );
 
-router.post("/symptoms" ,verifyToken, postSymptoms );
+router.post("/symptoms" ,userToken, postSymptoms );
 
-router.delete("/remove/symptom" ,verifyToken, removeSymptoms );
+router.delete("/remove/symptom" ,userToken, removeSymptoms );
 
-router.get("/moodtrack" , verifyToken, trackMood );
+router.get("/moodtrack" , userToken, trackMood );
 
-router.get("/daily/moodtrack" ,  verifyToken, trackDailyMood );
+router.get("/daily/moodtrack" ,  userToken, trackDailyMood );
 
-router.get("/lastperiod" , verifyToken, lastPeriod );
+router.get("/lastperiod" , userToken, lastPeriod );
 
-router.get("/badgeStatus", verifyToken, getBadgeStatus)
+router.get("/badgeStatus", userToken, getBadgeStatus)
 
 
 

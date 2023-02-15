@@ -4,21 +4,21 @@ const { newBadge, removeBadge, getGoalbadges, addToGoal, delinkGoal,
   activeBadges,inactiveBadges, archivedBadges , updateBadge } = require('../../../controllers/adminController');
 const { getGoalbadge, badgeStatus, getAllBadges, badgeComplete, 
   completedBadges, activeBadgeStatus} = require('../../../controllers/goalBadgeController');
-const { isAdmin, verifyToken } = require('../../../middleware/authenticated');
+const { isAdmin, verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.badge });
 
 
-router.get("/allBadges", verifyToken, getAllBadges)
+router.get("/allBadges", userToken, getAllBadges)
 
-router.get("/goalBadge", verifyToken, getGoalbadge)
+router.get("/goalBadge", userToken, getGoalbadge)
 
-router.post("/user/status" , verifyToken, badgeStatus );
+router.post("/user/status" , userToken, badgeStatus );
 
-router.get("/completed-badges", verifyToken, completedBadges)
+router.get("/completed-badges", userToken, completedBadges)
 
-router.get("/active-badges", verifyToken, activeBadgeStatus)
+router.get("/active-badges", userToken, activeBadgeStatus)
 
-router.put("/complete", verifyToken , badgeComplete )
+router.put("/complete", userToken , badgeComplete )
 
 router.post("/new" , isAdmin , newBadge );
 

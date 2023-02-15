@@ -29,6 +29,10 @@ db.symptom = require("./symptom.model")(sequelize, Sequelize);
 db.birthControl = require("./birthControl.model")(sequelize, Sequelize);
 db.userIntegration = require("./userIntegration.model")(sequelize, Sequelize);
 db.integration = require("./integration.model")(sequelize, Sequelize);
+db.item = require("./item.model")(sequelize, Sequelize);
+db.level = require("./level.model")(sequelize, Sequelize);
+
+
 
 
 // db.goal.hasMany(db.badge);

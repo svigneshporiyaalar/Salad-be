@@ -17,7 +17,10 @@ module.exports = (sequelize, Sequelize) => {
       },
       contactNumber: {
         type: Sequelize.BIGINT,
-        allowNull:false
+        allowNull:false,
+      },
+      type:{
+        type: Sequelize.STRING,
       },
       onboardingComplete: {
         type: Sequelize.BOOLEAN,

@@ -3,29 +3,29 @@ const { v1 } = require('../../../constants/RouterConstants');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile, birthControlList, medicalHistoryList,
      addIntegration, removeIntegration }= require('../../../controllers/userOnboardController');
-const { verifyToken } = require('../../../middleware/authenticated');
+const { verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
 
-router.post("/primaryGoal" , verifyToken, primaryGoal );
+router.post("/primaryGoal" , userToken, primaryGoal );
 
-router.post("/integration" , verifyToken, addIntegration );
+router.post("/integration" , userToken, addIntegration );
 
-router.post("/remove/integration" , verifyToken, removeIntegration );
+router.post("/remove/integration" , userToken, removeIntegration );
 
-router.put("/editProfile" , verifyToken, editProfile );
+router.put("/editProfile" , userToken, editProfile );
 
-router.get("/getProfile" , verifyToken, getProfile );
+router.get("/getProfile" , userToken, getProfile );
 
-router.put("/switchGoal" , verifyToken, updateActiveGoal );
+router.put("/switchGoal" , userToken, updateActiveGoal );
 
-router.get("/birthcontrol/list" , verifyToken, birthControlList );
+router.get("/birthcontrol/list" , userToken, birthControlList );
 
-router.get("/medicalhistory/list" , verifyToken, medicalHistoryList );
+router.get("/medicalhistory/list" , userToken, medicalHistoryList );
 
-router.put("/menstrualDetails" , verifyToken, menstrualDetails );
+router.put("/menstrualDetails" , userToken, menstrualDetails );
 
-router.put("/complete" , verifyToken, completeOnboard );
+router.put("/complete" , userToken, completeOnboard );
 
 
 
