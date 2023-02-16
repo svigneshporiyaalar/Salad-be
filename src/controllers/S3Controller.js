@@ -27,11 +27,11 @@ exports.getProfilePhotoURL = (ctx) => {
     return;
   }
     const photo = S3Service.getPresignedPutImageURL({
-      id: `profile/${id}`,
-      fileName: `${id}_photo-${uuidv4()}`,
+      id: "display-image",
+      fileName: `${name}_photo-${uuidv4()}`,
       format,
     });
-    profilePicture[`${id}_${name}_DP`] = photo;
+    profilePicture["URL"] = photo;
   return profilePicture
 };
 
