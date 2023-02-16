@@ -2,7 +2,7 @@ const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile, birthControlList, medicalHistoryList,
-     addIntegration, removeIntegration }= require('../../../controllers/userOnboardController');
+     addIntegration, removeIntegration , profileImage }= require('../../../controllers/userOnboardController');
 const { verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
@@ -14,6 +14,8 @@ router.post("/integration" , userToken, addIntegration );
 router.post("/remove/integration" , userToken, removeIntegration );
 
 router.put("/editProfile" , userToken, editProfile );
+
+router.put("/profile-image" , userToken, profileImage );
 
 router.get("/getProfile" , userToken, getProfile );
 

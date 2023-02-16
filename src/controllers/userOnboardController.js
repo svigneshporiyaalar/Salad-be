@@ -150,6 +150,31 @@ const getProfile = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const profileImage = async (ctx) => {
+  let data = {};
+  let error = null;
+  const {user, body}=ctx.request;
+  const { imageURL } = body;
+  const userId = _.get(user, "userId");
+  try {
+    data = await User.update(
+      {
+        profileImage: imageURL,
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      }
+    );
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
 
 const updateActiveGoal = async (ctx) => {
   let data = {};
@@ -311,6 +336,7 @@ const completeOnboard = async (ctx) => {
 module.exports = {
   primaryGoal: primaryGoal,
   editProfile: editProfile,
+  profileImage:profileImage,
   menstrualDetails: menstrualDetails,
   updateActiveGoal: updateActiveGoal,
   completeOnboard:completeOnboard,

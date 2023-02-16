@@ -1,11 +1,11 @@
-var admin = require("firebase-admin");
-var serviceAccount = require("../../salad-28df2-firebase-adminsdk-gw508-8ddb753829.json");
+// var admin = require("firebase-admin");
+// // var serviceAccount = require("../../salad-28df2-firebase-adminsdk-gw508-8ddb753829.json");
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://salad-28df2.firebaseio.com"
-  })
+// admin.initializeApp({
+//     credential: admin.credential.cert(serviceAccount),
+//     databaseURL: "https://salad-28df2.firebaseio.com"
+//   })
   
 
 
-module.exports.admin =admin
+// module.exports.admin =admin

@@ -19,6 +19,9 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BIGINT,
         allowNull:false,
       },
+      profileImage: {
+        type: Sequelize.STRING,
+      },
       type:{
         type: Sequelize.STRING,
       },
