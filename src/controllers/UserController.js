@@ -80,6 +80,27 @@ const removePartner = async (ctx) => {
   ctx.response.status = HttpStatusCodes.CREATED;
 };
 
+const partnerCheck = async (ctx) => {
+  let data ={}
+  let error = null
+  let { user } = ctx.request
+  const id = _.get(user, "userId");
+  try{
+    data = await Userpartner.findAndCountAll({
+      raw:true,
+      where:{
+        partnerId:id,
+      }
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+}
+
+
 const partnerList = async (ctx) => {
   let {data, partnerIds, partnerData , relation , userData} ={}
   let error = null
@@ -132,5 +153,6 @@ const partnerList = async (ctx) => {
 module.exports = {
   addPartner: addPartner,
   removePartner:removePartner,
-  partnerList: partnerList
+  partnerList: partnerList,
+  partnerCheck:partnerCheck
 };

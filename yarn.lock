@@ -958,10 +958,10 @@
   "resolved" "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz"
   "version" "1.0.5"
 
-"aws-sdk@^2.1263.0", "aws-sdk@^2.449.0":
-  "integrity" "sha512-luYVrKPZ363LYU689XS79xW3fDw1SEQH46B9scWlQ1W/36d0wrJRd+FmnnNiSV2XR1VDfDicMbEbI/rqCD8pkw=="
-  "resolved" "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1263.0.tgz"
-  "version" "2.1263.0"
+"aws-sdk@^2.1316.0", "aws-sdk@^2.449.0":
+  "integrity" "sha512-5y0PR0RcswLlDkIq2E3dF4rvCn7b7yqyVae8SzDv5tcjebwt+YCSD2jJu5Cu7nahqtpWz35I2QGD1OcLK+rlUQ=="
+  "resolved" "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1316.0.tgz"
+  "version" "2.1316.0"
   dependencies:
     "buffer" "4.9.2"
     "events" "1.1.1"

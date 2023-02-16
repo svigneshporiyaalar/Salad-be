@@ -11,6 +11,8 @@ module.exports = {
     userOnboard: `${API}${V1}/userOnboard`,
     userTracking: `${API}${V1}/userTracking`,
     firebasePush: `${API}${V1}/firebasePush`,
+    s3: `${API}${V1}/s3`,
+
 
 
 
