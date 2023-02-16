@@ -10,6 +10,10 @@ module.exports = {
     badge: `${API}${V1}/badge`,
     userOnboard: `${API}${V1}/userOnboard`,
     userTracking: `${API}${V1}/userTracking`,
+    firebasePush: `${API}${V1}/firebasePush`,
+    s3: `${API}${V1}/s3`,
+
+
 
 
 

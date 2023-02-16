@@ -28,16 +28,19 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.FLOAT,
       },
       lastPeriodStart: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
       },
       lastPeriodEnd: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATEONLY,
       },
       menstrualCycle: {
         type: Sequelize.INTEGER,
       },
-      integration: {
-        type: Sequelize.STRING,
+      birthControlId: {
+        type: Sequelize.INTEGER,
+      },
+      medicalHistoryId: {
+        type: Sequelize.INTEGER,
       },
       allowReminder:{
         type: Sequelize.BOOLEAN,

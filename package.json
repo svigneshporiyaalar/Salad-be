@@ -6,11 +6,13 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.15.0",
     "@koa/cors": "^3.1.0",
-    "aws-sdk": "^2.1263.0",
+    "aws-sdk": "^2.1187.0",
     "bcryptjs": "^2.4.3",
     "chalk": "^4.1.2",
     "dotenv": "^11.0.0",
     "fast-two-sms": "^3.0.0",
+    "fcm-notification": "^2.0.0",
+    "firebase-admin": "^11.5.0",
     "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.1",
@@ -36,6 +38,7 @@
     "sequelize": "^6.12.0-alpha.1",
     "stream": "0.0.2",
     "twilio": "^3.83.3",
+    "uuid": "^9.0.0",
     "xml-stream": "^0.4.5",
     "yarn": "^1.22.19"
   },
@@ -47,7 +50,7 @@
     "eslint-plugin-prettier": "^3.4.0",
     "nodemon": "^2.0.15",
     "prettier": "^2.3.1",
-    "sequelize-cli": "^6.5.2"
+    "sequelize-cli": "^6.6.0"
   },
   "scripts": {
     "dev": "nodemon ./src/app.js",
@@ -67,7 +70,7 @@
     "url": "git+ssh://git@github.com/Poriyaalar/salad-be.git"
   },
   "keywords": [
-    "vertx"
+    "salad"
   ],
   "author": "Poriyaalar Pvt Ltd",
   "license": "ISC",

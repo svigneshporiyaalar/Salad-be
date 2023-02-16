@@ -4,7 +4,9 @@ const db = require("../models");
 const moment = require('moment')
 const _ = require("lodash");
 const { Op } = require("sequelize");
+const badgeConstants = require("../constants/badgeConstants");
 const log = console.log
+const chalk = require("chalk");
 const User = db.user;
 const Symptom = db.symptom;
 const UserTracking = db.userTracking;
@@ -69,8 +71,8 @@ const everyDayTracking = async (ctx) => {
   let data = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { description, badgeId, day, time,
-     level, preMood,postMood } = body;
+  const { description, badgeId, day, time, 
+    preMood,postMood } = body;
   const userId = _.get(user, "userId");
   try {
     data = await UserTracking.create({
@@ -79,9 +81,9 @@ const everyDayTracking = async (ctx) => {
       badgeId: badgeId,
       day:day,
       time:time,
-      difficultyLevel:level,
       preWorkoutMood: preMood,
-      postWorkoutMood: postMood
+      postWorkoutMood: postMood,
+      badgeStatus: badgeConstants.INPROGRESS
     });
    log(data.createdAt)
   } catch (err) {
@@ -97,12 +99,11 @@ const updateDayTracking = async (ctx) => {
   let error = null;
   const {user, body}=ctx.request;
   const { description, badgeId, day, time,
-     level, preMood,postMood } = body;
+     preMood,postMood } = body;
   const userId = _.get(user, "userId");
   try {
     data = await UserTracking.update({
       description:description,
-      difficultyLevel:level,
       preWorkoutMood: preMood,
       postWorkoutMood: postMood
     },{
@@ -113,8 +114,7 @@ const updateDayTracking = async (ctx) => {
         day:day,
         time:time,
       }
-    }
-    );
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -242,24 +242,53 @@ const trackDailyMood = async (ctx) => {
 };
 
 const lastPeriod = async (ctx) => {
-  let data = {};
+  let {data, periodStart,  periodEnd, cycle, ovulationPeak, periodData, 
+    nextPeriodStart, periodStatus,follicularStart, follicularEnd, 
+    ovulationStart , ovulationEnd,lutealStart, lutealEnd } = {};
   let error = null;
   const { user }=ctx.request;
   const userId = _.get(user, "userId");
   try {
     data = await UserOnboard.findOne(
       {
+        raw:true, 
         where: {
           userId: userId,
         },
-        attributes: [ ['lastPeriodEnd', 'lastPeriod'] , 'menstrualCycle', 'createdAt', 'updatedAt'] ,
-
+        attributes: ['lastPeriodStart','lastPeriodEnd', 
+         ['menstrualCycle', 'periodCycle']] ,
       });
+      periodStart = data.lastPeriodStart
+      periodEnd = data.lastPeriodEnd
+      cycle= data.periodCycle
+      if(cycle === 0 ){
+        log(chalk.red.bold("irregular periods"))
+        nextPeriodStart = moment(periodStart).add(28,'d').format('YYYY-MM-DD')
+        periodStatus = "irregular"
+      } else if(cycle === -1){
+        log(chalk.magenta.bold("Dont have periods"))
+        nextPeriodStart = moment(periodEnd).add(23,'d').format('YYYY-MM-DD')
+        periodStatus = "Dont have periods"
+      }
+       else{
+        log(chalk.green.bold("normal"))
+        nextPeriodStart = moment(periodStart).add(cycle,'d').format('YYYY-MM-DD')
+        periodStatus = "normal"
+      }
+      follicularStart = moment(periodEnd).add(1,'d').format('YYYY-MM-DD')
+      follicularEnd = moment(nextPeriodStart).subtract(19,'d').format('YYYY-MM-DD')
+      ovulationStart = moment(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD')
+      ovulationPeak = moment(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD')
+      ovulationEnd = moment(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD')
+      lutealStart = moment(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD')
+      lutealEnd = moment(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD')
+      periodData = {...data, follicularStart, follicularEnd, ovulationStart, 
+     ovulationPeak, ovulationEnd,lutealStart, lutealEnd, nextPeriodStart, periodStatus}
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, periodData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 

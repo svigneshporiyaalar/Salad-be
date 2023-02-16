@@ -6,7 +6,10 @@ module.exports = {
   PENDING:"pending",
   REJECTED: "rejected",
   INPROGRESS: "inprogress",
-  TRUE: "true"
+  TRUE: "true",
+  ARCHIVED: "archived",
+  ACTIVE: "active",
+  INACTIVE: "inactive"
 
   };
   

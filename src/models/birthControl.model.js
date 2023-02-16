@@ -1,13 +1,15 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("difficultyLevel", {
-      levelId: {
+    return sequelize.define("birthControl", {
+      id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         primaryKey: true,
+        autoIncrement: true,
       },
-      level: {
+      description: {
         type: Sequelize.STRING,
-        allowNull: false
+      },
+      tag: {
+        type: Sequelize.STRING,
       },
     });
   };
