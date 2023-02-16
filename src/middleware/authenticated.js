@@ -9,7 +9,8 @@ const Admin = db.admin;
 const User = db.user;
 const signup_secret = process.env.JWT_SECRET
 const secret = process.env.JWT_SECRET1
-const partnersecret = process.env.JWT_SECRET2
+const usersecret = process.env.JWT_SECRET2
+const partnersecret = process.env.JWT_SECRET3
 const aSecret = process.env.JWT_SECRET3
 
 
@@ -43,6 +44,22 @@ const verifyToken = async (ctx, next) => {
     ctx.throw(err.status || 401, err.text);
   }
 };
+
+const userToken = async (ctx, next) => {
+  if (!ctx.headers.authorization) {
+    ctx.throw(401, ERR_SBEE_0998);
+  }
+  const token = ctx.headers.authorization.split(" ")[1];
+  console.log(token)
+  try {
+    ctx.request.user = jwt.verify(token, usersecret);
+    console.log("REACHED", ctx.request.user);
+    await next();
+  } catch (err) {
+    ctx.throw(err.status || 401, err.text);
+  }
+};
+
 
 const partnerToken = async (ctx, next) => {
   if (!ctx.headers.authorization) {
@@ -129,6 +146,7 @@ const validateDuplicate = async (ctx, next) => {
 
 module.exports = {
   verifyToken: verifyToken,
+  userToken:userToken,
   partnerToken: partnerToken,
   isAdmin: isAdmin,
   verifyKey: verifyKey,

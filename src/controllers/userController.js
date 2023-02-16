@@ -1,12 +1,10 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const { Op } = require("sequelize");
 const _ = require("lodash");
-const { USR_SBEE_0003, USR_SBEE_0005 } = require("../constants/userConstants");
+const {  USR_SBEE_0005 } = require("../constants/userConstants");
 const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
 const User = db.user;
-const Partner = db.partner;
 const Userpartner = db.userPartner;
 
 
@@ -14,16 +12,16 @@ const addPartner = async (ctx) => {
   let { data, userData, reData, partnerId, message } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { partner_number , relation } = body;
+  const { name, partner_number , relation } = body;
   const userId = _.get(user, "userId" );
   try {
-    data = await Partner.findOne({
+    data = await User.findOne({
       raw: true,
       where: {
         contactNumber: partner_number,
+        onboardingComplete: "true"
       },
     });
-    console.log(data);
     if (data === null) {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0015" });
       ctx.response.status = HttpStatusCodes.NOT_FOUND;
@@ -44,7 +42,8 @@ const addPartner = async (ctx) => {
       userData = await Userpartner.create({
         userId: userId,
         partnerId: partnerId,
-        relation: relation
+        relation: relation,
+        shortName: name
       });
       message = "Partner added";
     }
@@ -81,8 +80,29 @@ const removePartner = async (ctx) => {
   ctx.response.status = HttpStatusCodes.CREATED;
 };
 
+const partnerCheck = async (ctx) => {
+  let data ={}
+  let error = null
+  let { user } = ctx.request
+  const id = _.get(user, "userId");
+  try{
+    data = await Userpartner.findAndCountAll({
+      raw:true,
+      where:{
+        partnerId:id,
+      }
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+}
+
+
 const partnerList = async (ctx) => {
-  let {data, partnerIds, partnerData} ={}
+  let {data, partnerIds, partnerData , relation , userData} ={}
   let error = null
   const { user } = ctx.request;
   const userId = _.get(user, "userId");
@@ -102,20 +122,28 @@ const partnerList = async (ctx) => {
     partnerIds= data.map((element) =>{
       return element.partnerId
     })
-    console.log("partnerIds List:" ,partnerIds)
-    partnerData = await Partner.findAll({
+    console.log("partnerIds List:" ,partnerIds )
+    partnerData = await User.findAll({
       raw:true,
       where:{
-        partnerId: partnerIds,
-        onboardingComplete: "true"
-      },
-      order:[["createdAt", "DESC"]]
+        userId: partnerIds,
+      }
     })
+     relation = await Userpartner.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+        partnerId: partnerIds
+      }
+    })
+    console.log(relation)
+    userData = partnerData.map((item) => 
+    ({...item, ...relation.find(itm => itm.partnerId === item.partnerId)}));  
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, partnerData);
+  ctx.body = responseHelper.buildResponse(error, userData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
@@ -125,5 +153,6 @@ const partnerList = async (ctx) => {
 module.exports = {
   addPartner: addPartner,
   removePartner:removePartner,
-  partnerList: partnerList
+  partnerList: partnerList,
+  partnerCheck:partnerCheck
 };

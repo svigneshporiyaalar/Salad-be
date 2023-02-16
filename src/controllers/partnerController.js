@@ -66,9 +66,34 @@ const getUsers = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, userData);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
+
+  const completeOnboard = async (ctx) => {
+    let data = {};
+    let error = null;
+    const { partner }=ctx.request;
+    const partnerId = _.get(partner, "partnerId");
+    try {
+      data = await Partner.update(
+        {
+          onboardingComplete : "true"
+        },
+        {
+          where: {
+            partnerId: partnerId,
+          },
+        })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+  
   
 
 module.exports = {
   updateProfile: updateProfile,
-  getUsers:getUsers
+  getUsers:getUsers,
+  completeOnboard:completeOnboard
 };

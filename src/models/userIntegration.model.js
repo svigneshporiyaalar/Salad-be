@@ -1,25 +1,20 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("userPartner", {
+    return sequelize.define("userIntegration", {
       id: {
         type: Sequelize.INTEGER,
-        autoIncrement: true,
         primaryKey: true,
+        autoIncrement: true,
       },
       userId: {
         type: Sequelize.INTEGER,
       },
-      partnerId: {
+      integrationId: {
         type: Sequelize.INTEGER,
-      }, 
-      relation: {
+        allowNull:false
+      },
+      status: {
         type: Sequelize.STRING,
-      }, 
-      shortName: {
-        type: Sequelize.STRING,
-      }, 
-    },{
-      timestamps: true
-    }
-    );
-  }
+      },
+    });
+  };
   

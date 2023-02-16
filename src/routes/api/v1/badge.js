@@ -1,32 +1,42 @@
-const { verify } = require('jsonwebtoken');
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { newBadge, updateBadge, removeBadge, getGoalbadges } = require('../../../controllers/adminController');
-const { getGoalbadge, badgeStatus, getAllBadges, 
-  badgeComplete, getAllBadgeStatus} = require('../../../controllers/goalBadgeController');
-const { isAdmin, verifyToken } = require('../../../middleware/authenticated');
+const { newBadge, removeBadge, getGoalbadges, addToGoal, delinkGoal, 
+  activeBadges,inactiveBadges, archivedBadges , updateBadge } = require('../../../controllers/adminController');
+const { getGoalbadge, badgeStatus, getAllBadges, badgeComplete, 
+  completedBadges, activeBadgeStatus} = require('../../../controllers/goalBadgeController');
+const { isAdmin, verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.badge });
 
 
-router.get("/allBadges", verifyToken, getAllBadges)
+router.get("/allBadges", userToken, getAllBadges)
 
-router.get("/goalBadge", verifyToken, getGoalbadge)
+router.get("/goalBadge", userToken, getGoalbadge)
 
-router.post("/status" , verifyToken, badgeStatus );
+router.post("/user/status" , userToken, badgeStatus );
 
-router.get("/userStatus", verifyToken, getAllBadgeStatus)
+router.get("/completed-badges", userToken, completedBadges)
 
-router.put("/complete", verifyToken , badgeComplete )
+router.get("/active-badges", userToken, activeBadgeStatus)
+
+router.put("/complete", userToken , badgeComplete )
 
 router.post("/new" , isAdmin , newBadge );
 
-router.get("/allBadges/admin", isAdmin, getAllBadges)
+router.post("/link-goal" , isAdmin , addToGoal );
+
+router.get("/allBadges/admin", isAdmin, activeBadges)
+
+router.get("/inactive", isAdmin, inactiveBadges)
+
+router.get("/archived", isAdmin, archivedBadges )
 
 router.get("/goal/admin", isAdmin, getGoalbadges)
 
-router.put("/update", isAdmin , updateBadge )
+router.put("/update", isAdmin, updateBadge )
 
-router.delete("/remove", isAdmin , removeBadge )
+router.put("/remove", isAdmin , removeBadge )
+
+router.delete("/delink-goal", isAdmin , delinkGoal )
 
 
 

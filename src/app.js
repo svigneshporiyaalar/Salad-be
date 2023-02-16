@@ -16,7 +16,7 @@ app.use(errorHandler);
 app.use(cors());
 
 
-db.sequelize.sync({ force: true });
+db.sequelize.sync({ force: false });
 
 app.use(koaBody());
 routes.createRoute(app);
@@ -24,5 +24,5 @@ cronFile()
 
 
 app.listen(process.env.PORT || PORT, () => {
-  console.log('Server up in %s', process.env.PORT || PORT);
+  console.log('Server listening in PORT:%s', process.env.PORT || PORT);
 });

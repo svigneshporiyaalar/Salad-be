@@ -3,35 +3,36 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    return queryInterface.bulkInsert('difficultyLevels', [{
-      levelId: '1',
-      level: 'low',
+    return queryInterface.bulkInsert('levels', [{
+      description: 'very easy',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      levelId: '2',
-      level: 'medium',
+      description: 'easy',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      levelId: '3',
-      level: 'hard',
+      description: 'average',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      levelId: '4',
-      level: 'extreme',
+      description: 'hard',
       createdAt: new Date(),
       updatedAt: new Date()
-    }
+    },
+    {
+      description: 'extreme',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
   ]);
   },
 
   async down (queryInterface, Sequelize) {
-    return queryInterface.bulkDelete('difficultyLevels', null, {});
+    return queryInterface.bulkDelete('levels', null, {});
 
   }
 };

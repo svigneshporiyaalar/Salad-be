@@ -1,11 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("mood", {
-      moodId: {
+    return sequelize.define("level", {
+      levelId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      mood: {
+      description: {
         type: Sequelize.STRING,
         allowNull: false
       },

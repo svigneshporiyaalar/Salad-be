@@ -8,7 +8,10 @@ var bcrypt = require("bcryptjs");
 const User = db.user;
 const BadgeStatus = db.badgeStatus;
 const Badge = db.badge;
+const BadgeGoal = db.badgeGoal;
 const Goal = db.goal;
+const chalk = require("chalk");
+const log= console.log
 const {
   ERR_SBEE_0016,
   ERR_SBEE_0999,
@@ -17,7 +20,8 @@ const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const { isEmpty } = require("lodash");
 const badgeConstants = require("../constants/badgeConstants");
-const secret = process.env.JWT_SECRET3;
+const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008 } = require("../constants/userConstants");
+const secret = process.env.JWT_SECRET4;
 
 const adminSignup = async (ctx) => {
   let { data, token, payload } = {};
@@ -92,6 +96,7 @@ const adminSignin = async (ctx) => {
       secret,
       { expiresIn: "2h" }
     );
+    log(chalk.green.underline.bold('-- Admin signing in --'))
     admin = {
       id: data.id,
       name: data.firstName + " " + data.lastName,
@@ -110,8 +115,8 @@ const allUsers = async (ctx) => {
   let data = {};
   let error = null;
   const { admin }=ctx.request;
-  let adminId = _.get(admin, "id", "Bad Response");
-  console.log("adminId :",adminId)
+  let adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await User.findAll({
       raw: true,
@@ -133,8 +138,8 @@ const userBadges = async (ctx) => {
   let {data, goalId ='', goalList, goalData, goalAndBadges } = {};
   let error = null;
   const { admin ,query }=ctx.request;
-  let adminId = _.get(admin, "id", "Bad Response");
-  console.log("adminId :",adminId)
+  let adminId = _.get(admin, "id" );
+  log("adminId :",adminId)
   const { userId } = query;
   try {
     data = await BadgeStatus.findAll({
@@ -145,7 +150,6 @@ const userBadges = async (ctx) => {
       },
       order: [["createdAt", "DESC"]],
     });
-    console.log(data)
     data.forEach(element => {
       goalId += element.goalId + ","
     });
@@ -170,13 +174,34 @@ const userBadges = async (ctx) => {
 const newBadge = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { admin } = ctx.request;
-  const { ...rest } = get(ctx.request, "body");
-  const adminId = _.get(admin, "id", "Bad Response");
-  console.log("adminId :",adminId)
+  let { admin }= ctx.request
+  let badgeData = {...ctx.request.body}
+  let adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
   try {
-    data = await Badge.create({...rest});
+    data = await Badge.create(badgeData);
     message = "badge added";
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error,  message );
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const addToGoal = async (ctx) => {
+  let { data, message } = {};
+  let error = null;
+  const { admin , body } = ctx.request;
+  const { badgeId, goalId } = body
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
+  try {
+    data = await BadgeGoal.create({
+      goalId: goalId,
+      badgeId: badgeId
+    });
+    message = USR_SBEE_0007;
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -185,13 +210,14 @@ const newBadge = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+
 const newGoal = async (ctx) => {
   let { data, message } = {};
   let error = null;
   const { admin, body } = ctx.request;
   const { goal } = body;
-  const adminId = _.get(admin, "id", "Bad Response");
-  console.log("adminId :",adminId)
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
   try {
     data = await Goal.create({
       goal: goal,
@@ -208,9 +234,15 @@ const newGoal = async (ctx) => {
 const getAllGoals = async (ctx) => {
   let { data } = {};
   let error = null;
-  // const adminId = _.get(ctx.request.admin, "id", "Bad Response");
+  const { admin } = ctx.request;
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
   try {
-    data = await Goal.findAll({});
+    data = await Goal.findAll({
+      where :{
+        status : badgeConstants.ACTIVE
+      }
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -219,14 +251,18 @@ const getAllGoals = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const getAllBadges = async (ctx) => {
+const inactiveGoals = async (ctx) => {
   let { data } = {};
   let error = null;
   const { admin } = ctx.request;
-  const adminId = _.get(admin, "id", "Bad Response");
-  console.log("adminId :",adminId)
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
   try {
-    data = await Badge.findAll({});
+    data = await Goal.findAll({
+      where :{
+        status : badgeConstants.INACTIVE
+      }
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -235,42 +271,197 @@ const getAllBadges = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const getGoalbadges = async (ctx) => {
+
+const activeBadges = async (ctx) => {
+  let { data } = {};
+  let error = null;
+  const { admin } = ctx.request;
+  const adminId = _.get(admin, "id" );
+  log(chalk.bold("adminId :",adminId))
+  try {
+    data = await Badge.findAll({
+      where :{
+        status : badgeConstants.ACTIVE
+      }
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const inactiveBadges = async (ctx) => {
   let {data } ={}
   let error = null
-  const { goalId  } = ctx.request.query
-  const adminId = _.get(ctx.request.admin, "id", "Bad Response");
-  console.log("adminId :",adminId)
   try{
     data = await Badge.findAll({
+      where :{
+        status : badgeConstants.INACTIVE
+      }
+    })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+ const archivedBadges = async (ctx) => {
+  let {data } ={}
+  let error = null
+  try{
+    data = await Badge.findAll({
+      where :{
+        status : badgeConstants.ARCHIVED
+      }
+    })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+
+const getGoalbadges = async (ctx) => {
+  let {data , badgeIds , badgeData } ={}
+  let error = null
+  const { goalId  } = ctx.request.query
+  const adminId = _.get(ctx.request.admin, "id" );
+  log(chalk.bold("adminId :",adminId))
+  try{
+    data = await BadgeGoal.findAll({
       where:
-      { goalId: goalId
+      { 
+        goalId: goalId,
+      }
+    })
+    badgeIds= data.map((element) =>{
+      return element.badgeId
+    })
+    badgeData = await Badge.findAll({
+      raw:true,
+      where:{
+        badgeId: badgeIds,
+        status:badgeConstants.ACTIVE
       }
     })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, badgeData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
 
 const removeBadge = async (ctx) => {
-  let data = {}
+  let {data , badgeData} = {}
   let error = null;
   const { admin, query } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const  adminId  = _.get(admin, "id", "Bad Response")
+  const  adminId  = _.get(admin, "id" )
   const { badgeId } = query;
-  console.log("adminId :",adminId)
+  log(chalk.bold("adminId :",adminId))
   try {
-    data = Badge.destroy({
+    badgeData = await BadgeStatus.findOne({
+      raw: true,
+      where: {
+        badgeId: badgeId,
+        badgeStatus: badgeConstants.INPROGRESS
+      },
+    });
+    if(badgeData) {
+      data =  await Badge.update({
+        status: badgeConstants.ARCHIVED
+      },{
+        where: 
+        {
+          badgeId: badgeId,
+        },
+      })
+      } else {
+    data = await Badge.update({
+      status: badgeConstants.INACTIVE
+    },{
       where: 
       {
         badgeId: badgeId,
       },
     })
+  }
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+const removeGoal = async (ctx) => {
+  let {data, goalData}  = {}
+  let error = null;
+  const { admin, query } = ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const  adminId  = _.get(admin, "id" )
+  const { goalId } = query;
+  log(chalk.bold("adminId :",adminId))
+  try {
+    goalData = await BadgeStatus.findOne({
+      raw: true,
+      where: {
+        goalId: goalId,
+        goalStatus: badgeConstants.INPROGRESS
+      },
+    });
+    if(goalData) {
+      data =  await Goal.update({
+        status: badgeConstants.ARCHIVED
+      },{
+        where: 
+        {
+          goalId: goalId,
+        },
+      })
+      } else {
+    data =  await Goal.update({
+      status: badgeConstants.INACTIVE
+    },{
+      where: 
+      {
+        goalId: goalId,
+      },
+    })
+  }
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+const updateGoal = async (ctx) => {
+  let data  = {}
+  let error = null;
+  const { admin, body } = ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const  adminId  = _.get(admin, "id")
+  const { goalId , goal } = body;
+  log(chalk.bold("adminId :",adminId))
+  try {
+     data = await  Goal.update({
+        goal: goal
+      },{
+        where: 
+        {
+          goalId: goalId,
+        },
+      })
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -280,21 +471,24 @@ const removeBadge = async (ctx) => {
 }
 
 const updateBadge = async (ctx) => {
-  let data = {}
+  let data  = {}
   let error = null;
+  const { admin, body } = ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
-  const { admin } = ctx.request;
-  const  adminId  = _.get(admin, "id", "Bad Response")
-  const { badgeId, ...rest } = get(ctx.request, "body");
-  console.log("adminId :",adminId)
+  const  adminId  = _.get(admin, "id")
+  const { badgeId, intermediate, advanced,regression } = body;
+  log(chalk.bold("adminId :",adminId))
   try {
-    data = Badge.update({...rest},
-      {
-      where: 
-      {
-        badgeId: badgeId,
-      },
-    })
+     data = await  Badge.update({
+      naturalProgressionIntermediate:intermediate,
+      naturalProgressionAdvanced: advanced,
+      naturalRegression: regression
+      },{
+        where: 
+        {
+          badgeId: badgeId,
+        },
+      })
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -303,6 +497,34 @@ const updateBadge = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
+
+const delinkGoal = async (ctx) => {
+  let {data, message }  = {}
+  let error = null;
+  const { admin, query} = ctx.request;
+  const  adminId  = _.get(admin, "id")
+  const { goalId , badgeId } = query;
+  log(chalk.bold("adminId :",adminId))
+  try {
+    data = await BadgeGoal.destroy({
+      where: {
+        goalId: goalId,
+        badgeId: badgeId
+      },
+    });
+    console.log(data);
+    if(data===1){
+      message = USR_SBEE_0006
+    } else{
+      message = USR_SBEE_0008
+    }
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, message);
+  ctx.response.status = HttpStatusCodes.SUCCESS
+};
 
 
 
@@ -315,9 +537,15 @@ module.exports = {
   getGoalbadges:getGoalbadges,
   newGoal: newGoal,
   newBadge: newBadge,
-  getAllBadges:getAllBadges,
+  addToGoal:addToGoal,
+  activeBadges:activeBadges,
+  inactiveBadges:inactiveBadges,
+  archivedBadges:archivedBadges,
   getAllGoals:getAllGoals,
+  inactiveGoals:inactiveGoals,
+  removeBadge:removeBadge,
+  removeGoal:removeGoal,
+  updateGoal:updateGoal,
   updateBadge:updateBadge,
-  removeBadge:removeBadge
-
+  delinkGoal:delinkGoal
 };

@@ -1,17 +1,13 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("goal", {
+    return sequelize.define("integration", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      goalId: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-      },
-      goal: {
+      integration: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull:false
       },
       status: {
         type: Sequelize.STRING,
