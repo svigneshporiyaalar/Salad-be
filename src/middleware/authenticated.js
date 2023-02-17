@@ -11,7 +11,7 @@ const signup_secret = process.env.JWT_SECRET
 const secret = process.env.JWT_SECRET1
 const usersecret = process.env.JWT_SECRET2
 const partnersecret = process.env.JWT_SECRET3
-const aSecret = process.env.JWT_SECRET3
+const aSecret = process.env.JWT_SECRET4
 
 
 
