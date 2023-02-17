@@ -20,7 +20,7 @@ const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const { isEmpty } = require("lodash");
 const badgeConstants = require("../constants/badgeConstants");
-const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008 } = require("../constants/userConstants");
+const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008, USR_SBEE_0009 } = require("../constants/userConstants");
 const secret = process.env.JWT_SECRET4;
 
 const adminSignup = async (ctx) => {
@@ -192,21 +192,22 @@ const newBadge = async (ctx) => {
 const addToGoal = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { admin , body } = ctx.request;
-  const { badgeId, goalId } = body
+  const { admin, body } = ctx.request;
   const adminId = _.get(admin, "id" );
   log(chalk.bold("adminId :",adminId))
   try {
-    data = await BadgeGoal.create({
-      goalId: goalId,
-      badgeId: badgeId
-    });
-    message = USR_SBEE_0007;
+    data = await BadgeGoal.bulkCreate(body,
+      { ignoreDuplicates: true })
+    if(_.isEmpty(data)){
+      message = USR_SBEE_0009;
+    } else{
+      message = USR_SBEE_0007;
+    }
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, { message });
+  ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
@@ -232,7 +233,7 @@ const newGoal = async (ctx) => {
 };
 
 const getAllGoals = async (ctx) => {
-  let { data } = {};
+  let  data  = {};
   let error = null;
   const { admin } = ctx.request;
   const adminId = _.get(admin, "id" );
