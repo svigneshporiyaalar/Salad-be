@@ -256,32 +256,35 @@ const lastPeriod = async (ctx) => {
           userId: userId,
         },
         attributes: ['lastPeriodStart','lastPeriodEnd', 
-         ['menstrualCycle', 'periodCycle']] ,
+         ['menstrualCycle', 'periodCycle'] , 'birthControlId' ]
       });
       periodStart = data.lastPeriodStart
       periodEnd = data.lastPeriodEnd
       cycle= data.periodCycle
-      if(cycle === 0 ){
-        log(chalk.red.bold("irregular periods"))
-        nextPeriodStart = moment(periodStart).add(28,'d').format('YYYY-MM-DD')
-        periodStatus = "irregular"
-      } else if(cycle === -1){
-        log(chalk.magenta.bold("Dont have periods"))
-        nextPeriodStart = moment(periodEnd).add(23,'d').format('YYYY-MM-DD')
-        periodStatus = "Dont have periods"
+      if(cycle === 29.5 ){
+        log(chalk.blue.bold("Lunar cycle mode"))
+        periodStatus = "Lunar cycle"
+        follicularStart = moment(periodStart).add(5,'d').format('YYYY-MM-DD')
+        follicularEnd = moment(periodStart).add(13,'d').format('YYYY-MM-DD')
+        ovulationStart = moment(periodStart).add(14,'d').format('YYYY-MM-DD')
+        ovulationPeak = moment(periodStart).add(16,'d').format('YYYY-MM-DD')
+        ovulationEnd = moment(periodStart).add(17,'d').format('YYYY-MM-DD')
+        lutealStart = moment(periodStart).add(18,'d').format('YYYY-MM-DD')
+        lutealEnd = moment(periodStart).add(29,'d').add(12 ,'h').format('LLL')
+        nextPeriodStart = moment(periodStart).add(29,'d').add(12 ,'h').add(1,'m').format('LLL')
       }
-       else{
-        log(chalk.green.bold("normal"))
-        nextPeriodStart = moment(periodStart).add(cycle,'d').format('YYYY-MM-DD')
-        periodStatus = "normal"
+      else{
+       log(chalk.green.bold("Normal"))
+       nextPeriodStart = moment(periodStart).add(cycle,'d').format('YYYY-MM-DD')
+       periodStatus = "normal"
+       follicularStart = moment(periodEnd).add(1,'d').format('YYYY-MM-DD')
+       follicularEnd = moment(nextPeriodStart).subtract(19,'d').format('YYYY-MM-DD')
+       ovulationStart = moment(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD')
+       ovulationPeak = moment(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD')
+       ovulationEnd = moment(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD')
+       lutealStart = moment(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD')
+       lutealEnd = moment(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD')
       }
-      follicularStart = moment(periodEnd).add(1,'d').format('YYYY-MM-DD')
-      follicularEnd = moment(nextPeriodStart).subtract(19,'d').format('YYYY-MM-DD')
-      ovulationStart = moment(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD')
-      ovulationPeak = moment(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD')
-      ovulationEnd = moment(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD')
-      lutealStart = moment(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD')
-      lutealEnd = moment(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD')
       periodData = {...data, follicularStart, follicularEnd, ovulationStart, 
      ovulationPeak, ovulationEnd,lutealStart, lutealEnd, nextPeriodStart, periodStatus}
   } catch (err) {
