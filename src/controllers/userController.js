@@ -4,8 +4,11 @@ const db = require("../models");
 const _ = require("lodash");
 const {  USR_SBEE_0005 } = require("../constants/userConstants");
 const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
+const badgeConstants = require("../constants/badgeConstants");
 const User = db.user;
 const Userpartner = db.userPartner;
+const UserOnboard = db.userOnboard;
+
 
 
 const addPartner = async (ctx) => {
@@ -81,22 +84,38 @@ const removePartner = async (ctx) => {
 };
 
 const partnerCheck = async (ctx) => {
-  let data ={}
+  let {data , isCompletedUser, isCompletedPartner} ={}
   let error = null
   let { user } = ctx.request
-  const id = _.get(user, "userId");
+  const userId = _.get(user, "userId");
   try{
     data = await Userpartner.findAndCountAll({
       raw:true,
       where:{
-        partnerId:id,
+        partnerId:userId,
+      }
+    })
+    isCompletedUser = await UserOnboard.findOne({
+      raw:true,
+      where:{
+        userId:userId,
+        onboardingComplete: badgeConstants.TRUE,
+        type: 'user'
+      }
+    })
+    isCompletedPartner = await UserOnboard.findOne({
+      raw:true,
+      where:{
+        userId:userId,
+        onboardingComplete: badgeConstants.TRUE,
+        type: 'partner'
       }
     })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, {data, isCompletedUser});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 

@@ -10,9 +10,9 @@ router.post("/phoneOtp" , Otp_phone);
 
 router.post("/verifyphoneOtp", verifyKey, Otp_phoneVerify);
 
-router.get("/partner-check", verifyToken, partnerCheck)
+router.get("/partner-check", userToken, partnerCheck)
 
-router.post("/entry-type", verifyToken, verifyType)
+router.post("/partner-switch", userToken, verifyType)
 
 router.post("/addpartner", userToken, addPartner)
 

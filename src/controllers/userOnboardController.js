@@ -4,9 +4,9 @@ const db = require("../models");
 const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
+const chalk = require("chalk");
 const moment = require('moment')
 const badgeConstants = require("../constants/badgeConstants");
-const { DATE } = require("sequelize");
 const User = db.user;
 const Badge = db.badge;
 const BirthControl = db.birthControl
@@ -25,6 +25,7 @@ const primaryGoal = async (ctx) => {
       activeGoal: goal,
       goalId: goalId,
       userId: userId,
+      goalStatus: badgeConstants.INPROGRESS
     });
   } catch (err) {
     error = err;
@@ -83,8 +84,8 @@ const editProfile = async (ctx) => {
   let {data, userData , uptData } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { name, email, age, height,medicalHistoryId, 
-    weight, allowReminder } = body;
+  const {  email, age, height,medicalHistoryId, 
+    weight, DOB , reason} = body;
   const userId = _.get(user, "userId");
   try {
     uptData = await UserOnboard.update(
@@ -92,8 +93,9 @@ const editProfile = async (ctx) => {
         height: height,
         weight: weight,
         age: age,
+        birthDate:DOB,
         medicalHistoryId:medicalHistoryId,
-        allowReminder: allowReminder
+        reason: reason
       },
       {
         where: {
@@ -102,7 +104,6 @@ const editProfile = async (ctx) => {
       });
     userData = await User.update(
       {
-        name:name,
         email:email,
       },
       {
@@ -203,24 +204,20 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let { data , userData, uptData } = {};
+  let { data , userData } = {};
   let error = null;
   let {user, body}=ctx.request;
   let { startDate, endDate, cycle , birthControlId } = body;
   const userId = _.get(user, "userId");
   try {
-    userData = await UserOnboard.findOne({
+    data = await UserOnboard.findOne({
       where :
       { 
         userId : userId
       }
     })
-    if(!endDate){
-      endDate = new Date;
-    }
-    log(`milliseconds : ${moment(endDate).valueOf()}`)
-    if(userData){
-    uptData = await UserOnboard.update(
+    if(data){
+    userData = await UserOnboard.update(
       {
         lastPeriodStart: startDate,
         lastPeriodEnd: endDate,
@@ -232,15 +229,10 @@ const menstrualDetails = async (ctx) => {
           userId: userId,
         },
       })
-    data = await UserOnboard.findOne({
-      where :
-        { 
-          userId : userId
-        }
-      })
-    } 
-    else{
-    data = await UserOnboard.create({
+    }
+    else
+    {
+    userData = await UserOnboard.create({
       lastPeriodStart: startDate,
       lastPeriodEnd: endDate,
       menstrualCycle: cycle,
@@ -255,6 +247,58 @@ const menstrualDetails = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
+const lunarCycle = async (ctx) => {
+  let { data, userData, startDate, endDate, 
+    cycle, birthControlId } = {};
+  let error = null;
+  let { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  try {
+    startDate = moment(new Date).format('YYYY-MM-DD')
+    endDate = moment(startDate).add(4, 'd').format('YYYY-MM-DD')
+    cycle = 29.5
+    birthControlId= 1
+    log(chalk.blue.bold("Entering lunar cycle"))
+    log(startDate , endDate )
+    // log(`start date in MS : ${moment(startDate).valueOf()},end date in MS : ${moment(endDate).valueOf()}`)
+    data = await UserOnboard.findOne({
+      where :
+      { 
+        userId : userId
+      }
+    })
+    if(data){
+    userData = await UserOnboard.update(
+      {
+        lastPeriodStart: startDate,
+        lastPeriodEnd: endDate,
+        menstrualCycle: cycle,
+        birthControlId: birthControlId
+      },
+      {
+        where: {
+          userId: userId,
+        },
+      })
+    }
+    else{
+    userData = await UserOnboard.create({
+      lastPeriodStart: startDate,
+      lastPeriodEnd: endDate,
+      menstrualCycle: cycle,
+      birthControlId: birthControlId,
+      userId: userId,
+      });
+    }
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, userData );
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
 
 const birthControlList = async (ctx) => {
   let {data } ={}
@@ -305,10 +349,12 @@ const completeOnboard = async (ctx) => {
   let error = null;
   const { user }=ctx.request;
   const userId = _.get(user, "userId");
+  const type = _.get(user, "type");
   try {
     data = await UserOnboard.update(
       {
         onboardStatus: badgeConstants.COMPLETED
+
       },
       {
         where: {
@@ -317,7 +363,8 @@ const completeOnboard = async (ctx) => {
       });
     userData = await User.update(
       {
-        onboardingComplete : badgeConstants.TRUE
+        onboardingComplete : badgeConstants.TRUE,
+        type:type
       },
       {
         where: {
@@ -338,6 +385,7 @@ module.exports = {
   editProfile: editProfile,
   profileImage:profileImage,
   menstrualDetails: menstrualDetails,
+  lunarCycle:lunarCycle,
   updateActiveGoal: updateActiveGoal,
   completeOnboard:completeOnboard,
   getProfile:getProfile,

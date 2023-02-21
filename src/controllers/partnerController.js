@@ -7,24 +7,23 @@ const { Op } = require("sequelize");
 const _ = require("lodash");
 const { USR_SBEE_0004 } = require("../constants/userConstants");
 const User = db.user;
-const Partner = db.partner;
 const Userpartner = db.userPartner;
 
 
 const updateProfile = async (ctx) => {
-  let {data , message} = {};
+  let { data , message} = {};
   let error = null;
   const { partner }=ctx.request;
-  const { ...rest } = get(ctx.request, "body");
-  const partnerId = _.get(partner, "partnerId");
+  const { ...rest } = get(partner, "body");
+  const partnerId = _.get(partner, "userId");
   try {
-      data = await Partner.update({ ...rest },
-        {
-          where: {
-            partnerId:partnerId,
-          },
-        });
-        message= USR_SBEE_0004
+    data = await User.update({ ...rest },
+     {
+      where: {
+        userId:partnerId,
+       },
+      });
+      message= USR_SBEE_0004
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -71,15 +70,17 @@ const getUsers = async (ctx) => {
     let data = {};
     let error = null;
     const { partner }=ctx.request;
-    const partnerId = _.get(partner, "partnerId");
+    const partnerId = _.get(partner, "userId");
+    const type = _.get(partner, "type");
     try {
-      data = await Partner.update(
+      data = await User.update(
         {
-          onboardingComplete : "true"
+          onboardingComplete : "true",
+          type:type
         },
         {
           where: {
-            partnerId: partnerId,
+            userId: partnerId,
           },
         })
     } catch (err) {

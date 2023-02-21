@@ -118,7 +118,7 @@ const getAllBadges = async (ctx) => {
         where:
         { 
           userId: userId,
-          badgeStatus:badgeConstants.ACTIVE
+          badgeStatus:badgeConstants.INPROGRESS
         }
       })
     } catch (err) {

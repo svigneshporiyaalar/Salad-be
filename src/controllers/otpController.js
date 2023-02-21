@@ -104,10 +104,11 @@ const Otp_phoneVerify = async (ctx) => {
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
-    const id = _.get(ctx.request.key, "id", "Bad Response");
-    const userId = _.get(ctx.request.key, "userId", "Bad Response");
-    const name = _.get(ctx.request.key, "name", "Bad Response");
-    const phoneNumber = _.get(ctx.request.key, "phoneNumber", "Bad Response");
+    const id = _.get(ctx.request.key, "id");
+    const userId = _.get(ctx.request.key, "userId");
+    const name = _.get(ctx.request.key, "name");
+    const phoneNumber = _.get(ctx.request.key, "phoneNumber");
+    let type = "user"
     console.log(id, name,userId,phoneNumber)
     data = await User.findOne({
       where: {
@@ -130,7 +131,7 @@ const Otp_phoneVerify = async (ctx) => {
       if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
-      name:name }, secret, { expiresIn: "2h" });
+      name:name, type:type}, userSecret, { expiresIn: "2h" });
     } else {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -145,58 +146,24 @@ const Otp_phoneVerify = async (ctx) => {
 };
 
 const verifyType = async (ctx) => {
-  let { data ,token } = {};
+  let { payload ,token } = {};
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  let { user , body } = ctx.request
-  let  { type }  = body;
-  const id = _.get(user, "id");
+  let { user } = ctx.request
+  let   type = "partner"
   const userId = _.get(user, "userId");
   const name = _.get(user, "name");
   const phoneNumber = _.get(user, "phoneNumber");
-  console.log(id, name,userId,phoneNumber)
+  log(name,userId,phoneNumber)
   try {
-    if (!type) {
-      data = await User.findOne({
-        where: {
-          contactNumber: phoneNumber,
-          name:name,
-          userId: userId,
-          onboardingComplete: "true"
-        }
-      })
-      if(data === null){
-      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0011" });
-      ctx.response.status = HttpStatusCodes.NOT_FOUND;
-      return;
-    } else {
-      type = data.type
-    }
-    } else{
-    data = await User.update({
-      type :type,
-    },{
-      where: {
-        contactNumber: phoneNumber,
-        name:name,
-        userId: userId
-      },
-    })
-  }
-    const payload = {
+    payload = {
       phoneNumber: phoneNumber,
       userId: userId,
       name:name,
-      id: id,
       type:type
     }
-    if(type ==="partner"){
     token = jwt.sign(payload, partnerSecret, { expiresIn: "2h" });
     log(chalk.green('Continuing as partner'))
-    } else {
-      token = jwt.sign(payload, userSecret, { expiresIn: "2h" });
-      log(chalk.magenta('Continuing as user'))
-    }
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
