@@ -104,10 +104,10 @@ const Otp_phoneVerify = async (ctx) => {
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
-    const id = _.get(ctx.request.key, "id", "Bad Response");
-    const userId = _.get(ctx.request.key, "userId", "Bad Response");
-    const name = _.get(ctx.request.key, "name", "Bad Response");
-    const phoneNumber = _.get(ctx.request.key, "phoneNumber", "Bad Response");
+    const id = _.get(ctx.request.key, "id");
+    const userId = _.get(ctx.request.key, "userId");
+    const name = _.get(ctx.request.key, "name");
+    const phoneNumber = _.get(ctx.request.key, "phoneNumber");
     let type = "user"
     console.log(id, name,userId,phoneNumber)
     data = await User.findOne({

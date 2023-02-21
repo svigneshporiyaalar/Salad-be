@@ -204,24 +204,20 @@ const updateActiveGoal = async (ctx) => {
 };
 
 const menstrualDetails = async (ctx) => {
-  let { data , userData, uptData } = {};
+  let { data , userData } = {};
   let error = null;
   let {user, body}=ctx.request;
   let { startDate, endDate, cycle , birthControlId } = body;
   const userId = _.get(user, "userId");
   try {
-    userData = await UserOnboard.findOne({
+    data = await UserOnboard.findOne({
       where :
       { 
         userId : userId
       }
     })
-    if(!startDate){
-      startDate = new Date;
-      log(`milliseconds : ${moment(startDate).valueOf()}`)
-    }
-    if(userData){
-    uptData = await UserOnboard.update(
+    if(data){
+    userData = await UserOnboard.update(
       {
         lastPeriodStart: startDate,
         lastPeriodEnd: endDate,
@@ -233,15 +229,10 @@ const menstrualDetails = async (ctx) => {
           userId: userId,
         },
       })
-    data = await UserOnboard.findOne({
-      where :
-        { 
-          userId : userId
-        }
-      })
-    } 
-    else{
-    data = await UserOnboard.create({
+    }
+    else
+    {
+    userData = await UserOnboard.create({
       lastPeriodStart: startDate,
       lastPeriodEnd: endDate,
       menstrualCycle: cycle,
@@ -267,7 +258,7 @@ const lunarCycle = async (ctx) => {
     startDate = moment(new Date).format('YYYY-MM-DD')
     endDate = moment(startDate).add(4, 'd').format('YYYY-MM-DD')
     cycle = 29.5
-    birthControlId= 9
+    birthControlId= 1
     log(chalk.blue.bold("Entering lunar cycle"))
     log(startDate , endDate )
     // log(`start date in MS : ${moment(startDate).valueOf()},end date in MS : ${moment(endDate).valueOf()}`)

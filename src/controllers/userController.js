@@ -84,7 +84,7 @@ const removePartner = async (ctx) => {
 };
 
 const partnerCheck = async (ctx) => {
-  let {data , isCompletedUser} ={}
+  let {data , isCompletedUser, isCompletedPartner} ={}
   let error = null
   let { user } = ctx.request
   const userId = _.get(user, "userId");
@@ -95,7 +95,7 @@ const partnerCheck = async (ctx) => {
         partnerId:userId,
       }
     })
-    isCompletedUser = await UserOnboard.findAll({
+    isCompletedUser = await UserOnboard.findOne({
       raw:true,
       where:{
         userId:userId,
@@ -103,7 +103,14 @@ const partnerCheck = async (ctx) => {
         type: 'user'
       }
     })
-
+    isCompletedPartner = await UserOnboard.findOne({
+      raw:true,
+      where:{
+        userId:userId,
+        onboardingComplete: badgeConstants.TRUE,
+        type: 'partner'
+      }
+    })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;

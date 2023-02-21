@@ -12,7 +12,7 @@ router.post("/verifyphoneOtp", verifyKey, Otp_phoneVerify);
 
 router.get("/partner-check", userToken, partnerCheck)
 
-router.post("/type-check", userToken, verifyType)
+router.post("/partner-switch", userToken, verifyType)
 
 router.post("/addpartner", userToken, addPartner)
 
