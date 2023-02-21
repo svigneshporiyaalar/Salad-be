@@ -16,10 +16,9 @@ module.exports = (sequelize, Sequelize) => {
       },
       goalStatus: {
         type: Sequelize.STRING,
-        defaultValue:"inprogress"
       },
-      age: {
-        type: Sequelize.INTEGER,
+      birthDate: {
+        type: Sequelize.DATEONLY,
       },
       height: {
         type: Sequelize.FLOAT,
@@ -34,7 +33,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATEONLY,
       },
       menstrualCycle: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.FLOAT,
       },
       birthControlId: {
         type: Sequelize.INTEGER,
@@ -42,8 +41,8 @@ module.exports = (sequelize, Sequelize) => {
       medicalHistoryId: {
         type: Sequelize.INTEGER,
       },
-      allowReminder:{
-        type: Sequelize.BOOLEAN,
+      reason:{
+        type: Sequelize.TEXT,
       },
       onboardStatus:{
         type: Sequelize.STRING,

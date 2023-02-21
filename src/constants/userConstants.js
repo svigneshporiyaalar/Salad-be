@@ -7,7 +7,7 @@ module.exports = {
     USR_SBEE_0006: "badge de-linked from goal",
     USR_SBEE_0007: "badge linked to goal",
     USR_SBEE_0008: "data not found",
-    USR_SBEE_0009: "Error while linking badge and goal",
+    USR_SBEE_0009: "Error in linking badge and goal",
 
 
 

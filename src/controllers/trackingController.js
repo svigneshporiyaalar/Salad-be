@@ -244,7 +244,7 @@ const trackDailyMood = async (ctx) => {
 const lastPeriod = async (ctx) => {
   let {data, periodStart,  periodEnd, cycle, ovulationPeak, periodData, 
     nextPeriodStart, periodStatus,follicularStart, follicularEnd, 
-    ovulationStart , ovulationEnd,lutealStart, lutealEnd } = {};
+    ovulationStart , ovulationEnd,lutealStart, lutealEnd, periodGraph } = {};
   let error = null;
   const { user }=ctx.request;
   const userId = _.get(user, "userId");
@@ -256,34 +256,40 @@ const lastPeriod = async (ctx) => {
           userId: userId,
         },
         attributes: ['lastPeriodStart','lastPeriodEnd', 
-         ['menstrualCycle', 'periodCycle']] ,
+         ['menstrualCycle', 'periodCycle'] , 'birthControlId' ]
       });
-      periodStart = data.lastPeriodStart
-      periodEnd = data.lastPeriodEnd
+      periodStart = moment.utc(data.lastPeriodStart).format('YYYY-MM-DD HH:mm')
+      periodEnd = moment.utc(data.lastPeriodEnd).add(5,'d').format('YYYY-MM-DD HH:mm')
       cycle= data.periodCycle
-      if(cycle === 0 ){
-        log(chalk.red.bold("irregular periods"))
-        nextPeriodStart = moment(periodStart).add(28,'d').format('YYYY-MM-DD')
-        periodStatus = "irregular"
-      } else if(cycle === -1){
-        log(chalk.magenta.bold("Dont have periods"))
-        nextPeriodStart = moment(periodEnd).add(23,'d').format('YYYY-MM-DD')
-        periodStatus = "Dont have periods"
+      if(cycle === 29.5 ){
+        log(chalk.blue.bold("Lunar cycle mode"))
+        periodStatus = "Lunar cycle"
+        follicularStart = moment.utc(periodStart).add(5,'d').format('YYYY-MM-DD HH:mm')
+        follicularEnd = moment.utc(periodStart).add(13,'d').format('YYYY-MM-DD HH:mm')
+        ovulationStart = moment.utc(periodStart).add(14,'d').format('YYYY-MM-DD HH:mm')
+        ovulationPeak = moment.utc(periodStart).add(16,'d').format('YYYY-MM-DD HH:mm')
+        ovulationEnd = moment.utc(periodStart).add(17,'d').format('YYYY-MM-DD HH:mm')
+        lutealStart = moment.utc(periodStart).add(18,'d').format('YYYY-MM-DD HH:mm')
+        lutealEnd = moment.utc(periodStart).add(29,'d').add(12 ,'h').format('YYYY-MM-DD HH:mm')
+        nextPeriodStart = moment.utc(periodStart).add(29,'d').add(12 ,'h').add(1,'m').format('YYYY-MM-DD HH:mm')
       }
-       else{
-        log(chalk.green.bold("normal"))
-        nextPeriodStart = moment(periodStart).add(cycle,'d').format('YYYY-MM-DD')
-        periodStatus = "normal"
+      else{
+       log(chalk.green.bold("Normal"))
+       nextPeriodStart = moment.utc(periodStart,'YYYY-MM-DD').add(cycle,'d').format('YYYY-MM-DD HH:mm')
+       periodStatus = "normal"
+       follicularStart = moment.utc(periodEnd, 'YYYY-MM-DD').add(1,'d').format('YYYY-MM-DD HH:mm')
+       follicularEnd = moment.utc(nextPeriodStart, 'YYYY-MM-DD').subtract(19,'d').format('YYYY-MM-DD HH:mm')
+       ovulationStart = moment.utc(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD HH:mm')
+       ovulationPeak = moment.utc(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD HH:mm')
+       ovulationEnd = moment.utc(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD HH:mm')
+       lutealStart = moment.utc(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD HH:mm')
+       lutealEnd = moment.utc(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD HH:mm')
       }
-      follicularStart = moment(periodEnd).add(1,'d').format('YYYY-MM-DD')
-      follicularEnd = moment(nextPeriodStart).subtract(19,'d').format('YYYY-MM-DD')
-      ovulationStart = moment(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD')
-      ovulationPeak = moment(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD')
-      ovulationEnd = moment(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD')
-      lutealStart = moment(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD')
-      lutealEnd = moment(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD')
-      periodData = {...data, follicularStart, follicularEnd, ovulationStart, 
-     ovulationPeak, ovulationEnd,lutealStart, lutealEnd, nextPeriodStart, periodStatus}
+     periodGraph =[{ ["follicular"]:{"start" : follicularStart, "end" : follicularEnd }},
+     { ["ovulation"]: {"start" : ovulationStart, "peak": ovulationPeak, "end" : ovulationEnd }},
+     { ["luteal"]:{"start" : lutealStart, "end" : lutealEnd }}]
+     periodData = {...data,  nextPeriodStart, periodStatus , periodGraph}
+
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;

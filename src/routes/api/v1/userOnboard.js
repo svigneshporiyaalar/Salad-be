@@ -2,7 +2,7 @@ const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile, birthControlList, medicalHistoryList,
-     addIntegration, removeIntegration , profileImage }= require('../../../controllers/userOnboardController');
+     addIntegration, removeIntegration , profileImage, lunarCycle }= require('../../../controllers/userOnboardController');
 const { verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
@@ -13,11 +13,11 @@ router.post("/integration" , userToken, addIntegration );
 
 router.post("/remove/integration" , userToken, removeIntegration );
 
-router.put("/editProfile" , userToken, editProfile );
+router.put("/edit-profile" , userToken, editProfile );
 
 router.put("/profile-image" , userToken, profileImage );
 
-router.get("/getProfile" , userToken, getProfile );
+router.get("/profile" , userToken, getProfile );
 
 router.put("/switchGoal" , userToken, updateActiveGoal );
 
@@ -25,7 +25,9 @@ router.get("/birthcontrol/list" , userToken, birthControlList );
 
 router.get("/medicalhistory/list" , userToken, medicalHistoryList );
 
-router.put("/menstrualDetails" , userToken, menstrualDetails );
+router.put("/menstrual-details" , userToken, menstrualDetails );
+
+router.put("/lunar-cycle" , userToken, lunarCycle );
 
 router.put("/complete" , userToken, completeOnboard );
 

@@ -1,13 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
     return sequelize.define("badge", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       badgeId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
+        primaryKey: true,
       },
       name: {
         type: Sequelize.STRING,
@@ -16,15 +12,6 @@ module.exports = (sequelize, Sequelize) => {
       description: {
         type: Sequelize.STRING,
         allowNull: false
-      },
-      item: {
-        type: Sequelize.JSON,
-      },
-      quantity: {
-        type: Sequelize.INTEGER,
-      },
-      unit: {
-        type: Sequelize.STRING,
       },
       frequency: {
         type: Sequelize.STRING,

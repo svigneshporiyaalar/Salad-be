@@ -10,32 +10,27 @@ const UserOnboard = db.userOnboard;
 
 module.exports={
    cronFile(){
-    Cron.schedule("06 33 18 * * *", async(ctx) => {
+    Cron.schedule("06 59 18 * * *", async(ctx) => {
     log(chalk.bgMagenta("Cron job running 🚀"))
-    let {data, todayDate,date , periodDate ='',periodList,ovulationDay='', today , filter='' }={}
+    let {data, todayDate,date , periodDate ,periodList,ovulationDay='', today , filter='' }={}
     let error = null
     try {
       data = await UserOnboard.findAll({
         raw:true,
-        })
-      data.map((element) =>{
-        periodDate += element.lastPeriodDate.toLocaleDateString('en-US', { day: '2-digit'}) + ","
+        }) 
+      periodDate=data.map((element) =>{
+        return element.lastPeriodStart
       })
       log(periodDate)
-      periodList= periodDate.split(",").slice(0,-1)
-      log(periodList)
-      ovulationDay = periodList.map((element) =>{
-        return (+element) + (+12)
-      })
-      log(ovulationDay)
       todayDate = new Date
-      date = todayDate.getFullYear()+'-'+(todayDate.getMonth()+1)+'-'+(todayDate.getDate() +12); 
-      today =todayDate.toLocaleDateString('en-US', { day: '2-digit'})
-      log(`timeZone : ${todayDate} , Date : ${date} , Day : ${today}`)
-      filter = ovulationDay.filter((element) =>{
-        return element = today
-      })
-      log(filter)
+      // date = todayDate.getFullYear()+'-'+(todayDate.getMonth()+1)+'-'+(todayDate.getDate()); 
+      // today =todayDate.toLocaleDateString('en-US', { day: '2-digit'})
+      // log(date)
+      // filter = periodDate.filter((date) =>{
+      //   const ischecking = periodDate.includes(date);
+      //   return ischecking
+      // })
+      // log(filter)
     } catch (err) {
       error = err;
       responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -43,7 +38,7 @@ module.exports={
     // if (data[0]===0 ) {
     //   log(chalk.red("No event to be updated"))
     // } else {
-      log(chalk.blue("🍺 Updated -> completed event"))
+      log(chalk.blue("🍺 Updated "))
       ctx.response.status = HttpStatusCodes.SUCCESS;
     // }
   })

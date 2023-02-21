@@ -192,11 +192,12 @@ const newBadge = async (ctx) => {
 const addToGoal = async (ctx) => {
   let { data, message } = {};
   let error = null;
-  const { admin , body } = ctx.request;
+  const { admin, body } = ctx.request;
   const adminId = _.get(admin, "id" );
   log(chalk.bold("adminId :",adminId))
   try {
-    data = await BadgeGoal.bulkCreate(body);
+    data = await BadgeGoal.bulkCreate(body,
+      { ignoreDuplicates: true })
     if(_.isEmpty(data)){
       message = USR_SBEE_0009;
     } else{
