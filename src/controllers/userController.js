@@ -95,7 +95,7 @@ const partnerCheck = async (ctx) => {
         partnerId:userId,
       }
     })
-    isCompletedUser = await UserOnboard.findOne({
+    isCompletedUser = await User.findOne({
       raw:true,
       where:{
         userId:userId,
@@ -103,7 +103,7 @@ const partnerCheck = async (ctx) => {
         type: 'user'
       }
     })
-    isCompletedPartner = await UserOnboard.findOne({
+    isCompletedPartner = await User.findOne({
       raw:true,
       where:{
         userId:userId,
@@ -115,7 +115,7 @@ const partnerCheck = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data, isCompletedUser});
+  ctx.body = responseHelper.buildResponse(error, {data, isCompletedUser , isCompletedPartner});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
