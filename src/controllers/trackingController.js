@@ -124,7 +124,7 @@ const updateDayTracking = async (ctx) => {
 };
 
 
-const postSymptoms = async (ctx) => {
+const trackFeedback = async (ctx) => {
   let data = {};
   let error = null;
   const {user, body}=ctx.request;
@@ -144,7 +144,7 @@ const postSymptoms = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const removeSymptoms = async (ctx) => {
+const removeFeedback = async (ctx) => {
   let data = {};
   let error = null;
   const {user, body}=ctx.request;
@@ -308,8 +308,8 @@ module.exports = {
   updateDayTracking:updateDayTracking,
   dailyTrack: dailyTrack,
   dateTrack: dateTrack,
-  postSymptoms:postSymptoms,
-  removeSymptoms:removeSymptoms,
+  trackFeedback:trackFeedback,
+  removeFeedback:removeFeedback,
   trackMood: trackMood,
   lastPeriod:lastPeriod,
   trackDailyMood: trackDailyMood

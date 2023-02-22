@@ -8,6 +8,8 @@ const badgeConstants = require("../constants/badgeConstants");
 const User = db.user;
 const Userpartner = db.userPartner;
 const UserOnboard = db.userOnboard;
+const Feedback = db.feedback
+
 
 
 
@@ -166,6 +168,24 @@ const partnerList = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
+const feedbackList = async (ctx) => {
+  let {data } ={}
+  let error = null
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  console.log( "userId :" , userId)
+  try{
+    data = await Feedback.findAll({
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+
 
 
 
@@ -173,5 +193,6 @@ module.exports = {
   addPartner: addPartner,
   removePartner:removePartner,
   partnerList: partnerList,
-  partnerCheck:partnerCheck
+  partnerCheck:partnerCheck,
+  feedbackList:feedbackList
 };

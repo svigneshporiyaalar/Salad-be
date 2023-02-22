@@ -10,15 +10,12 @@ const BadgeStatus = db.badgeStatus;
 const Badge = db.badge;
 const BadgeGoal = db.badgeGoal;
 const Goal = db.goal;
+const Feedback = db.feedback
 const chalk = require("chalk");
 const log= console.log
-const {
-  ERR_SBEE_0016,
-  ERR_SBEE_0999,
-} = require("../constants/ApplicationErrorConstants");
+const { ERR_SBEE_0016, ERR_SBEE_0999 } = require("../constants/ApplicationErrorConstants");
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
-const { isEmpty } = require("lodash");
 const badgeConstants = require("../constants/badgeConstants");
 const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008, USR_SBEE_0009 } = require("../constants/userConstants");
 const secret = process.env.JWT_SECRET4;
@@ -527,8 +524,62 @@ const delinkGoal = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS
 };
 
+const feedbackList = async (ctx) => {
+  let {data } ={}
+  let error = null
+  const { admin} = ctx.request;
+  const  adminId  = _.get(admin, "id")
+  log(chalk.bold("adminId :",adminId))
+  try{
+    data = await Feedback.findAll({
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
 
+  const addFeedback = async (ctx) => {
+    let data = {};
+    let error = null;
+    const { admin, body} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { feedback } = body
+    log(chalk.bold("adminId :",adminId))
+      try {
+      data = await Feedback.create({
+        feedback: feedback
+      });
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
 
+  const deleteFeedback = async (ctx) => {
+    let data = {};
+    let error = null;
+    const { admin, query} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { feedbackId } = query
+    log(chalk.bold("adminId :",adminId))
+      try {
+      data = await Feedback.destroy({
+        feedbackId: feedbackId
+      });
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
+  
 
 module.exports = {
   adminSignup: adminSignup,
@@ -548,5 +599,8 @@ module.exports = {
   removeGoal:removeGoal,
   updateGoal:updateGoal,
   updateBadge:updateBadge,
-  delinkGoal:delinkGoal
+  delinkGoal:delinkGoal,
+  feedbackList:feedbackList,
+  addFeedback:addFeedback,
+  deleteFeedback:deleteFeedback
 };

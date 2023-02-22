@@ -1,26 +1,22 @@
 module.exports = (sequelize, Sequelize) => {
     return sequelize.define("item", {
-      id: {
+      exerciseId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
-      name: {
+      exerciseName: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      activity: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      frequency: {
+      exerciseMedia: {
         type: Sequelize.STRING,
       },
-      phase: {
-        type: Sequelize.STRING,
-      },
-      type : {
+      exerciseType : {
         type: Sequelize.STRING, 
+      },
+      exerciseMeta : {
+        type: Sequelize.JSON, 
       },
       status: {
         type: Sequelize.STRING,
