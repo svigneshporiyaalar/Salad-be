@@ -96,7 +96,7 @@ const getAllBadges = async (ctx) => {
         goalId: goalId,
         userId:userId,
         badge:badge,
-        badgeStatus: badgeConstants.INPROGRESS,
+        badgeStatus: badgeConstants.ACTIVATE,
         goalStatus: badgeConstants.INPROGRESS
       })
     } catch (err) {
@@ -111,14 +111,14 @@ const getAllBadges = async (ctx) => {
   const activeBadgeStatus = async (ctx) => {
     let {data } ={}
     let error = null
-    const { user }=ctx.request;
+    const { user } = ctx.request;
     const userId = _.get(user, "userId");
     try{
       data = await BadgeStatus.findAll({
         where:
         { 
           userId: userId,
-          badgeStatus:badgeConstants.INPROGRESS
+          badgeStatus:badgeConstants.ACTIVATE
         }
       })
     } catch (err) {

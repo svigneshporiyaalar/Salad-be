@@ -8,6 +8,9 @@ const badgeConstants = require("../constants/badgeConstants");
 const User = db.user;
 const Userpartner = db.userPartner;
 const UserOnboard = db.userOnboard;
+const Feedback = db.feedback
+const BadgeItem = db.badgeItem
+const Item = db.item
 
 
 
@@ -166,6 +169,57 @@ const partnerList = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
+const feedbackList = async (ctx) => {
+  let {data } ={}
+  let error = null
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  console.log( "userId :" , userId)
+  try{
+    data = await Feedback.findAll({
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+  const getBadgeItems = async (ctx) => {
+    let {data , itemData, exerciseIds } ={}
+    let error = null
+    const { user, query }=ctx.request;
+    const { badgeId  } = query
+    const userId = _.get(user, "userId");
+    console.log( "userId :" , userId)
+    try{
+      data = await BadgeItem.findAll({
+        where:
+        { 
+          badgeId: badgeId,
+        }
+      })
+      exerciseIds= data.map((element) =>{
+        return element.itemId
+      })
+      itemData = await Item.findAll({
+        raw:true,
+        where:{
+          exerciseId: exerciseIds,
+          status: badgeConstants.ACTIVE
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, itemData);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+
+
 
 
 
@@ -173,5 +227,7 @@ module.exports = {
   addPartner: addPartner,
   removePartner:removePartner,
   partnerList: partnerList,
-  partnerCheck:partnerCheck
+  partnerCheck:partnerCheck,
+  feedbackList:feedbackList,
+  getBadgeItems:getBadgeItems
 };
