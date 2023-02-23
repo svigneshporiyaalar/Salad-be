@@ -96,7 +96,7 @@ const getAllBadges = async (ctx) => {
         goalId: goalId,
         userId:userId,
         badge:badge,
-        badgeStatus: badgeConstants.INPROGRESS,
+        badgeStatus: badgeConstants.ACTIVATE,
         goalStatus: badgeConstants.INPROGRESS
       })
     } catch (err) {
@@ -118,7 +118,7 @@ const getAllBadges = async (ctx) => {
         where:
         { 
           userId: userId,
-          badgeStatus:badgeConstants.INPROGRESS
+          badgeStatus:badgeConstants.ACTIVATE
         }
       })
     } catch (err) {

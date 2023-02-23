@@ -18,6 +18,7 @@ module.exports = {
   ERR_SBEE_0017: "Phone number already in use",
   ERR_SBEE_0018: "Selected goal already in use.Cannot be deleted at the moment.",
   ERR_SBEE_0019: "Selected badge already in use.Cannot be deleted at the moment.",
+  ERR_SBEE_0020: "De-link badge and item association before deleting item.",
   ERR_SBEE_0997: "Link invalid or expired ",
   ERR_SBEE_0998: "UnAuthorized",
   ERR_SBEE_0999: "Email ID does not exist",

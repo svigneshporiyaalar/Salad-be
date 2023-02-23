@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
 const { Otp_phone , Otp_phoneVerify, verifyType } = require('../../../controllers/otpController');
-const { addPartner, removePartner, partnerList, partnerCheck } = require('../../../controllers/userController');
+const { addPartner, removePartner, partnerList, partnerCheck, getItems } = require('../../../controllers/userController');
 const { verifyKey, verifyToken, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userService });
 
@@ -18,7 +18,9 @@ router.post("/addpartner", userToken, addPartner)
 
 router.delete("/removepartner", userToken, removePartner)
 
-router.get("/partnerlist", userToken, partnerList)
+router.get("/partner-list", userToken, partnerList)
+
+router.get("/items", userToken , getItems)
 
 
 

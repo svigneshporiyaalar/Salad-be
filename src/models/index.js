@@ -25,6 +25,7 @@ db.userOnboard = require("./userOnboard.model.js")(sequelize, Sequelize);
 db.userTracking = require("./userTracking.model.js")(sequelize, Sequelize);
 db.moodTracking = require("./moodTracking.model.js")(sequelize, Sequelize);
 db.badgeGoal = require("./badgeGoal.model")(sequelize, Sequelize);
+db.badgeItem = require("./badgeItem.model")(sequelize, Sequelize);
 db.feedback = require("./feedback.model")(sequelize, Sequelize);
 db.birthControl = require("./birthControl.model")(sequelize, Sequelize);
 db.userIntegration = require("./userIntegration.model")(sequelize, Sequelize);

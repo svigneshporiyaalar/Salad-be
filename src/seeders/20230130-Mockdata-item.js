@@ -23,7 +23,7 @@ module.exports = {
     {
     exerciseId: '5d16eae5-5073-4966-978f-79569af028b3',
     exerciseName: '5km cycling',
-    exerciseType: "cardio",
+    exerciseType: "S&C",
     exerciseMedia: "https://www.youtube.com/watch?v=ksJFLPDG22o",
     exerciseMeta: null,
     createdAt: new Date(),
@@ -59,6 +59,24 @@ module.exports = {
   {
     exerciseId: 'a8973c14-faeb-4cb8-8e7d-82b9608495cf',
     exerciseName: '3 sets of lunges',
+    exerciseType: "S&C",
+    exerciseMedia: "https://www.youtube.com/watch?v=jjVpDI6x_ec",
+    exerciseMeta: null,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    exerciseId: '78f728c7-703d-4bf1-bbe8-4aefdf32810b',
+    exerciseName: '60 mins on Treadmill',
+    exerciseType: "S&C",
+    exerciseMedia: "https://www.youtube.com/watch?v=jjVpDI6x_ec",
+    exerciseMeta: null,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    exerciseId: 'f8feae34-3ad9-4940-ba5d-e9af90c2330f',
+    exerciseName: '3 sets of crunches',
     exerciseType: "S&C",
     exerciseMedia: "https://www.youtube.com/watch?v=jjVpDI6x_ec",
     exerciseMeta: null,

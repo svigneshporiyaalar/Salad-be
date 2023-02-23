@@ -8,7 +8,7 @@ const badgeConstants = require("../constants/badgeConstants");
 const log = console.log
 const chalk = require("chalk");
 const User = db.user;
-const Symptom = db.symptom;
+const Feedback = db.feedback
 const UserTracking = db.userTracking;
 const MoodTracking = db.moodTracking
 const UserOnboard = db.userOnboard;
@@ -128,13 +128,13 @@ const trackFeedback = async (ctx) => {
   let data = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { date , symptoms } = body;
+  const { date , feedback } = body;
   const userId = _.get(user, "userId");
   try {
     data = await MoodTracking.create({
       userId: userId,
       date: moment(date),
-      symptoms: symptoms
+      symptoms: feedback
     });
   } catch (err) {
     error = err;
@@ -167,7 +167,7 @@ const removeFeedback = async (ctx) => {
 
 
 const trackMood = async (ctx) => {
-  let {data, symptom='' , moodData, symptomList , mergedData} = {};
+  let {data, feedback , moodData , mergedData} = {};
   let error = null;
   let condition = {}
   const {user, query}=ctx.request;
@@ -181,7 +181,7 @@ const trackMood = async (ctx) => {
         userId: userId,
         date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
       },
-      attributes: [ ['symptoms', 'symptomId'] , 'date', 'userId'] ,
+      attributes: [ ['symptoms', 'feedbackId'] , 'date', 'userId'] ,
     }
   } else {
     condition= {
@@ -191,19 +191,18 @@ const trackMood = async (ctx) => {
   }
   try {
     data = await MoodTracking.findAll(condition)
-    data.forEach(element => {
-      symptom += element.symptomId + ","
+    feedback = data.forEach(element => {
+      return element.feedbackId
     });
-    symptomList= symptom.split(",").slice(0,-1)
-    moodData = await Symptom.findAll({
+    moodData = await Feedback.findAll({
       raw:true,
         where: {
-          symptomId: symptomList,
+          feedbackId: feedback,
         },
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
     mergedData = data.map((item) => 
-    ({...item, ...periodData.find(itm => itm.symptomId == item.symptomId)}));  
+    ({...item, ...moodData.find(itm => itm.feedbackId == item.feedbackId)}));  
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -213,7 +212,7 @@ const trackMood = async (ctx) => {
 }
 
 const trackDailyMood = async (ctx) => {
-  let {data, symptomId , symptom} = {};
+  let {data, feedbackId , feedback} = {};
   let error = null;
   const {user, query}=ctx.request;
   const userId = _.get(user, "userId", "Bad Response");
@@ -226,18 +225,18 @@ const trackDailyMood = async (ctx) => {
           date : date
         },
       });
-      symptomId = data.symptoms
-    symptom = await Symptom.findOne(
+      feedbackId = data.symptoms
+    feedback = await Feedback.findOne(
         {
           where: {
-            symptomId: symptomId,
+            feedbackId: feedbackId,
           },
         });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, symptom );
+  ctx.body = responseHelper.buildResponse(error, feedback );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 

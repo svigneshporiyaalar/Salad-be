@@ -9,15 +9,18 @@ const User = db.user;
 const BadgeStatus = db.badgeStatus;
 const Badge = db.badge;
 const BadgeGoal = db.badgeGoal;
+const BadgeItem = db.badgeItem
 const Goal = db.goal;
 const Feedback = db.feedback
 const chalk = require("chalk");
+const Item=db.item
 const log= console.log
 const { ERR_SBEE_0016, ERR_SBEE_0999 } = require("../constants/ApplicationErrorConstants");
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const badgeConstants = require("../constants/badgeConstants");
-const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008, USR_SBEE_0009 } = require("../constants/userConstants");
+const { USR_SBEE_0006, USR_SBEE_0007, USR_SBEE_0008, USR_SBEE_0009, 
+  USR_SBEE_0010, USR_SBEE_0011, USR_SBEE_0012 } = require("../constants/userConstants");
 const secret = process.env.JWT_SECRET4;
 
 const adminSignup = async (ctx) => {
@@ -569,7 +572,9 @@ const feedbackList = async (ctx) => {
     log(chalk.bold("adminId :",adminId))
       try {
       data = await Feedback.destroy({
+        where:{
         feedbackId: feedbackId
+        }
       });
     } catch (err) {
       error = err;
@@ -578,6 +583,172 @@ const feedbackList = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   };
+
+  const getAllItems = async (ctx) => {
+    let data ={}
+    let error = null
+    const { admin, query} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { status } = query
+    log(chalk.bold("adminId :",adminId))
+    try{
+      data = await Item.findAll({
+        raw:true,
+        where:{
+          status: status
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+  const getBadgeItems = async (ctx) => {
+    let {data , itemData, exerciseIds } ={}
+    let error = null
+    const { admin, query} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { badgeId } = query
+    log(chalk.bold("adminId :",adminId))
+    try{
+      data = await BadgeItem.findAll({
+        where:
+        { 
+          badgeId: badgeId,
+        }
+      })
+      exerciseIds= data.map((element) =>{
+        return element.itemId
+      })
+      itemData = await Item.findAll({
+        raw:true,
+        where:{
+          exerciseId: exerciseIds,
+          status: badgeConstants.ACTIVE
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, itemData);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
+  const deleteItems = async (ctx) => {
+    let {data , itemData} = {};
+    let error = null;
+    const { admin, query} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { itemId } = query
+    log(chalk.bold("adminId :",adminId))
+    try {
+      data = await BadgeItem.findOne({
+        where:
+        { 
+          itemId: itemId,
+        }
+      })
+      log(data)
+     if(data){
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0020" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
+     } else {
+      itemData = await Item.update({
+        status: badgeConstants.INACTIVE
+      },{
+        where:
+        {
+        exerciseId: itemId
+        }
+      });
+    }
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, itemData);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
+  const addItem = async (ctx) => {
+    let data = {};
+    let error = null;
+    const { admin, body} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { name , type, meta, media } = body
+    log(chalk.bold("adminId :",adminId))
+    try {
+      data = await Item.create({
+        exerciseName:name,
+        exerciseType: type,
+        exerciseMedia: media,
+        exerciseMeta: meta,
+      });
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
+  const linkItem = async (ctx) => {
+    let { data, message } = {};
+    let error = null;
+    const { admin, body } = ctx.request;
+    const adminId = _.get(admin, "id" );
+    log(chalk.bold("adminId :",adminId))
+    try {
+      data = await BadgeItem.bulkCreate(body,
+        { ignoreDuplicates: true })
+      if(_.isEmpty(data)){
+        message = USR_SBEE_0010;
+      } else{
+        message = USR_SBEE_0011;
+      }
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
+  const delinkItem = async (ctx) => {
+    let {data, message }  = {}
+    let error = null;
+    const { admin, query} = ctx.request;
+    const  adminId  = _.get(admin, "id")
+    const { itemId , badgeId } = query;
+    log(chalk.bold("adminId :",adminId))
+    try {
+      data = await BadgeItem.destroy({
+        where: {
+          itemId: itemId,
+          badgeId: badgeId
+        },
+      });
+      console.log(data);
+      if(data===1){
+        message = USR_SBEE_0012
+      } else{
+        message = USR_SBEE_0008
+      }
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, message);
+    ctx.response.status = HttpStatusCodes.SUCCESS
+  };
+  
+  
+
 
   
 
@@ -602,5 +773,11 @@ module.exports = {
   delinkGoal:delinkGoal,
   feedbackList:feedbackList,
   addFeedback:addFeedback,
-  deleteFeedback:deleteFeedback
+  deleteFeedback:deleteFeedback,
+  getAllItems:getAllItems,
+  getBadgeItems:getBadgeItems,
+  deleteItems:deleteItems,
+  addItem:addItem,
+  linkItem:linkItem,
+  delinkItem:delinkItem
 };

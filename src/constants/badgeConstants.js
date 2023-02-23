@@ -9,7 +9,9 @@ module.exports = {
   TRUE: "true",
   ARCHIVED: "archived",
   ACTIVE: "active",
-  INACTIVE: "inactive"
+  INACTIVE: "inactive",
+  ACTIVATE:"activate",
+  DEACTIVATE: "deactivate"
 
   };
   
