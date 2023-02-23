@@ -111,7 +111,7 @@ const getAllBadges = async (ctx) => {
   const activeBadgeStatus = async (ctx) => {
     let {data } ={}
     let error = null
-    const { user }=ctx.request;
+    const { user } = ctx.request;
     const userId = _.get(user, "userId");
     try{
       data = await BadgeStatus.findAll({

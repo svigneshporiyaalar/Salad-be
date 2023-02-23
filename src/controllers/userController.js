@@ -186,7 +186,7 @@ const feedbackList = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 
-  const getItems = async (ctx) => {
+  const getBadgeItems = async (ctx) => {
     let {data , itemData, exerciseIds } ={}
     let error = null
     const { user, query }=ctx.request;
@@ -229,5 +229,5 @@ module.exports = {
   partnerList: partnerList,
   partnerCheck:partnerCheck,
   feedbackList:feedbackList,
-  getItems:getItems
+  getBadgeItems:getBadgeItems
 };
