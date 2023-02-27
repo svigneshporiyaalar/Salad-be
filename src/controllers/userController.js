@@ -5,6 +5,8 @@ const _ = require("lodash");
 const {  USR_SBEE_0005 } = require("../constants/userConstants");
 const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
 const badgeConstants = require("../constants/badgeConstants");
+const log= console.log
+const chalk = require("chalk")
 const User = db.user;
 const Userpartner = db.userPartner;
 const UserOnboard = db.userOnboard;
@@ -86,11 +88,13 @@ const removePartner = async (ctx) => {
   ctx.response.status = HttpStatusCodes.CREATED;
 };
 
-const partnerCheck = async (ctx) => {
-  let {data , isCompletedUser, isCompletedPartner} ={}
+const checkPoint = async (ctx) => {
+  let { data,isCompletedUser}  ={}
   let error = null
   let { user } = ctx.request
   const userId = _.get(user, "userId");
+  const id = _.get(user, "id");
+  const phoneNumber = _.get(user, "phoneNumber");
   try{
     data = await Userpartner.findAndCountAll({
       raw:true,
@@ -98,27 +102,43 @@ const partnerCheck = async (ctx) => {
         partnerId:userId,
       }
     })
-    isCompletedUser = await UserOnboard.findOne({
-      raw:true,
+    isCompletedUser = await User.findOne({
       where:{
-        userId:userId,
+        id:id,
+        contactNumber:phoneNumber,
         onboardingComplete: badgeConstants.TRUE,
         type: 'user'
-      }
-    })
-    isCompletedPartner = await UserOnboard.findOne({
-      raw:true,
-      where:{
-        userId:userId,
-        onboardingComplete: badgeConstants.TRUE,
-        type: 'partner'
       }
     })
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data, isCompletedUser});
+  ctx.body = responseHelper.buildResponse(error, {data ,isCompletedUser});
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+}
+
+const updateName = async (ctx) => {
+  let data  ={}
+  let error = null
+  let { user, body } = ctx.request
+  let {name} = body
+  const id = _.get(user, "id");
+  const phoneNumber = _.get(user, "phoneNumber");
+  try{
+    data = await User.update({
+      name:name
+    },{
+      where:{
+        id:id,
+        contactNumber:phoneNumber,
+      }
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error,data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
@@ -227,7 +247,8 @@ module.exports = {
   addPartner: addPartner,
   removePartner:removePartner,
   partnerList: partnerList,
-  partnerCheck:partnerCheck,
+  checkPoint:checkPoint,
+  updateName:updateName,
   feedbackList:feedbackList,
   getBadgeItems:getBadgeItems
 };
