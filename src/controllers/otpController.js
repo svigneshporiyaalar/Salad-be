@@ -30,7 +30,7 @@ const Otp_phone = async (ctx) => {
     token, otpMessage , smsResp, whatsappResp} = {};
   let error = null;
   let responseCode = HttpStatusCodes.SUCCESS;
-  let  { name, phoneNumber, channel } = ctx.request.body
+  let  { phoneNumber, channel } = ctx.request.body
   try {
     if (!phoneNumber) {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
@@ -49,13 +49,11 @@ const Otp_phone = async (ctx) => {
       log(chalk.yellow.bold("--> Creating new account"))
       userData = await User.create({
       contactNumber: phoneNumber,
-      name: name
     },
     )}
     otpId = userData.id;
     userId = userData.userId;
     const payload = {
-      name:name,
       phoneNumber: phoneNumber,
       id: otpId,
       userId: userId,
@@ -106,10 +104,8 @@ const Otp_phoneVerify = async (ctx) => {
     }
     const id = _.get(ctx.request.key, "id");
     const userId = _.get(ctx.request.key, "userId");
-    const name = _.get(ctx.request.key, "name");
     const phoneNumber = _.get(ctx.request.key, "phoneNumber");
     let type = "user"
-    console.log(id, name,userId,phoneNumber)
     data = await User.findOne({
       where: {
         id: id,
@@ -131,7 +127,7 @@ const Otp_phoneVerify = async (ctx) => {
       if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
-      name:name, type:type}, userSecret, { expiresIn: "2h" });
+       type:type}, userSecret, { expiresIn: "2h" });
     } else {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -212,6 +208,9 @@ const verifyType = async (ctx) => {
 //       partnerId: partnerId,
 //       type:type
 //     };
+    // smsResp = otpGenerator.generate(7, { lowerCaseAlphabets: false, specialChars: false });
+    // console.log(smsResp)
+
 //     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
 //     // otpResponse = await client.verify
 //     //   .services(partner_serviceSid)

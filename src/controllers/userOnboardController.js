@@ -239,12 +239,12 @@ const menstrualDetails = async (ctx) => {
       birthControlId: birthControlId,
       userId: userId,
       });
-    }
+    } 
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data );
+  ctx.body = responseHelper.buildResponse(error, userData );
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 

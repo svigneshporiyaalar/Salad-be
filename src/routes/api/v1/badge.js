@@ -1,7 +1,7 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { newBadge, removeBadge, getGoalbadges, addToGoal, delinkGoal, 
-  activeBadges,inactiveBadges, archivedBadges , updateBadge } = require('../../../controllers/adminController');
+const { newBadge, removeBadge, getGoalbadges, addToGoal, delinkGoal,
+   updateBadge, allBadges } = require('../../../controllers/adminController');
 const { getGoalbadge, badgeStatus, getAllBadges, badgeComplete, 
   completedBadges, activeBadgeStatus} = require('../../../controllers/goalBadgeController');
 const { isAdmin, verifyToken, userToken } = require('../../../middleware/authenticated');
@@ -24,11 +24,7 @@ router.post("/new" , isAdmin , newBadge );
 
 router.post("/link-goal" , isAdmin , addToGoal );
 
-router.get("/allBadges/admin", isAdmin, activeBadges)
-
-router.get("/inactive", isAdmin, inactiveBadges)
-
-router.get("/archived", isAdmin, archivedBadges )
+router.get("/allBadges/admin", isAdmin, allBadges)
 
 router.get("/goal/admin", isAdmin, getGoalbadges)
 
