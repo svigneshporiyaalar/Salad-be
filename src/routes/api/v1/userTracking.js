@@ -4,7 +4,7 @@ const { getBadgeStatus } = require('../../../controllers/goalBadgeController');
 const { everyDayTracking,dateTrack,dailyTrack, updateDayTracking,
      lastPeriod,trackMood,trackDailyMood,trackFeedback,
      removeFeedback} = require('../../../controllers/trackingController');
-const { feedbackList } = require('../../../controllers/UserController');
+const { feedbackList } = require('../../../controllers/userController');
 const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
