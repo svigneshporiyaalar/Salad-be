@@ -83,7 +83,7 @@ const getAllBadges = async (ctx) => {
   }
   
   const badgeStatus = async (ctx) => {
-    let {data } = {};
+    let data  = {};
     let error = null;
     const { user, body }=ctx.request;
     const { badgeId, badge , goalId } = body
@@ -97,7 +97,6 @@ const getAllBadges = async (ctx) => {
         userId:userId,
         badge:badge,
         badgeStatus: badgeConstants.ACTIVATE,
-        goalStatus: badgeConstants.INPROGRESS
       })
     } catch (err) {
       error = err;
@@ -109,23 +108,15 @@ const getAllBadges = async (ctx) => {
 
 
   const activateBadge = async (ctx) => {
-    let {data } = {};
+    let {data}  = {};
     let error = null;
     const { user, body }=ctx.request;
-    const { badgeId, badge , goalId } = body
     const userId = _.get(user, "userId");
+    const badgeData ={...body , userId}
     log( "userId :" , userId)
     try {
-     data = await BadgeStatus.create(
-      { 
-        badgeId:badgeId,
-        goalId: goalId,
-        userId:userId,
-        badge:badge,
-        badgeStatus: badgeConstants.ACTIVATE,
-        goalStatus: badgeConstants.INPROGRESS
-      })
-    } catch (err) {
+      data = await BadgeStatus.bulkCreate(body)
+      } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }

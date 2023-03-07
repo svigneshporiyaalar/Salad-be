@@ -8,8 +8,8 @@ module.exports = (sequelize, Sequelize) => {
       userId: {
         type: Sequelize.INTEGER,
       },
-      partnerId: {
-        type: Sequelize.INTEGER,
+      partnerNumber: {
+        type: Sequelize.STRING,
       }, 
     },{
       timestamps: true

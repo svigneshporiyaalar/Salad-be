@@ -1,11 +1,10 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { getBadgeStatus, activeBadgeStatus, activateBadge } = require('../../../controllers/goalBadgeController');
+const { getBadgeStatus, activeBadgeStatus, activateBadge , badgeStatus} = require('../../../controllers/goalBadgeController');
 const { Otp_phone , Otp_phoneVerify, verifyType } = require('../../../controllers/otpController');
 const { addPartner, removePartner, partnerList,
     getBadgeItems, checkPoint, updateName} = require('../../../controllers/userController');
 const { verifyKey, userToken } = require('../../../middleware/authenticated');
-const { badgeStatus } = require('../../../models');
 const router = new Router({ prefix: v1.userService });
 
 
