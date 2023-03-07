@@ -29,11 +29,6 @@ const addPartner = async (ctx) => {
         contactNumber: partner_number,
       },
     });
-    if (data === null) {
-      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0015" });
-      ctx.response.status = HttpStatusCodes.NOT_FOUND;
-      return;
-    } else {
       partnerId = data.userId;
       reData = await Userpartner.findOne({
         where: {
@@ -51,7 +46,6 @@ const addPartner = async (ctx) => {
         partnerId: partnerId,
       });
       message = "Partner added";
-    }
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
