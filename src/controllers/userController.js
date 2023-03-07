@@ -141,7 +141,7 @@ const updateName = async (ctx) => {
 
 
 const partnerList = async (ctx) => {
-  let {data, partnerIds, partnerData , relation , userData} ={}
+  let {data, partnerIds, partnerData } ={}
   let error = null
   const { user } = ctx.request;
   const userId = _.get(user, "userId");
@@ -153,10 +153,10 @@ const partnerList = async (ctx) => {
         userId:userId,
       }
     })
-    console.log(data)
     if (data===null){
-      ctx.throw(404, ERR_SBEE_0015);
-      return; 
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0015" });
+      ctx.response.status = HttpStatusCodes.NOT_FOUND;
+      return;
     } 
     partnerIds= data.map((element) =>{
       return element.partnerId
@@ -168,21 +168,11 @@ const partnerList = async (ctx) => {
         userId: partnerIds,
       }
     })
-     relation = await Userpartner.findAll({
-      raw:true,
-      where:{
-        userId:userId,
-        partnerId: partnerIds
-      }
-    })
-    console.log(relation)
-    userData = partnerData.map((item) => 
-    ({...item, ...relation.find(itm => itm.partnerId === item.partnerId)}));  
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, userData);
+  ctx.body = responseHelper.buildResponse(error, partnerData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
