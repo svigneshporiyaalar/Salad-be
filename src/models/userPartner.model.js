@@ -11,12 +11,6 @@ module.exports = (sequelize, Sequelize) => {
       partnerId: {
         type: Sequelize.INTEGER,
       }, 
-      relation: {
-        type: Sequelize.STRING,
-      }, 
-      shortName: {
-        type: Sequelize.STRING,
-      }, 
     },{
       timestamps: true
     }

@@ -1,14 +1,14 @@
 const { v4: uuidv4 } = require("uuid");
 const S3Service = require("../services/S3Service");
 const _ = require("lodash");
-const { ERR_WSG_0011} = require("../constants/ApplicationErrorConstants");
+const { ERR_SBEE_0998 } = require("../constants/ApplicationErrorConstants");
 
 
 exports.getProfileURL = (ctx) => {
   let id  = _.get(ctx.request.user, "id");
   const { name = "" } = ctx.request.query;
   if (!id) {
-    return Promise.reject({ message: ERR_WSG_0011 });
+    return Promise.reject({ message: ERR_SBEE_0998 });
   }
   return S3Service.getPresignedPutImageURL({
     id: `users/${id}`,

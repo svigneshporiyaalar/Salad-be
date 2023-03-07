@@ -297,6 +297,32 @@ const lastPeriod = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const activatedBadgeStatus = async (ctx) => {
+  let {data } = {};
+  let error = null;
+  const { user, body }=ctx.request;
+  const { badgeId } = body
+  const userId = _.get(user, "userId");
+  log( "userId :" , userId)
+  try {
+   data = await BadgeStatus.findAll(
+    { 
+      where:
+      {
+      badgeId:badgeId,
+      userId:userId,
+      badgeStatus: badgeConstants.ACTIVATE,
+      }
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 
 
 
@@ -311,5 +337,5 @@ module.exports = {
   removeFeedback:removeFeedback,
   trackMood: trackMood,
   lastPeriod:lastPeriod,
-  trackDailyMood: trackDailyMood
+  trackDailyMood: trackDailyMood,
 };

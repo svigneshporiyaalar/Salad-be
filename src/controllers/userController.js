@@ -20,14 +20,13 @@ const addPartner = async (ctx) => {
   let { data, userData, reData, partnerId, message } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { name, partner_number , relation } = body;
+  const { partner_number  } = body;
   const userId = _.get(user, "userId" );
   try {
     data = await User.findOne({
       raw: true,
       where: {
         contactNumber: partner_number,
-        onboardingComplete: "true"
       },
     });
     if (data === null) {
@@ -35,7 +34,7 @@ const addPartner = async (ctx) => {
       ctx.response.status = HttpStatusCodes.NOT_FOUND;
       return;
     } else {
-      partnerId = data.partnerId;
+      partnerId = data.userId;
       reData = await Userpartner.findOne({
         where: {
           userId: userId,
@@ -50,8 +49,6 @@ const addPartner = async (ctx) => {
       userData = await Userpartner.create({
         userId: userId,
         partnerId: partnerId,
-        relation: relation,
-        shortName: name
       });
       message = "Partner added";
     }
@@ -59,7 +56,7 @@ const addPartner = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, { message });
+  ctx.body = responseHelper.buildResponse(error, {data, message });
   ctx.response.status = HttpStatusCodes.CREATED;
 };
 
