@@ -38,7 +38,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING, 
       },
       cycleDays: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       onboarding : {
         type: Sequelize.TEXT, 
