@@ -108,14 +108,16 @@ const getAllBadges = async (ctx) => {
 
 
   const activateBadge = async (ctx) => {
-    let {data}  = {};
+    let {data ,badgeData }  = {};
     let error = null;
     const { user, body }=ctx.request;
     const userId = _.get(user, "userId");
-    const badgeData ={...body , userId}
     log( "userId :" , userId)
     try {
-      data = await BadgeStatus.bulkCreate(body)
+      badgeData=body.map(element =>({
+         ...element, userId
+      }))
+      data = await BadgeStatus.bulkCreate(badgeData)
       } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;

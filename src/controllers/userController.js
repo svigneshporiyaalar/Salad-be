@@ -167,7 +167,7 @@ const partnerList = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, partnerData);
+  ctx.body = responseHelper.buildResponse(error, {data ,partnerData});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 

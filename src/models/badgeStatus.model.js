@@ -8,12 +8,11 @@ module.exports = (sequelize, Sequelize) => {
       userId: {
         type: Sequelize.INTEGER,
       },
-      goalId: {
+      itemId: {
         type: Sequelize.UUID,
       },
-      goalStatus: {
+      itemStatus: {
         type: Sequelize.STRING,
-        defaultValue:"in progress"
       },
       badgeId: {
         type: Sequelize.UUID,
