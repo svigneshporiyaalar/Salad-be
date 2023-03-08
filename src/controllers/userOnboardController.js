@@ -259,8 +259,8 @@ const lunarCycle = async (ctx) => {
     endDate = moment(startDate).add(4, 'd').format('YYYY-MM-DD')
     cycle = 29.5
     birthControlId= 1
-    log(chalk.blue.bold("Entering lunar cycle"))
-    log(startDate , endDate )
+    log(chalk.blue.bold(`UserId:${userId} entering lunar cycle`))
+    log(`Start date: ${chalk.yellow.bold(startDate)}, End date: ${chalk.yellow.bold(endDate)}`)
     // log(`start date in MS : ${moment(startDate).valueOf()},end date in MS : ${moment(endDate).valueOf()}`)
     data = await UserOnboard.findOne({
       where :

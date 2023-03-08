@@ -258,7 +258,8 @@ const lastPeriod = async (ctx) => {
          ['menstrualCycle', 'periodCycle'] , 'birthControlId' ]
       });
       periodStart = moment.utc(data.lastPeriodStart).format('YYYY-MM-DD HH:mm')
-      periodEnd = moment.utc(data.lastPeriodEnd).add(5,'d').format('YYYY-MM-DD HH:mm')
+      periodEnd = moment.utc(data.lastPeriodEnd).format('YYYY-MM-DD HH:mm')
+      console.log(periodStart , periodEnd)
       cycle= data.periodCycle
       if(cycle === 29.5 ){
         log(chalk.blue.bold("Lunar cycle mode"))
@@ -277,11 +278,11 @@ const lastPeriod = async (ctx) => {
        nextPeriodStart = moment.utc(periodStart,'YYYY-MM-DD').add(cycle,'d').format('YYYY-MM-DD HH:mm')
        periodStatus = "normal"
        follicularStart = moment.utc(periodEnd, 'YYYY-MM-DD').add(1,'d').format('YYYY-MM-DD HH:mm')
-       follicularEnd = moment.utc(nextPeriodStart, 'YYYY-MM-DD').subtract(19,'d').format('YYYY-MM-DD HH:mm')
-       ovulationStart = moment.utc(nextPeriodStart).subtract(18,'d').format('YYYY-MM-DD HH:mm')
+       follicularEnd = moment.utc(nextPeriodStart, 'YYYY-MM-DD').subtract(17,'d').format('YYYY-MM-DD HH:mm')
+       ovulationStart = moment.utc(nextPeriodStart).subtract(16,'d').format('YYYY-MM-DD HH:mm')
        ovulationPeak = moment.utc(nextPeriodStart).subtract(14,'d').format('YYYY-MM-DD HH:mm')
-       ovulationEnd = moment.utc(nextPeriodStart).subtract(13,'d').format('YYYY-MM-DD HH:mm')
-       lutealStart = moment.utc(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD HH:mm')
+       ovulationEnd = moment.utc(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD HH:mm')
+       lutealStart = moment.utc(nextPeriodStart).subtract(11,'d').format('YYYY-MM-DD HH:mm')
        lutealEnd = moment.utc(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD HH:mm')
       }
      periodGraph =[{ ["follicular"]:{"start" : follicularStart, "end" : follicularEnd }},
