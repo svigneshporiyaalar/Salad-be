@@ -17,10 +17,10 @@ const Item = db.item
 
 
 const addPartner = async (ctx) => {
-  let { data, userData, reData, partnerId, message } = {};
+  let { data, userData, oldData } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { partner_number  } = body;
+  const { partner_number } = body;
   const userId = _.get(user, "userId" );
   try {
     data = await User.findOne({
@@ -29,28 +29,29 @@ const addPartner = async (ctx) => {
         contactNumber: partner_number,
       },
     });
-      partnerId = data.userId;
-      reData = await Userpartner.findOne({
-        where: {
-          userId: userId,
-          partnerId: partnerId,
-        },
-      });
-      if (reData) {
-        ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0007" });
-        ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-        return;
-      }
-      userData = await Userpartner.create({
+    if( data === null){
+      console.log("partner account does not exist")
+    }
+    oldData = await Userpartner.findOne({
+      where: {
         userId: userId,
-        partnerId: partnerId,
-      });
-      message = "Partner added";
+          partnerNumber: partner_number,
+        },
+  });
+    if(oldData) {
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0007" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+      return;
+    }
+    userData = await Userpartner.create({
+      userId: userId,
+      partnerNumber: partner_number,
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data, message });
+  ctx.body = responseHelper.buildResponse(error, {data, userData});
   ctx.response.status = HttpStatusCodes.CREATED;
 };
 
@@ -58,12 +59,12 @@ const removePartner = async (ctx) => {
   let { data, message } = {};
   let error = null;
   const { user, query }=ctx.request;
-  const { partnerId } = query;
+  const { partner_number } = query;
   const userId = _.get(user, "userId" );
   try {
     data = await Userpartner.destroy({
       where: {
-        partnerId: partnerId,
+        partnerNumber: partner_number,
         userId: userId
       },
     });
@@ -90,7 +91,7 @@ const checkPoint = async (ctx) => {
     data = await Userpartner.findAndCountAll({
       raw:true,
       where:{
-        partnerId:userId,
+        partnerNumber:phoneNumber,
       }
     })
     isCompletedUser = await User.findOne({
@@ -135,7 +136,7 @@ const updateName = async (ctx) => {
 
 
 const partnerList = async (ctx) => {
-  let {data, partnerIds, partnerData } ={}
+  let {data, partnerNumbers, partnerData } ={}
   let error = null
   const { user } = ctx.request;
   const userId = _.get(user, "userId");
@@ -152,14 +153,14 @@ const partnerList = async (ctx) => {
       ctx.response.status = HttpStatusCodes.NOT_FOUND;
       return;
     } 
-    partnerIds= data.map((element) =>{
-      return element.partnerId
+    partnerNumbers= data.map((element) =>{
+      return element.partnerNumber
     })
-    console.log("partnerIds List:" ,partnerIds )
+    console.log("partner numbers List:" ,partnerNumbers )
     partnerData = await User.findAll({
       raw:true,
       where:{
-        userId: partnerIds,
+        contactNumber: partnerNumbers,
       }
     })
   } catch (err) {
