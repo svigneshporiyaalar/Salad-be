@@ -10,8 +10,8 @@ module.exports = {
   ARCHIVED: "archived",
   ACTIVE: "active",
   INACTIVE: "inactive",
-  ACTIVATE:"activate",
-  DEACTIVATE: "deactivate"
+  ACTIVATE:"activated",
+  DEACTIVATE: "deactivated"
 
   };
   

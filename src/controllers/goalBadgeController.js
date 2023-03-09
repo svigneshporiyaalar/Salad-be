@@ -83,7 +83,7 @@ const getAllBadges = async (ctx) => {
   }
   
   const badgeStatus = async (ctx) => {
-    let {data } = {};
+    let data  = {};
     let error = null;
     const { user, body }=ctx.request;
     const { badgeId, badge , goalId } = body
@@ -97,9 +97,28 @@ const getAllBadges = async (ctx) => {
         userId:userId,
         badge:badge,
         badgeStatus: badgeConstants.ACTIVATE,
-        goalStatus: badgeConstants.INPROGRESS
       })
     } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
+
+  const activateBadge = async (ctx) => {
+    let {data ,badgeData }  = {};
+    let error = null;
+    const { user, body }=ctx.request;
+    const userId = _.get(user, "userId");
+    log( "userId :" , userId)
+    try {
+      badgeData=body.map(element =>({
+         ...element, userId
+      }))
+      data = await BadgeStatus.bulkCreate(badgeData)
+      } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
@@ -173,6 +192,25 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 
+  const getAllBadgeStatus = async (ctx) => {
+    let {data } ={}
+    let error = null
+    const { user }=ctx.request;
+    const userId = _.get(user, "userId");
+    try{
+      data = await BadgeStatus.findOne({
+        where:
+        { 
+          userId: userId,
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
 
   const badgeComplete = async (ctx) => {
     let data = {};
@@ -247,6 +285,8 @@ module.exports = {
   getAllUserGoals:getAllUserGoals,
   badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
+  getAllBadgeStatus:getAllBadgeStatus,
+  activateBadge:activateBadge,
   activeBadgeStatus:activeBadgeStatus,
   completedBadges:completedBadges,
   badgeComplete:badgeComplete,

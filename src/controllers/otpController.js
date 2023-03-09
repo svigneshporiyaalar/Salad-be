@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const db = require("../models");
 const User = db.user;
-const Partner = db.partner;
 var otpGenerator = require("otp-generator");
 const twilio = require("twilio");
 const log = console.log
@@ -169,117 +168,8 @@ const verifyType = async (ctx) => {
 };
 
 
-// const Otp_partner = async (ctx) => {
-//   let { otp,partnerData, otpResponse,partnerId, otpId,
-//     token,otpMessage} = {};
-//   let error = null;
-//   let responseCode = HttpStatusCodes.SUCCESS;
-//   const {cc ,phoneNumber, type } = ctx.request.body;
-//   try {
-//     if (!phoneNumber) {
-//       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0009" });
-//       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-//       return;
-//     }
-//     if (type!== "partner") {
-//       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0998" });
-//       ctx.response.status = HttpStatusCodes.UNAUTHORIZED;
-//       return;
-//     }
-//     partnerData = await Partner.findOne({
-//       where: {
-//         contactNumber: phoneNumber,
-//       },
-//     });
-//     if(partnerData){
-//       log("Partner account exists")
-//     } else{
-//     partnerData = await Partner.create({
-//       contactNumber: phoneNumber,
-//     });
-//   }
-//     otpId = partnerData.id;
-//     partnerId = partnerData.partnerId;
-//     const payload = {
-//       cc:cc,
-//       phoneNumber: phoneNumber,
-//       id: otpId,
-//       otp:otp,
-//       partnerId: partnerId,
-//       type:type
-//     };
     // smsResp = otpGenerator.generate(7, { lowerCaseAlphabets: false, specialChars: false });
     // console.log(smsResp)
-
-//     token = jwt.sign(payload, signup_secret, { expiresIn: "10m" });
-//     // otpResponse = await client.verify
-//     //   .services(partner_serviceSid)
-//     //   .verifications.create({
-//     //     to: `+${cc}${phoneNumber}`,
-//     //     channel: "sms",
-//     //   });
-//     otpMessage = USR_SBEE_0001;
-//     // console.log(otpResponse);
-//   } catch (err) {
-//     error = err;
-//     responseCode = HttpStatusCodes.BAD_REQUEST;
-//   }
-//   ctx.body = responseHelper.buildResponse(error, {token, otpMessage});
-//   ctx.response.status = responseCode;
-// };
-
-// const Otp_partnerVerify = async (ctx) => {
-//   let { data, verifiedResponse, otpMessage, token } = {};
-//   let error = null;
-//   let responseCode = HttpStatusCodes.SUCCESS;
-//   const { otp } = ctx.request.body;
-//   try {
-//     if (!otp) {
-//       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0010" });
-//       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-//       return;
-//     }
-//     const id = _.get(ctx.request.key, "id", "Bad Response");
-//     const partnerId = _.get(ctx.request.key, "partnerId", "Bad Response");
-//     const phoneNumber = _.get(ctx.request.key, "phoneNumber", "Bad Response");
-//     const type = _.get(ctx.request.key, "type", "Bad Response");
-//     data = await Partner.findOne({
-//       raw:true,
-//       where: {
-//         id: id,
-//       },
-//     });
-//     if(data===null) {
-//       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
-//       ctx.response.status = HttpStatusCodes.NOT_FOUND
-//       return; 
-//     }
-//     // verifiedResponse = await client.verify
-//     //   .services(partner_serviceSid)
-//     //   .verificationChecks.create({
-//     //     to: `+91${phoneNumber}`,
-//     //     code: otp,
-//     //   });
-//     // if(verifiedResponse.valid) {
-//     //   console.log(verifiedResponse)
-//      if( tempOtp === otp){
-//       otpMessage = USR_SBEE_0002
-//       token = jwt.sign({id:id,partnerId:partnerId,phoneNumber:phoneNumber,
-//       type:type}, partnerSecret, { expiresIn: "2h" });
-//     } else {
-//       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
-//       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
-//       return;
-//     }
-//   } catch (err) {
-//     error = err;
-//     responseCode = HttpStatusCodes.BAD_REQUEST;
-//   }
-//   ctx.body = responseHelper.buildResponse(error, {otpMessage,token});
-//   ctx.response.status = responseCode;
-// };
-
-
 
 module.exports = {
   Otp_phone: Otp_phone,

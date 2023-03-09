@@ -13,17 +13,35 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
+      daysFollowed : {
+        type: Sequelize.INTEGER,
+      },
+      grantBadge : {
+        type: Sequelize.INTEGER,
+      },
+      badgeRunway : {
+        type: Sequelize.INTEGER,
+      },
+      timeOfTheDay : {
+        type: Sequelize.TIME,
+      },
       frequency: {
         type: Sequelize.STRING,
       },
-      phase: {
+      menstrualPhase: {
         type: Sequelize.STRING,
+      },
+      difficultyLevel : {
+        type: Sequelize.INTEGER, 
       },
       type : {
         type: Sequelize.STRING, 
       },
       cycleDays: {
         type: Sequelize.STRING,
+      },
+      onboarding : {
+        type: Sequelize.TEXT, 
       },
       naturalProgressionIntermediate: {
         type: Sequelize.STRING,
