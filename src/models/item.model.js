@@ -15,6 +15,9 @@ module.exports = (sequelize, Sequelize) => {
       exerciseType : {
         type: Sequelize.STRING, 
       },
+      difficultyLevel : {
+        type: Sequelize.INTEGER, 
+      },
       exerciseMeta : {
         type: Sequelize.JSON, 
       },

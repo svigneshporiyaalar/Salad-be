@@ -31,6 +31,9 @@ router.get("/badgeStatus", userToken, getBadgeStatus)
 
 router.get("/feedback-list", userToken, feedbackList )
 
+router.get("/activated-badge/status" , userToken , getBadgeStatus);
+
+
 
 
 

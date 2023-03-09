@@ -15,7 +15,6 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.user = require("./user.model.js")(sequelize, Sequelize);
-db.partner = require("./partner.model.js")(sequelize, Sequelize);
 db.admin = require("./admin.model.js")(sequelize, Sequelize);
 db.userPartner = require("./userPartner.model.js")(sequelize, Sequelize);
 db.badge = require("./badge.model.js")(sequelize, Sequelize);
@@ -33,11 +32,6 @@ db.integration = require("./integration.model")(sequelize, Sequelize);
 db.item = require("./item.model")(sequelize, Sequelize);
 db.level = require("./level.model")(sequelize, Sequelize);
 
-
-
-
-// db.goal.hasMany(db.badge);
-// db.badge.belongsTo(db.goal);
 
 
 
