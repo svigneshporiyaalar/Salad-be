@@ -13,8 +13,8 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false
       },
-      daysFollowed : {
-        type: Sequelize.INTEGER,
+      frequency : {
+        type: Sequelize.STRING,
       },
       grantBadge : {
         type: Sequelize.INTEGER,
@@ -23,9 +23,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       timeOfTheDay : {
-        type: Sequelize.TIME,
-      },
-      frequency: {
         type: Sequelize.STRING,
       },
       menstrualPhase: {
@@ -37,20 +34,17 @@ module.exports = (sequelize, Sequelize) => {
       type : {
         type: Sequelize.STRING, 
       },
-      cycleDays: {
-        type: Sequelize.STRING,
-      },
       onboarding : {
-        type: Sequelize.TEXT, 
+        type: Sequelize.STRING, 
       },
-      naturalProgressionIntermediate: {
+      excludes : {
+        type: Sequelize.JSON, 
+      },
+      naturalProgression: {
         type: Sequelize.STRING,
       },
-      naturalProgressionAdvanced: {
-        type: Sequelize.STRING,
-      },
-      naturalRegression: {
-        type: Sequelize.STRING,
+      defaultTimeInMins: {
+        type: Sequelize.INTEGER,
       },
       status: {
         type: Sequelize.STRING,
