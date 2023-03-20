@@ -7,20 +7,19 @@ const { Op } = require("sequelize");
 const badgeConstants = require("../constants/badgeConstants");
 const log = console.log
 const chalk = require("chalk");
-const User = db.user;
 const Feedback = db.feedback
 const UserTracking = db.userTracking;
-const MoodTracking = db.moodTracking
+const MoodTracker = db.moodTracker
 const UserOnboard = db.userOnboard;
 
 
 
 const dailyTrack = async (ctx) => {
-  let data = {};
+  let { data, date } = {};
   let error = null;
-  const { user, query }=ctx.request;
+  const { user  }=ctx.request;
   const userId = _.get(user, "userId");
-  let { date } = query;
+  date = new Date()
   try {
     data = await UserTracking.findAll(
       {
@@ -38,12 +37,12 @@ const dailyTrack = async (ctx) => {
 };
 
 const dateTrack = async (ctx) => {
-  let data = {}
+  let {data, condition, date} = {}
   let error = null;
-  let condition = {}
   const {user, query}=ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
   const userId = _.get(user, "userId");
+  date = new Date()
   let { startDate, endDate  } = query;
   if (startDate && endDate) {
     condition = {
@@ -67,25 +66,22 @@ const dateTrack = async (ctx) => {
   ctx.response.status = responseCode;
 }
 
-const everyDayTracking = async (ctx) => {
+const todayWorkoutComplete = async (ctx) => {
   let data = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { description, badgeId, day, time, 
-    preMood,postMood } = body;
+  const {  badgeId, itemId, date, time,preMood } = body;
   const userId = _.get(user, "userId");
   try {
     data = await UserTracking.create({
       userId: userId,
-      description:description,
       badgeId: badgeId,
-      day:day,
-      time:time,
+      itemId: itemId,
+      date:date,
+      durationInMins: time,
       preWorkoutMood: preMood,
-      postWorkoutMood: postMood,
-      badgeStatus: badgeConstants.INPROGRESS
+      isDayWorkoutComplete: "yes"
     });
-   log(data.createdAt)
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -98,21 +94,20 @@ const updateDayTracking = async (ctx) => {
   let data = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { description, badgeId, day, time,
-     preMood,postMood } = body;
+  const { badgeId, date, postMood, level, time  } = body;
   const userId = _.get(user, "userId");
   try {
     data = await UserTracking.update({
-      description:description,
-      preWorkoutMood: preMood,
-      postWorkoutMood: postMood
-    },{
+      durationInMins: time,
+      postWorkoutMood: postMood,
+      difficultyLevel:level
+     },
+    {
       where :
       {
         userId: userId,
         badgeId: badgeId,
-        day:day,
-        time:time,
+        date:date,
       }
     });
   } catch (err) {
@@ -124,17 +119,26 @@ const updateDayTracking = async (ctx) => {
 };
 
 
-const trackFeedback = async (ctx) => {
-  let data = {};
+const postSymptom = async (ctx) => {
+  let {data , symptomData, symptomId} = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { date , feedback } = body;
+  const { date , symptom } = body;
   const userId = _.get(user, "userId");
   try {
-    data = await MoodTracking.create({
+    symptomData = await Feedback.findOne({
+      raw:true,
+        where: {
+          tag:"symptom",
+          description: symptom,
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      });
+     symptomId = symptomData.feedbackId
+    data = await MoodTracker.create({
       userId: userId,
       date: moment(date),
-      symptoms: feedback
+      symptoms: symptomId
     });
   } catch (err) {
     error = err;
@@ -144,17 +148,27 @@ const trackFeedback = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const removeFeedback = async (ctx) => {
-  let data = {};
+
+const removeSymptom = async (ctx) => {
+  let {data , symptomData, symptomId} = {};
   let error = null;
   const {user, body}=ctx.request;
-  const { date , symptoms } = body;
+  const { date , symptom } = body;
   const userId = _.get( user, "userId");
   try {
-    data = await MoodTracking.destroy({
+    symptomData = await Feedback.findOne({
+      raw:true,
+        where: {
+          tag:"symptom",
+          description: symptom,
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      });
+     symptomId = symptomData.feedbackId
+    data = await MoodTracker.destroy({
       userId: userId,
       date: moment(date),
-      symptoms: symptoms
+      symptoms: symptomId
     });
   } catch (err) {
     error = err;
@@ -164,35 +178,61 @@ const removeFeedback = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-
-
-const trackMood = async (ctx) => {
-  let {data, feedback , moodData , mergedData} = {};
+const postDailyMood = async (ctx) => {
+  let {data , moodData , moodId , today , time} = {};
   let error = null;
-  let condition = {}
-  const {user, query}=ctx.request;
+  const {user, body}=ctx.request;
+  const { mood } = body;
+  const userId = _.get(user, "userId");
+  today = moment.utc(new Date()).format('YYYY-MM-DD')
+  time = moment(new Date()).format('HH:mm')
+  try {
+    moodData = await Feedback.findOne({
+      raw:true,
+        where: {
+          tag:"mood",
+          description: mood,
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      });
+     moodId = moodData.feedbackId
+    data = await MoodTracker.create({
+      userId: userId,
+      date: today,
+      time:time,
+      mood:moodId
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
+const trackWeeklyMood = async (ctx) => {
+  let {data, feedback, moodData, mergedData, condition, 
+    date, startDate, endDate} = {};
+  let error = null;
+  const {user }=ctx.request;
   let responseCode = HttpStatusCodes.SUCCESS;
   const userId = _.get(user, "userId");
-  let { startDate, endDate  } = query;
-  if (startDate && endDate) {
-    condition = {
+  date= new Date()
+  endDate = moment.utc(date).subtract(1,'d').format('YYYY-MM-DD')
+  startDate = moment.utc(endDate).subtract(6,'d').format('YYYY-MM-DD')
+  condition = {
       raw:true,
       where : {
         userId: userId,
         date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
       },
-      attributes: [ ['symptoms', 'feedbackId'] , 'date', 'userId'] ,
+      attributes: [ ['mood', 'moodId'], 'date', 'userId'] ,
     }
-  } else {
-    condition= {
-      where: { userId: userId },
-      attributes: { exclude: ['createdAt', 'updatedAt'] }
-   }
-  }
   try {
-    data = await MoodTracking.findAll(condition)
-    feedback = data.forEach(element => {
-      return element.feedbackId
+    data = await MoodTracker.findAll(condition)
+    feedback = data.map(element => {
+      return element.moodId
     });
     moodData = await Feedback.findAll({
       raw:true,
@@ -202,7 +242,7 @@ const trackMood = async (ctx) => {
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
     mergedData = data.map((item) => 
-    ({...item, ...moodData.find(itm => itm.feedbackId == item.feedbackId)}));  
+    ({...item, ...moodData.find(itm => itm.feedbackId === item.moodId)}));  
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
@@ -212,20 +252,20 @@ const trackMood = async (ctx) => {
 }
 
 const trackDailyMood = async (ctx) => {
-  let {data, feedbackId , feedback} = {};
+  let {data, feedbackId , feedback, date} = {};
   let error = null;
-  const {user, query}=ctx.request;
+  const { user }=ctx.request;
   const userId = _.get(user, "userId", "Bad Response");
-  let { date } = query;
+  date = new Date()
   try {
-    data = await MoodTracking.findOne(
+    data = await MoodTracker.findOne(
       {
         where: {
           userId: userId,
           date : date
         },
       });
-      feedbackId = data.symptoms
+      feedbackId = data.mood
     feedback = await Feedback.findOne(
         {
           where: {
@@ -240,14 +280,17 @@ const trackDailyMood = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+
 const lastPeriod = async (ctx) => {
   let {data, periodStart,  periodEnd, cycle, ovulationPeak, periodData, 
     nextPeriodStart, periodStatus,follicularStart, follicularEnd, 
     ovulationStart , ovulationEnd,lutealStart, lutealEnd, periodGraph } = {};
+  let { today, condition, isMenstruation, isFollicular, isLuteal, isOvulation}  ={}
   let error = null;
   const { user }=ctx.request;
   const userId = _.get(user, "userId");
   try {
+    today = moment.utc(new Date()).format('YYYY-MM-DD HH:mm')
     data = await UserOnboard.findOne(
       {
         raw:true, 
@@ -259,7 +302,7 @@ const lastPeriod = async (ctx) => {
       });
       periodStart = moment.utc(data.lastPeriodStart).format('YYYY-MM-DD HH:mm')
       periodEnd = moment.utc(data.lastPeriodEnd).format('YYYY-MM-DD HH:mm')
-      console.log(periodStart , periodEnd)
+      log(periodStart , periodEnd)
       cycle= data.periodCycle
       if(cycle === 29.5 ){
         log(chalk.blue.bold("Lunar cycle mode"))
@@ -285,11 +328,15 @@ const lastPeriod = async (ctx) => {
        lutealStart = moment.utc(nextPeriodStart).subtract(11,'d').format('YYYY-MM-DD HH:mm')
        lutealEnd = moment.utc(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD HH:mm')
       }
+      isFollicular =moment(today).isBetween(follicularStart , follicularEnd ,undefined, '[]'); 
+      isOvulation =moment(today).isBetween(ovulationStart , ovulationEnd ,undefined, '[]'); 
+      isLuteal =moment(today).isBetween(lutealStart , lutealEnd ,undefined, '[]'); 
+      isMenstruation =moment(today).isBetween(periodStart , periodEnd ,undefined, '[]'); 
+      condition ={ isFollicular,isOvulation,isLuteal,isMenstruation}
      periodGraph =[{ ["follicular"]:{"start" : follicularStart, "end" : follicularEnd }},
      { ["ovulation"]: {"start" : ovulationStart, "peak": ovulationPeak, "end" : ovulationEnd }},
      { ["luteal"]:{"start" : lutealStart, "end" : lutealEnd }}]
-     periodData = {...data,  nextPeriodStart, periodStatus , periodGraph}
-
+     periodData = {...data,  nextPeriodStart, periodStatus , periodGraph, ...condition}
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -298,21 +345,18 @@ const lastPeriod = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const activatedBadgeStatus = async (ctx) => {
-  let {data } = {};
-  let error = null;
-  const { user, body }=ctx.request;
-  const { badgeId } = body
+const badgeTracker = async (ctx) => {
+  let {data } ={}
+  let error = null
+  const { user, query }=ctx.request;
   const userId = _.get(user, "userId");
-  log( "userId :" , userId)
-  try {
-   data = await BadgeStatus.findAll(
-    { 
+  const { badgeId } = query
+  try{
+    data = await UserTracking.findAll({
       where:
-      {
-      badgeId:badgeId,
-      userId:userId,
-      badgeStatus: badgeConstants.ACTIVATE,
+      { 
+        userId: userId,
+        badgeId:badgeId
       }
     })
   } catch (err) {
@@ -321,22 +365,20 @@ const activatedBadgeStatus = async (ctx) => {
   }
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
-};
-
-
-
-
+}
 
 
 
 module.exports = {
-  everyDayTracking:everyDayTracking,
+  todayWorkoutComplete:todayWorkoutComplete,
   updateDayTracking:updateDayTracking,
   dailyTrack: dailyTrack,
   dateTrack: dateTrack,
-  trackFeedback:trackFeedback,
-  removeFeedback:removeFeedback,
-  trackMood: trackMood,
-  lastPeriod:lastPeriod,
+  postSymptom,postSymptom,
+  removeSymptom: removeSymptom,
+  postDailyMood:postDailyMood,
+  trackWeeklyMood:trackWeeklyMood,
   trackDailyMood: trackDailyMood,
+  lastPeriod:lastPeriod,
+  badgeTracker:badgeTracker
 };

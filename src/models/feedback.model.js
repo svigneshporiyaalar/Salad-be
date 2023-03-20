@@ -5,7 +5,10 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      feedback: {
+      tag: {
+        type: Sequelize.STRING,
+      },
+      description: {
         type: Sequelize.STRING,
       },
     });

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  return sequelize.define("moodTracking",
+  return sequelize.define("moodTracker",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -13,7 +13,13 @@ module.exports = (sequelize, Sequelize) => {
       date: {
         type: Sequelize.DATEONLY,
       },
-      symptoms: {
+      time: {
+        type: Sequelize.TIME,
+      },
+      symptom: {
+        type: Sequelize.INTEGER,
+      },
+      mood: {
         type: Sequelize.INTEGER,
       },
     });

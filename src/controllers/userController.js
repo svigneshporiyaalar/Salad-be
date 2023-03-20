@@ -174,14 +174,18 @@ const partnerList = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
-const feedbackList = async (ctx) => {
+const symptomList = async (ctx) => {
   let { data } = {};
   let error = null;
   const { user } = ctx.request;
   const userId = _.get(user, "userId");
   console.log("userId :", userId);
   try {
-    data = await Feedback.findAll({});
+    data = await Feedback.findAll({
+      where :{
+        tag:"symptom"
+      }
+    });
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -189,6 +193,27 @@ const feedbackList = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
+const moodList = async (ctx) => {
+  let { data } = {};
+  let error = null;
+  const { user } = ctx.request;
+  const userId = _.get(user, "userId");
+  console.log("userId :", userId);
+  try {
+    data = await Feedback.findAll({
+      where :{
+        tag:"mood"
+      }
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
 
 const getBadgeItems = async (ctx) => {
   let { data, itemData, exerciseIds } = {};
@@ -227,6 +252,7 @@ module.exports = {
   partnerList: partnerList,
   checkPoint: checkPoint,
   updateName: updateName,
-  feedbackList: feedbackList,
+  symptomList:symptomList,
+  moodList:moodList,
   getBadgeItems: getBadgeItems,
 };

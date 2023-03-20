@@ -3,52 +3,92 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('feedbacks', [{
-      feedback: 'feeling on the low side',
+      tag: "symptom",
+      description: 'feeling on the low side',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'feeling on the high side',
+      tag: "symptom",
+      description: 'feeling on the high side',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'soreness from last workout',
+      tag: "symptom",
+      description: 'soreness from last workout',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'not sore from last workout',
+      tag: "symptom",
+      description: 'not sore from last workout',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'not enough sleep last night',
+      tag: "symptom",
+      description: 'not enough sleep last night',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'enough sleep last night',
+      tag: "symptom",
+      description: 'enough sleep last night',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'Difficulty of workout was high',
+      tag: "symptom",
+      description: 'Difficulty of workout was high',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'Difficulty of workout was low',
+      tag: "symptom",
+      description: 'Difficulty of workout was low',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'Did not like the workout',
+      tag: "symptom",
+      description: 'Did not like the workout',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
-      feedback: 'Like the workout',
+      tag: "symptom",
+      description: 'Like the workout',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      tag: "mood",
+      description: 'Happy',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      tag: "mood",
+      description: 'Gloomy',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      tag: "mood",
+      description: 'Cheerful',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      tag: "mood",
+      description: 'Dull',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      tag: "mood",
+      description: 'Confused',
       createdAt: new Date(),
       updatedAt: new Date()
     },

@@ -1,37 +1,45 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { getBadgeStatus } = require('../../../controllers/goalBadgeController');
-const { everyDayTracking,dateTrack,dailyTrack, updateDayTracking,
-     lastPeriod,trackMood,trackDailyMood,trackFeedback,
-     removeFeedback} = require('../../../controllers/trackingController');
-const { feedbackList } = require('../../../controllers/UserController');
+const { dateTrack,dailyTrack, updateDayTracking, lastPeriod,trackDailyMood,
+     postDailyMood,postSymptom, removeSymptom, activatedBadges,
+     todayWorkoutComplete, badgeTracker, trackWeeklyMood} = require('../../../controllers/trackingController');
+const { symptomList, moodList } = require('../../../controllers/UserController');
 const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
 
-router.post("/everyday" , userToken, everyDayTracking );
+router.get("/symptom-list", userToken, symptomList )
 
-router.put("/updatetrack" , userToken, updateDayTracking );
+router.get("/mood-list", userToken, moodList )
 
-router.get("/dailytrack" , userToken, dailyTrack );
+router.get("/weekly-mood" , userToken, trackWeeklyMood );
 
-router.get("/datetrack" , userToken, dateTrack );
+router.get("/everyday-mood" ,  userToken, trackDailyMood );
 
-router.post("/feedback" ,userToken, trackFeedback );
+router.post("/daily-mood" ,userToken, postDailyMood );
 
-router.delete("/remove/feedback" ,userToken, removeFeedback );
+router.post("/daily-symptom" ,userToken, postSymptom );
 
-router.get("/moodtrack" , userToken, trackMood );
+router.delete("/remove-symptom" ,userToken, removeSymptom );
 
-router.get("/daily/moodtrack" ,  userToken, trackDailyMood );
+router.get("/daily-workout" , userToken, dailyTrack );
+
+router.get("/range-workout" , userToken, dateTrack );
+
+router.post("/everyday/work-out" , userToken, todayWorkoutComplete );
+
+router.put("/work-out/update" , userToken, updateDayTracking );
 
 router.get("/lastperiod" , userToken, lastPeriod );
 
-router.get("/badgeStatus", userToken, getBadgeStatus)
+router.get("/badge-status", userToken, badgeTracker )
 
-router.get("/feedback-list", userToken, feedbackList )
 
-router.get("/activated-badge/status" , userToken , getBadgeStatus);
+
+
+
+
+
 
 
 

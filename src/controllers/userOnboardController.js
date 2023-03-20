@@ -45,7 +45,7 @@ const addIntegration = async (ctx) => {
     data = await UserIntegration.create({
       userId: userId,
       integration: integration,
-      status: "active",
+      status: badgeConstants.ACTIVE,
     });
   } catch (err) {
     error = err;
@@ -63,7 +63,7 @@ const removeIntegration = async (ctx) => {
   const userId = _.get(user, "userId" );
   try {
     data = await UserIntegration.update({
-      status: "inactive",
+      status: badgeConstants.INACTIVE,
     },{
       where :
       {

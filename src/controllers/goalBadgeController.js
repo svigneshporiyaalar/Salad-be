@@ -198,7 +198,7 @@ const getAllBadges = async (ctx) => {
     const { user }=ctx.request;
     const userId = _.get(user, "userId");
     try{
-      data = await BadgeStatus.findOne({
+      data = await BadgeStatus.findAll({
         where:
         { 
           userId: userId,

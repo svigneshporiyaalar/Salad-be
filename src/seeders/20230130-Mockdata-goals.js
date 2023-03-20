@@ -5,7 +5,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('goals', [{
       goalId: '1b16eae5-5073-4966-978f-79569af028b1',
-      goal: 'Manage excessive period pain',
+      goal: 'Decreased period pain',
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -29,20 +29,12 @@ module.exports = {
   },
   {
     goalId: '1b16eae5-5073-4966-978f-79569af028b5',
-    goal: 'improve flexibility',
+    goal: 'General fitness goals',
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  {
-    goalId: '1b16eae5-5073-4966-978f-79569af028b5',
-    goal: 'Take a tech brake',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  
   ]);
   },
-
   async down (queryInterface, Sequelize) {
     return queryInterface.bulkDelete('goals', null, {});
 

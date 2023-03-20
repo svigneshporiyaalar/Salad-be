@@ -12,14 +12,14 @@ module.exports = (sequelize, Sequelize) => {
       badgeId: {
         type: Sequelize.UUID,
       },
-      description: {
-        type: Sequelize.STRING,
-      },
-      day: {
+      itemId: {
+        type: Sequelize.UUID,
+      },      
+      date: {
         type: Sequelize.DATEONLY,
       },
-      time: {
-        type: Sequelize.TIME,
+      durationInMins: {
+        type: Sequelize.INTEGER,
       },
       difficultyLevel: {
         type: Sequelize.INTEGER,
@@ -30,11 +30,13 @@ module.exports = (sequelize, Sequelize) => {
       postWorkoutMood: {
         type: Sequelize.INTEGER,
       },
-      badgeStatus: {
+      isDayWorkoutComplete: {
         type: Sequelize.STRING,
-        defaultValue: "inprogress"
+        validate: {
+          isIn: [['yes', 'no']],
       },
-    },
+    }
+  },
     {
       timestamps: true,
     }
