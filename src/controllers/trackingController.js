@@ -11,6 +11,9 @@ const Feedback = db.feedback
 const UserTracking = db.userTracking;
 const MoodTracker = db.moodTracker
 const UserOnboard = db.userOnboard;
+const ProductivityTracker = db.productivityTracker
+const Productivity = db.productivity
+const SleepTracker = db.sleepTracker
 
 
 
@@ -367,6 +370,135 @@ const badgeTracker = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
+const postSleep = async (ctx) => {
+  let {data, date, today} = {};
+  let error = null;
+  const {user, body}=ctx.request;
+  const { sleepHour } = body;
+  const userId = _.get(user, "userId");
+  date = new Date()
+  today = moment.utc(new Date()).format('YYYY-MM-DD')
+  try {
+    data = await SleepTracker.create({
+      userId: userId,
+      date: today,
+      hoursOfSleep: sleepHour
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const trackWeeklySleep = async (ctx) => {
+  let {data, condition, date, startDate, endDate} = {};
+  let error = null;
+  const {user }=ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const userId = _.get(user, "userId");
+  date= new Date()
+  endDate = moment.utc(date).subtract(1,'d').format('YYYY-MM-DD')
+  startDate = moment.utc(endDate).subtract(6,'d').format('YYYY-MM-DD')
+  condition = {
+      raw:true,
+      where : {
+        userId: userId,
+        date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
+      },
+    }
+  try {
+    data = await SleepTracker.findAll(condition)
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+const productivityList = async (ctx) => {
+  let data  ={}
+  let error = null
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  try{
+    data = await Productivity.findAll({
+      attributes: { exclude: ['createdAt', 'updatedAt', 'id'] }
+    })
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+}
+
+const postProductivity = async (ctx) => {
+  let { data, date, today , prodData , prodPoint } = {};
+  let error = null;
+  const {user, body}=ctx.request;
+  const { productivity } = body;
+  const userId = _.get(user, "userId");
+  date = new Date()
+  today = moment.utc(new Date()).format('YYYY-MM-DD')
+  try {
+    prodData = await Productivity.findOne({
+      raw:true,
+        where: {
+          tag: productivity,
+        },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      });
+     prodPoint = prodData.points
+    data = await ProductivityTracker.create({
+      userId: userId,
+      date: today,
+      productivity: prodPoint
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const trackWeeklyProductivity = async (ctx) => {
+  let {data, condition, date, startDate, endDate} = {};
+  let error = null;
+  const {user }=ctx.request;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  const userId = _.get(user, "userId");
+  date= new Date()
+  endDate = moment.utc(date).subtract(1,'d').format('YYYY-MM-DD')
+  startDate = moment.utc(endDate).subtract(6,'d').format('YYYY-MM-DD')
+  condition = {
+      raw:true,
+      where : {
+        userId: userId,
+        date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
+      },
+    }
+  try {
+    data = await ProductivityTracker.findAll(condition)
+  } catch (err) {
+    error = err;
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = responseCode;
+}
+
+
+
+
+
+
+
+
+
 
 
 module.exports = {
@@ -380,5 +512,10 @@ module.exports = {
   trackWeeklyMood:trackWeeklyMood,
   trackDailyMood: trackDailyMood,
   lastPeriod:lastPeriod,
-  badgeTracker:badgeTracker
+  badgeTracker:badgeTracker,
+  postSleep:postSleep,
+  trackWeeklySleep:trackWeeklySleep,
+  productivityList:productivityList,
+  postProductivity:postProductivity,
+  trackWeeklyProductivity:trackWeeklyProductivity
 };
