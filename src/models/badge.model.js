@@ -2,14 +2,9 @@ module.exports = (sequelize, Sequelize) => {
     return sequelize.define("badge", {
       badgeId: {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
       name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      description: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -17,21 +12,18 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
       },
       grantBadge : {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       badgeRunway : {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       timeOfTheDay : {
         type: Sequelize.STRING,
       },
-      menstrualPhase: {
+      phase: {
         type: Sequelize.STRING,
       },
       difficultyLevel : {
-        type: Sequelize.INTEGER, 
-      },
-      type : {
         type: Sequelize.STRING, 
       },
       onboarding : {
@@ -43,8 +35,26 @@ module.exports = (sequelize, Sequelize) => {
       naturalProgression: {
         type: Sequelize.STRING,
       },
-      defaultTimeInMins: {
-        type: Sequelize.INTEGER,
+      trackParameter: {
+        type: Sequelize.STRING,
+      },
+      defaultTrack: {
+        type: Sequelize.STRING,
+      },
+      possibleTrackRange: {
+        type: Sequelize.STRING,
+      },
+      trackChangeValue: {
+        type: Sequelize.STRING,
+      },
+      type : {
+        type: Sequelize.STRING, 
+      },
+      media : {
+        type: Sequelize.JSON, 
+      },
+      meta : {
+        type: Sequelize.JSON, 
       },
       status: {
         type: Sequelize.STRING,

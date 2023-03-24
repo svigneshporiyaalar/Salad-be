@@ -11,6 +11,8 @@ module.exports = {
     USR_SBEE_0010: "Error in linking badge and item",
     USR_SBEE_0011: "badge linked to item",
     USR_SBEE_0012: "badge de-linked from item",
+    REQUESTED: "requested",
+    ACCEPTED: "accepted"
 
 
 

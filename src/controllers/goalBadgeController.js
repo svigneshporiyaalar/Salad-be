@@ -50,6 +50,28 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 
+  const individualBadge = async (ctx) => {
+    let data  ={}
+    let error = null
+    const { user, query }=ctx.request;
+    const { badgeId } = query
+    const userId = _.get(user, "userId");
+    console.log( "userId :" , userId)
+    try{
+      data = await Badge.findOne({
+        where :{
+          badgeId: badgeId,
+        }
+      })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+      ctx.body = responseHelper.buildResponse(error, data);
+      ctx.response.status = HttpStatusCodes.SUCCESS;
+    }
+  
+
  const getGoalbadge = async (ctx) => {
     let {data , badgeData, badgeIds } ={}
     let error = null
@@ -281,6 +303,7 @@ const getAllBadges = async (ctx) => {
 
 module.exports = {
   getAllBadges:getAllBadges,
+  individualBadge:individualBadge,
   getGoalbadge:getGoalbadge,
   getAllUserGoals:getAllUserGoals,
   badgeStatus:badgeStatus,

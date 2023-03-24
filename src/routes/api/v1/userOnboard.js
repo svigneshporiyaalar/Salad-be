@@ -1,9 +1,11 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
+const { individualBadge } = require('../../../controllers/goalBadgeController');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile, birthControlList, medicalHistoryList,
-     addIntegration, removeIntegration , profileImage, lunarCycle }= require('../../../controllers/userOnboardController');
-const { verifyToken, userToken } = require('../../../middleware/authenticated');
+     addIntegration, removeIntegration , profileImage, 
+     lunarCycle }= require('../../../controllers/userOnboardController');
+const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
 
@@ -28,6 +30,8 @@ router.get("/medicalhistory/list" , userToken, medicalHistoryList );
 router.put("/menstrual-details" , userToken, menstrualDetails );
 
 router.put("/lunar-cycle" , userToken, lunarCycle );
+
+router.get("/badge-details" , userToken, individualBadge );
 
 router.put("/complete" , userToken, completeOnboard );
 

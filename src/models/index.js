@@ -17,6 +17,7 @@ db.sequelize = sequelize;
 db.user = require("./user.model.js")(sequelize, Sequelize);
 db.admin = require("./admin.model.js")(sequelize, Sequelize);
 db.userPartner = require("./userPartner.model.js")(sequelize, Sequelize);
+db.userPartnerTracker = require("./userPartnerTracker.model")(sequelize, Sequelize);
 db.badge = require("./badge.model.js")(sequelize, Sequelize);
 db.goal = require("./goal.model.js")(sequelize, Sequelize);
 db.badgeStatus = require("./badgeStatus.model.js")(sequelize, Sequelize);

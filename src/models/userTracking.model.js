@@ -12,14 +12,20 @@ module.exports = (sequelize, Sequelize) => {
       badgeId: {
         type: Sequelize.UUID,
       },
+      badgeName: {
+        type: Sequelize.STRING,
+      },
       itemId: {
         type: Sequelize.UUID,
       },      
       date: {
         type: Sequelize.DATEONLY,
       },
-      durationInMins: {
-        type: Sequelize.INTEGER,
+      trackParameter: {
+        type: Sequelize.STRING,
+      },
+      defaultTrack: {
+        type: Sequelize.STRING,
       },
       difficultyLevel: {
         type: Sequelize.INTEGER,

@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("userPartner", {
+    return sequelize.define("userPartnerTracker", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -8,18 +8,16 @@ module.exports = (sequelize, Sequelize) => {
       userId: {
         type: Sequelize.INTEGER,
       },
-      partnerNumber: {
-        type: Sequelize.STRING,
-      }, 
-      partnerName: {
-        type: Sequelize.STRING,
-      }, 
+      partnerId: {
+        type: Sequelize.INTEGER,
+      },
       action: {
         type: Sequelize.STRING,
-      }, 
-    },{
-      timestamps: true
-    }
+      },
+      date: {
+        type: Sequelize.DATEONLY,
+      },
+    },
     );
   }
   

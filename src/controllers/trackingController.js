@@ -371,17 +371,17 @@ const badgeTracker = async (ctx) => {
 }
 
 const postSleep = async (ctx) => {
-  let {data, date, today} = {};
+  let {data, date, yesterday} = {};
   let error = null;
   const {user, body}=ctx.request;
   const { sleepHour } = body;
   const userId = _.get(user, "userId");
   date = new Date()
-  today = moment.utc(new Date()).format('YYYY-MM-DD')
+  yesterday = moment.utc(new Date()).subtract(1,'d').format('YYYY-MM-DD')
   try {
     data = await SleepTracker.create({
       userId: userId,
-      date: today,
+      date: yesterday,
       hoursOfSleep: sleepHour
     });
   } catch (err) {

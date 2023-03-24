@@ -7,18 +7,26 @@ const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
 const badgeConstants = require("../constants/badgeConstants");
 const log = console.log;
 const chalk = require("chalk");
+const userConstants = require("../constants/userConstants");
 const User = db.user;
 const Userpartner = db.userPartner;
 const UserOnboard = db.userOnboard;
+const UserTracking = db.userTracking;
+const MoodTracker = db.moodTracker;
+const SleepTracker = db.sleepTracker;
+const BadgeStatus = db.badgeStatus;
+const Productivity = db.productivityTracker;
+const UserIntegration = db.userIntegration;
 const Feedback = db.feedback;
 const BadgeItem = db.badgeItem;
 const Item = db.item;
+
 
 const addPartner = async (ctx) => {
   let { newData, oldData, accountExists, data } = {};
   let error = null;
   const { user, body } = ctx.request;
-  const { partner_number } = body;
+  const { partner_number , name } = body;
   const userId = _.get(user, "userId");
   try {
     oldData = await Userpartner.findOne({
@@ -44,6 +52,8 @@ const addPartner = async (ctx) => {
     newData = await Userpartner.create({
       userId: userId,
       partnerNumber: partner_number,
+      name:name,
+      action: userConstants.REQUESTED
     });
     data = { newData, accountExists };
   } catch (err) {
@@ -78,6 +88,121 @@ const removePartner = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, { message });
   ctx.response.status = HttpStatusCodes.CREATED;
 };
+
+const deleteUserData = async (ctx) => {
+  let { data } = {};
+  let error = null;
+  const { user } = ctx.request;
+  const userId = _.get(user, "userId");
+  try {
+    data = await UserTracking.destroy({
+      where: {
+        userId: userId,
+      },
+    }),
+    await MoodTracker.destroy({
+      where: {
+        userId: userId,
+      }
+    }),
+    await SleepTracker.destroy({
+        where: {
+          userId: userId,
+        }
+      }),
+    await Productivity.destroy({
+        where: {
+          userId: userId,
+        },
+      }) ,
+    await UserIntegration.destroy({
+        where: {
+          userId: userId,
+        },
+      }),
+    await BadgeStatus.destroy({
+        where: {
+          userId: userId,
+        },
+      }) ,
+    await UserOnboard.destroy({
+        where: {
+          userId: userId,
+        },
+      }) ,
+    await Userpartner.destroy({
+        where: {
+          userId: userId,
+        },
+      })   
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.CREATED;
+};
+
+
+const deleteUserAccount = async (ctx) => {
+  let { data } = {};
+  let error = null;
+  const { user } = ctx.request;
+  const userId = _.get(user, "userId");
+  try {
+    data = await User.destroy({
+      where: {
+        userId: userId,
+      },
+    }),
+    await UserTracking.destroy({
+      where: {
+        userId: userId,
+      },
+    }),
+    await MoodTracker.destroy({
+      where: {
+        userId: userId,
+      }
+    }),
+    await SleepTracker.destroy({
+        where: {
+          userId: userId,
+        }
+      }),
+    await Productivity.destroy({
+        where: {
+          userId: userId,
+        },
+      }) ,
+    await UserIntegration.destroy({
+        where: {
+          userId: userId,
+        },
+      }),
+    await BadgeStatus.destroy({
+        where: {
+          userId: userId,
+        },
+      }) ,
+    await UserOnboard.destroy({
+        where: {
+          userId: userId,
+        },
+      }) ,
+    await Userpartner.destroy({
+        where: {
+          userId: userId,
+        },
+      })   
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.CREATED;
+};
+
 
 const checkPoint = async (ctx) => {
   let { data, isCompletedUser } = {};
@@ -255,4 +380,6 @@ module.exports = {
   symptomList:symptomList,
   moodList:moodList,
   getBadgeItems: getBadgeItems,
+  deleteUserData:deleteUserData,
+  deleteUserAccount:deleteUserAccount
 };

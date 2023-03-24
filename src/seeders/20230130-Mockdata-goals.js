@@ -5,13 +5,13 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('goals', [{
       goalId: '1b16eae5-5073-4966-978f-79569af028b1',
-      goal: 'Decreased period pain',
+      goal: 'Manage excessive period pain',
       createdAt: new Date(),
       updatedAt: new Date()
     },
     {
       goalId: '1b16eae5-5073-4966-978f-79569af028b2',
-      goal: 'Lose weight safely',
+      goal: 'Loose weight safely',
       createdAt: new Date(),
       updatedAt: new Date()
     },
