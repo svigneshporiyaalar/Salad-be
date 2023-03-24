@@ -4,7 +4,7 @@ const { individualBadge } = require('../../../controllers/goalBadgeController');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile, birthControlList, medicalHistoryList,
      addIntegration, removeIntegration , profileImage, 
-     lunarCycle }= require('../../../controllers/userOnboardController');
+     lunarCycle, getUserBadges}= require('../../../controllers/userOnboardController');
 const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
@@ -31,7 +31,9 @@ router.put("/menstrual-details" , userToken, menstrualDetails );
 
 router.put("/lunar-cycle" , userToken, lunarCycle );
 
-router.get("/badge-details" , userToken, individualBadge );
+router.get("/badge-details" , userToken, getUserBadges );
+
+// router.get("/badge-details" , userToken, individualBadge );
 
 router.put("/complete" , userToken, completeOnboard );
 

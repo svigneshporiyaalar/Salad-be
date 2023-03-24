@@ -176,6 +176,36 @@ const profileImage = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const getUserBadges = async (ctx) => {
+  let {data , badgeList, badgeData } ={}
+  let error = null
+  const {user}=ctx.request;
+  const userId = _.get(user, "userId");
+  try{
+    data = await BadgeStatus.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+        badgeStatus: badgeConstants.ACTIVATE
+      },
+    })
+    badgeList= statusData.map((element) =>{
+      return element.badgeId
+    })
+    badgeData = await Badge.findAll({
+      raw:true,
+      where:{
+        badgeId:badgeList,
+      },
+    })
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, badgeData);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
+
 
 const updateActiveGoal = async (ctx) => {
   let data = {};
@@ -392,5 +422,6 @@ module.exports = {
   birthControlList:birthControlList,
   medicalHistoryList:medicalHistoryList,
   addIntegration:addIntegration,
-  removeIntegration:removeIntegration
+  removeIntegration:removeIntegration,
+  getUserBadges:getUserBadges
 };
