@@ -9,6 +9,7 @@ const moment = require('moment')
 const badgeConstants = require("../constants/badgeConstants");
 const User = db.user;
 const Badge = db.badge;
+const BadgeStatus = db.badgeStatus;
 const BirthControl = db.birthControl
 const UserOnboard = db.userOnboard;
 const UserIntegration = db.userIntegration
@@ -189,7 +190,7 @@ const getUserBadges = async (ctx) => {
         badgeStatus: badgeConstants.ACTIVATE
       },
     })
-    badgeList= statusData.map((element) =>{
+    badgeList= data.map((element) =>{
       return element.badgeId
     })
     badgeData = await Badge.findAll({

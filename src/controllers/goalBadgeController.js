@@ -108,14 +108,13 @@ const getAllBadges = async (ctx) => {
     let data  = {};
     let error = null;
     const { user, body }=ctx.request;
-    const { badgeId, badge , goalId } = body
+    const { badgeId, badge } = body
     const userId = _.get(user, "userId");
     log( "userId :" , userId)
     try {
      data = await BadgeStatus.create(
       { 
         badgeId:badgeId,
-        goalId: goalId,
         userId:userId,
         badge:badge,
         badgeStatus: badgeConstants.ACTIVATE,

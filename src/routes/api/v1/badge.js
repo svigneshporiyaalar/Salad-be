@@ -12,7 +12,7 @@ router.get("/allBadges", userToken, getAllBadges)
 
 router.get("/goalBadge", userToken, getGoalbadge)
 
-router.post("/user/status" , userToken, badgeStatus );
+// router.post("/user/status" , userToken, badgeStatus );
 
 router.get("/completed-badges", userToken, completedBadges)
 

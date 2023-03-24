@@ -1,6 +1,6 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { individualBadge } = require('../../../controllers/goalBadgeController');
+const { individualBadge, badgeStatus } = require('../../../controllers/goalBadgeController');
 const { updateActiveGoal, primaryGoal, editProfile, menstrualDetails, 
     completeOnboard, getProfile, birthControlList, medicalHistoryList,
      addIntegration, removeIntegration , profileImage, 
