@@ -33,7 +33,7 @@ router.put("/lunar-cycle" , userToken, lunarCycle );
 
 router.get("/badge-details" , userToken, getUserBadges );
 
-// router.get("/badge-details" , userToken, individualBadge );
+router.get("/individual/badge-details" , userToken, individualBadge );
 
 router.put("/complete" , userToken, completeOnboard );
 

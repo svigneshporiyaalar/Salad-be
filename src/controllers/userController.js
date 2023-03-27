@@ -52,7 +52,7 @@ const addPartner = async (ctx) => {
     newData = await Userpartner.create({
       userId: userId,
       partnerNumber: partner_number,
-      name:name,
+      partnerName:name,
       action: userConstants.REQUESTED
     });
     data = { newData, accountExists };
@@ -63,6 +63,7 @@ const addPartner = async (ctx) => {
   ctx.body = responseHelper.buildResponse(error, data);
   ctx.response.status = HttpStatusCodes.CREATED;
 };
+
 
 const removePartner = async (ctx) => {
   let { data, message } = {};
