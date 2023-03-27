@@ -242,7 +242,6 @@ const trackWeeklyMood = async (ctx) => {
         where: {
           feedbackId: feedback,
         },
-        attributes: { exclude: ['createdAt', 'updatedAt'] }
       });
     mergedData = data.map((item) => 
     ({...item, ...moodData.find(itm => itm.feedbackId === item.moodId)}));  

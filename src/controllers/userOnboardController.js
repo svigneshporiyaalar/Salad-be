@@ -85,18 +85,17 @@ const editProfile = async (ctx) => {
   let {data, userData , uptData } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const {  email, age, height,medicalHistoryId, 
-    weight, DOB , reason} = body;
+  const {  email, height, medicalHistoryId, 
+    weight, DOB , allowReminder } = body;
   const userId = _.get(user, "userId");
   try {
     uptData = await UserOnboard.update(
       {
         height: height,
         weight: weight,
-        age: age,
         birthDate:DOB,
         medicalHistoryId:medicalHistoryId,
-        reason: reason
+        allowReminder:allowReminder
       },
       {
         where: {
@@ -127,17 +126,27 @@ const editProfile = async (ctx) => {
 };
 
 const getProfile = async (ctx) => {
-  let {data, userData} = {};
+  let {data, userData, birthControl, newData, onboardData} = {};
   let error = null;
   const { user }=ctx.request;
   const userId = _.get(user, "userId");
   try {
-    data = await UserOnboard.findOne(
-      {
+    data = await UserOnboard.findOne({
+      raw:true,
         where: {
           userId: userId,
         },
       });
+    birthControl = data.birthControlId 
+    log(birthControl)
+    newData = await BirthControl.findOne({
+      raw:true,
+      where:{
+        id: birthControl,
+      },
+      attributes: [ ['id', 'birthControlId'], 'tag', 'description'] ,
+    })
+    onboardData ={ ...data , ...newData}
     userData = await User.findOne(
       {
         where: {
@@ -148,7 +157,7 @@ const getProfile = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data , userData});
+  ctx.body = responseHelper.buildResponse(error, {onboardData , userData});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 

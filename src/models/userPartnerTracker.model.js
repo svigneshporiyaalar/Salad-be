@@ -5,10 +5,10 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-      userId: {
+      partnerId: {
         type: Sequelize.INTEGER,
       },
-      partnerId: {
+      userId: {
         type: Sequelize.INTEGER,
       },
       action: {

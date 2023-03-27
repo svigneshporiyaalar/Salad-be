@@ -41,8 +41,9 @@ module.exports = (sequelize, Sequelize) => {
       medicalHistoryId: {
         type: Sequelize.INTEGER,
       },
-      reason:{
-        type: Sequelize.TEXT,
+      allowReminder: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: "false"
       },
       onboardStatus:{
         type: Sequelize.STRING,

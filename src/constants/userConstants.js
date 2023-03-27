@@ -12,7 +12,8 @@ module.exports = {
     USR_SBEE_0011: "badge linked to item",
     USR_SBEE_0012: "badge de-linked from item",
     REQUESTED: "requested",
-    ACCEPTED: "accepted"
+    ACCEPTED: "accepted",
+    POKED: "poke"
 
 
 

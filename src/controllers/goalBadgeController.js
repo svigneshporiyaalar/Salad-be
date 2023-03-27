@@ -86,6 +86,7 @@ const getAllBadges = async (ctx) => {
           goalId: goalId,
         }
       })
+      log(data)
       badgeIds= data.map((element) =>{
         return element.badgeId
       })
@@ -129,7 +130,7 @@ const getAllBadges = async (ctx) => {
 
 
   const activateBadge = async (ctx) => {
-    let {data ,badgeData }  = {};
+    let {data ,badgeData, badgesExists, removeBadges }  = {};
     let error = null;
     const { user, body }=ctx.request;
     const userId = _.get(user, "userId");
@@ -138,7 +139,23 @@ const getAllBadges = async (ctx) => {
       badgeData=body.map(element =>({
          ...element, userId
       }))
-      data = await BadgeStatus.bulkCreate(badgeData)
+      badgesExists = await BadgeStatus.findAll({
+        where:
+        { 
+          userId: userId,
+          badgeStatus:badgeConstants.ACTIVATE
+        }
+      })
+      if(badgesExists){
+        removeBadges = await BadgeStatus.destroy({
+          where: {
+            userId: userId,
+            badgeStatus: badgeConstants.ACTIVATE
+          },
+        });
+      }
+      data = await BadgeStatus.bulkCreate(badgeData,
+      )
       } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;

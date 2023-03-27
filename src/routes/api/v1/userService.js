@@ -4,6 +4,7 @@ const { getBadgeStatus, activeBadgeStatus, activateBadge , badgeStatus} = requir
 const { Otp_phone , Otp_phoneVerify, verifyType } = require('../../../controllers/otpController');
 const { addPartner, removePartner, partnerList,getBadgeItems, checkPoint, 
     updateName, deleteUserData, deleteUserAccount} = require('../../../controllers/userController');
+const { editProfile, profileImage, getProfile, updateActiveGoal } = require('../../../controllers/userOnboardController');
 const { verifyKey, userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userService });
 
@@ -33,6 +34,15 @@ router.get("/activated-badge/status" , userToken , activeBadgeStatus);
 router.delete("/delete/user-data", userToken, deleteUserData)
 
 router.delete("/delete/user-account", userToken, deleteUserAccount)
+
+router.put("/edit-profile" , userToken, editProfile );
+
+router.put("/profile-image" , userToken, profileImage );
+
+router.get("/profile" , userToken, getProfile );
+
+router.put("/switchGoal" , userToken, updateActiveGoal );
+
 
 
 
