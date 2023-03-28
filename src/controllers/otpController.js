@@ -163,7 +163,7 @@ const verifyType = async (ctx) => {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {token});
+  ctx.body = responseHelper.buildResponse(error, token);
   ctx.response.status = responseCode;
 };
 
