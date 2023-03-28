@@ -43,10 +43,11 @@ const updateProfile = async (ctx) => {
 };
 
 const getUserRequest = async (ctx) => {
-  let {data, userList, userData} ={}
+  let {data, userList, userData, newData, pokeData, pokedList} ={}
   let error = null
-  const { user}=ctx.request;
+  const {partner}=ctx.request;
   const phoneNumber = _.get(partner, "phoneNumber");
+  const partnerId = _.get(partner, "userId");
   try{
     data = await Userpartner.findAll({
       raw:true,
@@ -65,11 +66,28 @@ const getUserRequest = async (ctx) => {
       },
       order:[["createdAt", "DESC"]]
     })
+    newData = await UserpartnerTracker.findAll({
+      raw:true,
+      where:{
+        userId:partnerId,
+      }
+    })
+     pokedList= data.map((element) =>{
+      return element.partnerId
+    })
+    pokeData = await User.findAll({
+      raw:true,
+      where:{
+        userId:pokedList,
+      },
+      order:[["createdAt", "DESC"]]
+    })
+
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, userData);
+  ctx.body = responseHelper.buildResponse(error, {userData, newData, pokeData});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
@@ -133,7 +151,7 @@ const getUsers = async (ctx) => {
 
 
   const userTracking = async (ctx) => {
-    let { date, startDate, endDate, moodData, trackingData,
+    let { date, startDate, endDate, trackingData,
        badgeList, badgeData } ={}
     let error = null
     const { partner , query}=ctx.request;
@@ -143,14 +161,6 @@ const getUsers = async (ctx) => {
     endDate = moment.utc(date).subtract(1,'d').format('YYYY-MM-DD')
     startDate = moment.utc(endDate).subtract(6,'d').format('YYYY-MM-DD')
     try {
-      moodData = await MoodTracker.findAll({
-        raw:true,
-        where:{
-          userId:userId,
-          date : { [Op.lte]: moment(endDate), [Op.gte]: moment(startDate) }
-        },
-        order:[["createdAt", "DESC"]]
-      })
       statusData = await BadgeStatus.findAll({
         raw:true,
         where:{
@@ -181,7 +191,7 @@ const getUsers = async (ctx) => {
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
     ctx.body = responseHelper.buildResponse(error, 
-      {moodData, trackingData, badgeData});
+      {trackingData, badgeData});
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 

@@ -12,7 +12,7 @@ module.exports = (sequelize, Sequelize) => {
       date: {
         type: Sequelize.DATEONLY,
       },
-      productivity: {
+      productivityPoints: {
         type: Sequelize.INTEGER,
       },
   },

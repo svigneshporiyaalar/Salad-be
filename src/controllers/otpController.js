@@ -12,6 +12,7 @@ const { USR_SBEE_0001, USR_SBEE_0002 } = require("../constants/userConstants");
 const signup_secret = process.env.JWT_SECRET;
 const secret = process.env.JWT_SECRET1;
 const userSecret = process.env.JWT_SECRET2;
+const refreshSecret = process.env.JWT_SECRET5;
 const partnerSecret = process.env.JWT_SECRET3;
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -126,7 +127,9 @@ const Otp_phoneVerify = async (ctx) => {
       if( tempOtp === otp){
       otpMessage = USR_SBEE_0002
       token = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
-       type:type}, userSecret, { expiresIn: "2h" });
+       type:type}, userSecret, { expiresIn: "8h" });
+      refreshToken = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
+        type:type}, refreshSecret, { expiresIn: "30d" });
     } else {
       ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0005" });
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -136,7 +139,7 @@ const Otp_phoneVerify = async (ctx) => {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {otpMessage,token});
+  ctx.body = responseHelper.buildResponse(error, {otpMessage,token, refreshToken});
   ctx.response.status = responseCode;
 };
 
@@ -167,6 +170,43 @@ const verifyType = async (ctx) => {
   ctx.response.status = responseCode;
 };
 
+const extendedAccess = async (ctx) => {
+  let { data, accessToken } = {};
+  let error = null;
+  let responseCode = HttpStatusCodes.SUCCESS;
+  let { type } = ctx.request.body;
+  try {
+    const id = _.get(ctx.request.user, "id");
+    const userId = _.get(ctx.request.user, "userId");
+    const phoneNumber = _.get(ctx.request.user, "phoneNumber");
+    data = await User.findOne({
+      where: {
+        id: id,
+        contactNumber:phoneNumber
+      },
+    });
+    if(data===null) {
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0014" });
+      ctx.response.status = HttpStatusCodes.NOT_FOUND
+      return; 
+    } else{
+        if(type ==="user"){
+      accessToken = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
+       type:type}, userSecret, { expiresIn: "8h" });
+    } else if(type ==="partner"){
+      accessToken = jwt.sign({id:id,userId:userId,phoneNumber:phoneNumber,
+       type:type}, partnerSecret, { expiresIn: "8h" });
+  }} 
+} catch (err) {
+    error = err;
+    console.log(err)
+    responseCode = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, {accessToken});
+  ctx.response.status = responseCode;
+};
+
+
 
     // smsResp = otpGenerator.generate(7, { lowerCaseAlphabets: false, specialChars: false });
     // console.log(smsResp)
@@ -175,5 +215,6 @@ module.exports = {
   Otp_phone: Otp_phone,
   Otp_phoneVerify: Otp_phoneVerify,
   verifyType:verifyType,
+  extendedAccess:extendedAccess
 
 };

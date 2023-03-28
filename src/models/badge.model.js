@@ -39,13 +39,13 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
       },
       defaultTrack: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       possibleTrackRange: {
         type: Sequelize.STRING,
       },
       trackChangeValue: {
-        type: Sequelize.STRING,
+        type: Sequelize.FLOAT,
       },
       type : {
         type: Sequelize.STRING, 

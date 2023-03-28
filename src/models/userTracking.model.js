@@ -21,11 +21,14 @@ module.exports = (sequelize, Sequelize) => {
       date: {
         type: Sequelize.DATEONLY,
       },
+      time: {
+        type: Sequelize.TIME,
+      },
       trackParameter: {
         type: Sequelize.STRING,
       },
       defaultTrack: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       difficultyLevel: {
         type: Sequelize.INTEGER,
@@ -37,10 +40,7 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.INTEGER,
       },
       isDayWorkoutComplete: {
-        type: Sequelize.STRING,
-        validate: {
-          isIn: [['yes', 'no']],
-      },
+        type: Sequelize.BOOLEAN,  
     }
   },
     {
