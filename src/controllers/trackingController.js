@@ -71,13 +71,13 @@ const dateTrack = async (ctx) => {
 }
 
 const todayWorkoutComplete = async (ctx) => {
-  let {data, badgeDetails, defaultValue, newData, badgeType} = {};
+  let {data, badgeDetails, defaultValue,newData, badgeType} = {};
   let error = null;
   const {user, body}=ctx.request;
-  const {  badgeId,preMood,parameter, trackValue} = body;
-  const userId = _.get(user, "userId");
-  const today = moment.utc(new Date()).format('YYYY-MM-DD')
-  const time = moment(new Date()).format('HH:mm')
+  let {  badgeId,preMood,parameter, trackValue} = body;
+  let userId = _.get(user, "userId");
+  let today = moment.utc(new Date()).format('YYYY-MM-DD')
+  let time = moment(new Date()).format('HH:mm')
   try {
     data = await UserTracking.create({
       userId: userId,
@@ -97,9 +97,9 @@ const todayWorkoutComplete = async (ctx) => {
     })
     defaultValue = badgeDetails.defaultTrack
     badgeType = badgeDetails.type
-    log(defaultValue , badgeType)
+    log(trackValue, defaultValue , badgeType)
     if (badgeType == "Nutrition" || trackValue >= defaultValue){
-      log("hello")
+      log("hello" , userId, badgeId)
       newData = await UserTracking.update({
         isDayWorkoutComplete: badgeConstants.TRUE
       },
@@ -107,12 +107,12 @@ const todayWorkoutComplete = async (ctx) => {
       where : {
         userId: userId,
         badgeId: badgeId,
-        date:date,
-        time:time
+        // date:date,
+        // time:time
       }
     }) 
-  }  else {
-     log("hello 2")
+  } else {
+     log("hello 2", userId,badgeId,date,time)
       newData = await UserTracking.update({
         isDayWorkoutComplete: badgeConstants.FALSE
       },
@@ -120,8 +120,8 @@ const todayWorkoutComplete = async (ctx) => {
       where : {
         userId: userId,
         badgeId: badgeId,
-        date:date,
-        time:time
+        // date:date,
+        // time:time
       }
     });
     }
@@ -129,7 +129,7 @@ const todayWorkoutComplete = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, newData);
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 

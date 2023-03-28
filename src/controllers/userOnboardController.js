@@ -138,7 +138,6 @@ const getProfile = async (ctx) => {
         },
       });
     birthControl = data.birthControlId 
-    log(birthControl)
     newData = await BirthControl.findOne({
       raw:true,
       where:{
@@ -212,7 +211,7 @@ const getUserBadges = async (ctx) => {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
-    ctx.body = responseHelper.buildResponse(error, badgeData);
+    ctx.body = responseHelper.buildResponse(error, {data,badgeData});
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 

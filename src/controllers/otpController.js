@@ -150,18 +150,16 @@ const verifyType = async (ctx) => {
   let { user } = ctx.request
   let   type = "partner"
   const userId = _.get(user, "userId");
-  const name = _.get(user, "name");
   const phoneNumber = _.get(user, "phoneNumber");
-  log(name,userId,phoneNumber)
+  log(userId,phoneNumber)
   try {
     payload = {
       phoneNumber: phoneNumber,
       userId: userId,
-      name:name,
       type:type
     }
     token = jwt.sign(payload, partnerSecret, { expiresIn: "2h" });
-    log(chalk.green('Continuing as partner'))
+    log(chalk.green(`Continuing as ${type}`))
   } catch (err) {
     error = err;
     responseCode = HttpStatusCodes.BAD_REQUEST;
