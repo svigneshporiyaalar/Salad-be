@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 const _ = require("lodash");
 const log =console.log
 const badgeConstants = require("../constants/badgeConstants");
+const { getMenstrualPhase } = require("../helpers/userHelper");
 const Badge = db.badge;
 const Goal = db.goal;
 const BadgeStatus = db.badgeStatus;
@@ -58,7 +59,8 @@ const getAllBadges = async (ctx) => {
     const userId = _.get(user, "userId");
     console.log( "userId :" , userId)
     try{
-      data = await Badge.findOne({
+      userPhase= await getMenstrualPhase(userId)
+       data = await Badge.findOne({
         where :{
           badgeId: badgeId,
         }
@@ -67,7 +69,7 @@ const getAllBadges = async (ctx) => {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
-      ctx.body = responseHelper.buildResponse(error, data);
+      ctx.body = responseHelper.buildResponse(error, {userPhase, data});
       ctx.response.status = HttpStatusCodes.SUCCESS;
     }
   
@@ -326,7 +328,7 @@ module.exports = {
   getBadgeStatus:getBadgeStatus,
   getAllBadgeStatus:getAllBadgeStatus,
   activateBadge:activateBadge,
-  activeBadgeStatus:activeBadgeStatus,
+  // activeBadgeStatus:activeBadgeStatus,
   completedBadges:completedBadges,
   badgeComplete:badgeComplete,
   goalComplete:goalComplete

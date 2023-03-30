@@ -1,10 +1,10 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { getBadgeStatus, activeBadgeStatus, activateBadge , badgeStatus} = require('../../../controllers/goalBadgeController');
+const { getBadgeStatus, activateBadge , badgeStatus} = require('../../../controllers/goalBadgeController');
 const { Otp_phone , Otp_phoneVerify, verifyType, extendedAccess } = require('../../../controllers/otpController');
 const { addPartner, removePartner, partnerList,getBadgeItems, checkPoint, 
     updateName, deleteUserData, deleteUserAccount} = require('../../../controllers/userController');
-const { editProfile, profileImage, getProfile, updateActiveGoal } = require('../../../controllers/userOnboardController');
+const { editProfile, profileImage, getProfile, updateActiveGoal, notificationData } = require('../../../controllers/userOnboardController');
 const { verifyKey, userToken, verifyRefreshtoken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userService });
 
@@ -31,7 +31,7 @@ router.get("/items", userToken , getBadgeItems)
 
 router.post("/activate-badge" , userToken, activateBadge );
 
-router.get("/activated-badge/status" , userToken , activeBadgeStatus);
+// router.get("/activated-badge/status" , userToken , activeBadgeStatus);
 
 router.delete("/delete/user-data", userToken, deleteUserData)
 
@@ -42,6 +42,8 @@ router.put("/edit-profile" , userToken, editProfile );
 router.put("/profile-image" , userToken, profileImage );
 
 router.get("/profile" , userToken, getProfile ); 
+
+router.get("/notifications" , userToken, notificationData ); 
 
 router.put("/switchGoal" , userToken, updateActiveGoal );
 

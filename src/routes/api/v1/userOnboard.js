@@ -8,27 +8,27 @@ const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
 
-router.post("/primaryGoal" , userToken, primaryGoal );
+router.post("/primaryGoal" , userToken, primaryGoal ); //ok A17
 
-router.post("/integration" , userToken, addIntegration );
+router.post("/integration" , userToken, addIntegration ); //A29
 
-router.post("/remove/integration" , userToken, removeIntegration );
+router.put("/remove/integration" , userToken, removeIntegration );
 
-router.get("/birthcontrol/list" , userToken, birthControlList );
+router.get("/birthcontrol/list" , userToken, birthControlList ); //A15
 
 router.get("/medicalhistory/list" , userToken, medicalHistoryList );
 
-router.put("/menstrual-details" , userToken, menstrualDetails );
+router.put("/menstrual-details" , userToken, menstrualDetails ); //A12
 
-router.put("/lunar-cycle" , userToken, lunarCycle );
+router.put("/lunar-cycle" , userToken, lunarCycle ); //A14
 
-router.get("/badge-details" , userToken, getUserBadges );
+router.get("/badge-details" , userToken, getUserBadges ); //ok A21 ,A24, B01
 
-router.get("/individual/badge-details" , userToken, individualBadge );
+router.get("/individual/badge-details" , userToken, individualBadge ); //C04
 
-router.put("/complete" , userToken, completeOnboard );
+router.put("/complete" , userToken, completeOnboard ); //AFTER A25
 
-router.put("/partner/complete" , userToken, partnerOnboard );
+router.put("/partner/complete" , userToken, partnerOnboard ); //AFTER A08
 
 
 

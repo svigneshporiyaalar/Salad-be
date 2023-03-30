@@ -6,14 +6,18 @@ const { Op } = require("sequelize");
 const _ = require("lodash");
 const chalk = require("chalk");
 const moment = require('moment')
+const log = console.log
 const badgeConstants = require("../constants/badgeConstants");
+const userConstants = require("../constants/userConstants")
+const { getMenstrualPhase, getBadgeDetails } = require("../helpers/userHelper");;
 const User = db.user;
 const Badge = db.badge;
 const BadgeStatus = db.badgeStatus;
 const BirthControl = db.birthControl
 const UserOnboard = db.userOnboard;
 const UserIntegration = db.userIntegration
-const log = console.log
+const UserpartnerTracker = db.userPartnerTracker;
+
 
 const primaryGoal = async (ctx) => {
   let data = {};
@@ -185,6 +189,36 @@ const profileImage = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const notificationData = async (ctx) => {
+  let { pokeData, requestData } = {};
+  let error = null;
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  const phoneNumber = _.get(user, "phoneNumber");
+  try {
+    pokeData = await UserpartnerTracker.findAll({
+      raw:true,
+        where: {
+          userId: userId,
+          action:userConstants.POKED
+        },
+      });
+    requestData = await Userpartner.findAll({
+      raw:true,
+      where: {
+        partnerNumber: phoneNumber,
+        action:userConstants.REQUESTED
+      },
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, {pokeData, requestData});
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
 const getUserBadges = async (ctx) => {
   let {data , badgeList, badgeData } ={}
   let error = null
@@ -201,14 +235,10 @@ const getUserBadges = async (ctx) => {
     badgeList= data.map((element) =>{
       return element.badgeId
     })
-    badgeData = await Badge.findAll({
-      raw:true,
-      where:{
-        badgeId:badgeList,
-      },
-    })
+    badgeData = await getBadgeDetails(badgeList)
     } catch (err) {
       error = err;
+      log(err)
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
     ctx.body = responseHelper.buildResponse(error, {data,badgeData});
@@ -428,6 +458,7 @@ module.exports = {
   updateActiveGoal: updateActiveGoal,
   completeOnboard:completeOnboard,
   getProfile:getProfile,
+  notificationData:notificationData,
   birthControlList:birthControlList,
   medicalHistoryList:medicalHistoryList,
   addIntegration:addIntegration,

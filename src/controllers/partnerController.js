@@ -7,6 +7,7 @@ const _ = require("lodash");
 const { USR_SBEE_0004 } = require("../constants/userConstants");
 const log = console.log
 const chalk = require("chalk");
+const moment = require('moment')
 const badgeConstants = require("../constants/badgeConstants");
 const userConstants = require("../constants/userConstants");
 const User = db.user;
@@ -266,16 +267,19 @@ const getUsers = async (ctx) => {
   };
 
   const pokeUser = async (ctx) => {
-    let data = {};
+    let {data, yesterday } = {};
     let error = null;
-    const { partner , query }=ctx.request;
-    const { partnerId } = get(partner, "userId");
-    const { userId  }= query
+    let { partner , query }=ctx.request;
+    let  partnerId  = get(partner, "userId");
+    let { userId, date }= query
+    // date = new Date()
+    // yesterday = moment.utc(date).subtract(24,'h').format('YYYY-MM-DD')
+    log(date, yesterday)
     try {
       data = await UserpartnerTracker.create({
         partnerId: partnerId,
         userId: userId,
-        date: new Date(),
+        date: date,
         action:userConstants.POKED
 
       });

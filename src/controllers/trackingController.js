@@ -7,10 +7,13 @@ const { Op } = require("sequelize");
 const badgeConstants = require("../constants/badgeConstants");
 const log = console.log
 const chalk = require("chalk");
+const { getMenstrualPhase, getBadgeDetails } = require("../helpers/userHelper");
+const userConstants = require("../constants/userConstants");
 const Feedback = db.feedback
 const Badge = db.badge
 const UserTracking = db.userTracking;
 const MoodTracker = db.moodTracker
+const BadgeStatus = db.badgeStatus;
 const UserOnboard = db.userOnboard;
 const ProductivityTracker = db.productivityTracker
 const Productivity = db.productivity
@@ -29,7 +32,8 @@ const dailyTrack = async (ctx) => {
       {
         where: {
           userId: userId,
-          date : date
+          date : date,
+          isDayWorkoutComplete: badgeConstants.TRUE
         },
       });
   } catch (err) {
@@ -71,7 +75,9 @@ const dateTrack = async (ctx) => {
 }
 
 const todayWorkoutComplete = async (ctx) => {
-  let {data, badgeDetails, defaultValue,newData, badgeType} = {};
+  let {data, badgeDetails, defaultValue,newData, badgeType, 
+    workoutExists} = {};
+  let addTrackValues=0  
   let error = null;
   const {user, body}=ctx.request;
   let {  badgeId,preMood,parameter, trackValue} = body;
@@ -97,9 +103,21 @@ const todayWorkoutComplete = async (ctx) => {
     })
     defaultValue = badgeDetails.defaultTrack
     badgeType = badgeDetails.type
-    log(trackValue, defaultValue , badgeType)
-    if (badgeType == "Nutrition" || trackValue >= defaultValue){
-      log("hello" , userId, badgeId)
+    workoutExists = await UserTracking.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+        badgeId:badgeId,
+        date:today
+      },
+      attributes : ["userId","badgeId","date" , "time", "defaultTrack"]
+    })
+    workoutExists.map((element) => {
+      addTrackValues += element.defaultTrack
+    });
+    log(addTrackValues, defaultValue , badgeType)
+    if(badgeType === "Nutrition" || addTrackValues >= defaultValue){
+      console.log("Work-out complete for the day" , userId )
       newData = await UserTracking.update({
         isDayWorkoutComplete: badgeConstants.TRUE
       },
@@ -107,12 +125,12 @@ const todayWorkoutComplete = async (ctx) => {
       where : {
         userId: userId,
         badgeId: badgeId,
-        // date:date,
-        // time:time
+        date:today,
+        time:time
       }
     }) 
   } else {
-     log("hello 2", userId,badgeId,date,time)
+     console.log("Work-out half done for the day", userId )
       newData = await UserTracking.update({
         isDayWorkoutComplete: badgeConstants.FALSE
       },
@@ -120,8 +138,8 @@ const todayWorkoutComplete = async (ctx) => {
       where : {
         userId: userId,
         badgeId: badgeId,
-        // date:date,
-        // time:time
+        date:today,
+        time:time
       }
     });
     }
@@ -387,11 +405,12 @@ const lastPeriod = async (ctx) => {
 };
 
 const badgeTracker = async (ctx) => {
-  let {data, statusData, badgeList, badgeDetails } ={}
+  let { trackingData, statusData, badgeList, badgeDetails, userPhase } ={}
   let error = null
   const { user  }=ctx.request;
   const userId = _.get(user, "userId");
   try{
+    userPhase= await getMenstrualPhase(userId)
     statusData = await BadgeStatus.findAll({
       raw:true,
       where:{
@@ -402,7 +421,8 @@ const badgeTracker = async (ctx) => {
     badgeList= statusData.map((element) =>{
       return element.badgeId
     })
-    data = await UserTracking.findAll({
+    badgeDetails = await getBadgeDetails(badgeList)
+    trackingData = await UserTracking.findAll({
       where:
       { 
         userId: userId,
@@ -410,18 +430,11 @@ const badgeTracker = async (ctx) => {
       },
       order:[["createdAt", "DESC"]]
     })
-    badgeDetails = await Badge.findAll({
-      raw:true,
-      where:{
-        badgeId:badgeList,
-      },
-      attributes : ["name","badgeId","frequency" , "grantBadge", "type"]
-    })
-  } catch (err) {
+     } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data, badgeDetails});
+  ctx.body = responseHelper.buildResponse(error, {userPhase, trackingData, badgeDetails});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 
@@ -431,13 +444,6 @@ const activeAndEarned = async (ctx) => {
   const { user  }=ctx.request;
   const userId = _.get(user, "userId");
   try{
-    statusData = await BadgeStatus.findAll({
-      raw:true,
-      where:{
-        userId:userId,
-        badgeStatus: badgeConstants.ACTIVATE
-      },
-    })
     earnedBadges = await BadgeStatus.findAll({
       raw:true,
       where:{
@@ -445,25 +451,74 @@ const activeAndEarned = async (ctx) => {
         badgeStatus: badgeConstants.COMPLETED
       },
     })
+    statusData = await BadgeStatus.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+        badgeStatus: badgeConstants.ACTIVATE
+      },
+    })
     badgeList= statusData.map((element) =>{
       return element.badgeId
     })
+    badgeDetails = await getBadgeDetails(badgeList)
     data = await UserTracking.findAll({
       where:
       { 
         userId: userId,
-        badgeId:badgeList
+        badgeId:badgeList,
+        isDayWorkoutComplete:badgeConstants.TRUE
       },
       order:[["createdAt", "DESC"]]
     })
-    badgeDetails = await Badge.findAll({
+        } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, {data, badgeDetails, earnedBadges});
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+}
+
+const nextUpBadges = async (ctx) => {
+  let {data, statusData, badgeList, badgeDetails, badgeHistory } ={}
+  let error = null
+  const { user  }=ctx.request;
+  const userId = _.get(user, "userId");
+  try{
+    badgeHistory = await BadgeStatus.findAll({
       raw:true,
       where:{
-        badgeId:badgeList,
+        userId:userId,
+        badgeStatus: [badgeConstants.COMPLETED || badgeConstants.ACTIVATE]
       },
-      attributes : ["name","badgeId","frequency" , "grantBadge", "type"]
     })
-  } catch (err) {
+    log(badgeHistory)
+    badgeList= badgeHistory.map((element) =>{
+      return element.badgeId
+    })
+    log(badgeList)
+
+    statusData = await BadgeStatus.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+        badgeStatus: badgeConstants.ACTIVATE
+      },
+    })
+    badgeList= statusData.map((element) =>{
+      return element.badgeId
+    })
+    badgeDetails = await getBadgeDetails(badgeList)
+    data = await UserTracking.findAll({
+      where:
+      { 
+        userId: userId,
+        badgeId:badgeList,
+        isDayWorkoutComplete:badgeConstants.TRUE
+      },
+      order:[["createdAt", "DESC"]]
+    })
+        } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
@@ -610,6 +665,7 @@ module.exports = {
   lastPeriod:lastPeriod,
   badgeTracker:badgeTracker,
   activeAndEarned:activeAndEarned,
+  nextUpBadges:nextUpBadges,
   postSleep:postSleep,
   trackWeeklySleep:trackWeeklySleep,
   productivityList:productivityList,

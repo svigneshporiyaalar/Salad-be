@@ -22,8 +22,6 @@ router.get("/user-tracking",partnerToken, userTracking)
 
 router.get("/user-badgeTracker",partnerToken, userIndividualBadgeTracking)
 
-router.get("/user-tracking",partnerToken, userTracking)
-
 router.post("/poke-user",partnerToken, pokeUser )
 
 

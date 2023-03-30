@@ -13,6 +13,7 @@ module.exports = {
   INACTIVE: "inactive",
   ACTIVATE:"activated",
   DEACTIVATE: "deactivated"
+  
 
   };
   

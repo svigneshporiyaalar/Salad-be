@@ -87,7 +87,7 @@ const partnerToken = async (ctx, next) => {
   console.log(token)
   try {
     ctx.request.partner = jwt.verify(token, partnersecret);
-    console.log("REACHED", ctx.request.partner);
+    console.log("Partner token verified ", ctx.request.partner);
     await next();
   } catch (err) {
     ctx.throw(err.status || 401, err.text);

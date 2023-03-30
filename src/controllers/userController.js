@@ -7,6 +7,8 @@ const { ERR_SBEE_0015 } = require("../constants/ApplicationErrorConstants");
 const badgeConstants = require("../constants/badgeConstants");
 const log = console.log;
 const chalk = require("chalk");
+const moment = require('moment')
+const { Op } = require('sequelize');
 const userConstants = require("../constants/userConstants");
 const User = db.user;
 const Userpartner = db.userPartner;
@@ -372,6 +374,66 @@ const getBadgeItems = async (ctx) => {
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
+const badgeRunway = async (ctx) => {
+  let { data, runwayCheck, cycle, today, newData } = {};
+  let error = null;
+  const { user } = ctx.request;
+  const userId = _.get(user, "userId");
+  console.log("userId :", userId);
+  try {
+    data = await UserOnboard.findOne({
+      raw:true, 
+        where: {
+          userId: userId,
+        },
+      });
+      cycle= data.menstrualCycle
+      today = moment().utc().toISOString()
+      runwayCheck=moment(moment().subtract(cycle, 'days')).utc().toISOString()
+      log(cycle, today, runwayCheck)
+    newData = await BadgeStatus.findAll({
+      where :{
+        userId:userId,
+        badgeStatus: badgeConstants.COMPLETED,
+        updatedAt:{ [Op.lt]: moment(runwayCheck)}
+     }
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, newData);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+const badgeArchived = async (ctx) => {
+  let  data = {};
+  let error = null;
+  const { user, query } = ctx.request;
+  const userId = _.get(user, "userId");
+  const { badgeId } = query;
+  console.log("userId :", userId);
+  try {
+    data = await BadgeStatus.update({
+      badgeStatus: badgeConstants.ARCHIVED
+    },
+     {
+      where :{
+        userId:userId,
+        badgeId:badgeId,
+        badgeStatus: badgeConstants.COMPLETED,
+     }
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
+
 module.exports = {
   addPartner: addPartner,
   removePartner: removePartner,
@@ -382,5 +444,7 @@ module.exports = {
   moodList:moodList,
   getBadgeItems: getBadgeItems,
   deleteUserData:deleteUserData,
-  deleteUserAccount:deleteUserAccount
+  deleteUserAccount:deleteUserAccount,
+  badgeRunway:badgeRunway,
+  badgeArchived:badgeArchived
 };

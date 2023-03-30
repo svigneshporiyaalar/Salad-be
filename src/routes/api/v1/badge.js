@@ -16,8 +16,6 @@ router.get("/goalBadge", userToken, getGoalbadge)
 
 router.get("/completed-badges", userToken, completedBadges)
 
-router.get("/active-badges", userToken, activeBadgeStatus)
-
 router.put("/complete", userToken , badgeComplete )
 
 router.post("/new" , isAdmin , newBadge );
