@@ -7,7 +7,7 @@ const { Op } = require("sequelize");
 const badgeConstants = require("../constants/badgeConstants");
 const log = console.log
 const chalk = require("chalk");
-const { getMenstrualPhase, getBadgeDetails } = require("../helpers/userHelper");
+const { getMenstrualPhase, getBadgeDetails, getActiveBadgestatus } = require("../helpers/userHelper");
 const userConstants = require("../constants/userConstants");
 const Feedback = db.feedback
 const Badge = db.badge
@@ -439,7 +439,8 @@ const badgeTracker = async (ctx) => {
 }
 
 const activeAndEarned = async (ctx) => {
-  let {data, statusData, badgeList, badgeDetails, earnedBadges } ={}
+  let {data, statusData, badgeList, badgeDetails, 
+    earnedBadges, activeCount } ={}
   let error = null
   const { user  }=ctx.request;
   const userId = _.get(user, "userId");
@@ -451,14 +452,9 @@ const activeAndEarned = async (ctx) => {
         badgeStatus: badgeConstants.COMPLETED
       },
     })
-    statusData = await BadgeStatus.findAll({
-      raw:true,
-      where:{
-        userId:userId,
-        badgeStatus: badgeConstants.ACTIVATE
-      },
-    })
-    badgeList= statusData.map((element) =>{
+    statusData = await getActiveBadgestatus(userId)
+    activeCount = statusData.count
+      badgeList= statusData.map((element) =>{
       return element.badgeId
     })
     badgeDetails = await getBadgeDetails(badgeList)
@@ -471,11 +467,12 @@ const activeAndEarned = async (ctx) => {
       },
       order:[["createdAt", "DESC"]]
     })
-        } catch (err) {
+   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data, badgeDetails, earnedBadges});
+  ctx.body = responseHelper.buildResponse(error, {data, badgeDetails, 
+    earnedBadges, activeCount});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 

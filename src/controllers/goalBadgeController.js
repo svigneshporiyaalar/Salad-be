@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 const _ = require("lodash");
 const log =console.log
 const badgeConstants = require("../constants/badgeConstants");
-const { getMenstrualPhase } = require("../helpers/userHelper");
+const { getMenstrualPhase, getActiveBadgestatus } = require("../helpers/userHelper");
 const Badge = db.badge;
 const Goal = db.goal;
 const BadgeStatus = db.badgeStatus;
@@ -52,7 +52,8 @@ const getAllBadges = async (ctx) => {
   }
 
   const individualBadge = async (ctx) => {
-    let {data, activeBadgeCount, userPhase,badgeStatus}  ={}
+    let {data, activeBadgeCount, userPhase, 
+      badgeStatus, isBadgeActivated}  ={}
     let error = null
     const { user, query }=ctx.request;
     const { badgeId } = query
@@ -65,20 +66,21 @@ const getAllBadges = async (ctx) => {
           badgeId: badgeId,
         }
       })
-      badgeStatus = await BadgeStatus.findAndCountAll({
+      isBadgeActivated = await BadgeStatus.findOne({
         raw:true,
         where:{
           userId:userId,
-          badgeStatus: badgeConstants.ACTIVATE
+          badgeId:badgeId,
         },
-        attributes:['userId','badgeId','badge','badgeStatus']
       })
+      badgeStatus = await getActiveBadgestatus(userId)
       activeBadgeCount= badgeStatus.count
     } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
-      ctx.body = responseHelper.buildResponse(error, {userPhase, data, activeBadgeCount});
+      ctx.body = responseHelper.buildResponse(error, {userPhase, data, 
+        activeBadgeCount, isBadgeActivated});
       ctx.response.status = HttpStatusCodes.SUCCESS;
     }
   

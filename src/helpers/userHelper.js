@@ -1,8 +1,11 @@
 const db = require('../models');
 const moment = require('moment')
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
+const badgeConstants = require('../constants/badgeConstants');
 const UserOnboard = db.userOnboard;
 const Badge = db.badge
+const BadgeStatus = db.badgeStatus
+
 
 
 
@@ -71,3 +74,24 @@ exports.getBadgeDetails = async (badgeList) => {
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
 }
+
+
+exports.getActiveBadgestatus = async(userId) => {
+  let statusData ={}
+  let error = null
+  try
+  {
+   statusData = await BadgeStatus.findAndCountAll({
+   raw:true,
+     where:{
+      userId:userId,
+      badgeStatus: badgeConstants.ACTIVATE
+  },
+})
+return statusData
+} catch (err) {
+  error = err;
+  ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+}
+}
+
