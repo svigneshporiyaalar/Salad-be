@@ -1,7 +1,6 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
 const chalk = require("chalk");
@@ -9,7 +8,8 @@ const moment = require('moment')
 const log = console.log
 const badgeConstants = require("../constants/badgeConstants");
 const userConstants = require("../constants/userConstants")
-const { getMenstrualPhase, getBadgeDetails } = require("../helpers/userHelper");;
+const { getMenstrualPhase, getBadgeDetails } = require("../helpers/userHelper");
+const { USR_SBEE_0008, USR_SBEE_0013 } = require("../constants/userConstants");
 const User = db.user;
 const Badge = db.badge;
 const BadgeStatus = db.badgeStatus;
@@ -174,21 +174,25 @@ const profileImage = async (ctx) => {
   const { imageURL } = body;
   const userId = _.get(user, "userId");
   try {
-    data = await User.update(
-      {
+    data = await User.update({
         profileImage: imageURL,
       },
       {
         where: {
           userId: userId,
         },
-      }
-    );
+      });
+      log(data)
+     if(data == 1){
+      message= USR_SBEE_0013
+     }else{
+      message= USR_SBEE_0008
+     } 
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, { message });
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
