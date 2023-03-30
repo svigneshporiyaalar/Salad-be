@@ -52,7 +52,7 @@ const getAllBadges = async (ctx) => {
   }
 
   const individualBadge = async (ctx) => {
-    let data  ={}
+    let {data, activeBadgeCount, userPhase,badgeStatus}  ={}
     let error = null
     const { user, query }=ctx.request;
     const { badgeId } = query
@@ -65,11 +65,20 @@ const getAllBadges = async (ctx) => {
           badgeId: badgeId,
         }
       })
+      badgeStatus = await BadgeStatus.findAndCountAll({
+        raw:true,
+        where:{
+          userId:userId,
+          badgeStatus: badgeConstants.ACTIVATE
+        },
+        attributes:['userId','badgeId','badge','badgeStatus']
+      })
+      activeBadgeCount= badgeStatus.count
     } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
     }
-      ctx.body = responseHelper.buildResponse(error, {userPhase, data});
+      ctx.body = responseHelper.buildResponse(error, {userPhase, data, activeBadgeCount});
       ctx.response.status = HttpStatusCodes.SUCCESS;
     }
   
