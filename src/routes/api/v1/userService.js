@@ -33,9 +33,7 @@ router.post("/activate-badge" , userToken, activateBadge );
 
 router.put("/badge/de-activate" , userToken, deactivateBadge );
 
-router.put("/badge/remove" , userToken, removeBadge);
-
-// router.get("/activated-badge/status" , userToken , activeBadgeStatus);
+router.delete("/badge/remove" , userToken, removeBadge);
 
 router.delete("/delete/user-data", userToken, deleteUserData)
 
