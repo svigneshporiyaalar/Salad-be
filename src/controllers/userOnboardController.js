@@ -26,11 +26,14 @@ const primaryGoal = async (ctx) => {
   const { goal, goalId } = body;
   const userId = _.get(user, "userId" );
   try {
-    data = await UserOnboard.create({
+    data = await UserOnboard.update({
       activeGoal: goal,
       goalId: goalId,
-      userId: userId,
       goalStatus: badgeConstants.INPROGRESS
+    },
+    { 
+      where :
+      { userId: userId }
     });
   } catch (err) {
     error = err;

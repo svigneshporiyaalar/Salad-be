@@ -10,6 +10,8 @@ const Badge = db.badge;
 const Goal = db.goal;
 const BadgeStatus = db.badgeStatus;
 const UserOnboard = db.userOnboard;
+const UserTracking = db.userTracking
+
 
 
 
@@ -118,7 +120,7 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
   
-  const badgeStatus = async (ctx) => {
+  const activateBadge = async (ctx) => {
     let data  = {};
     let error = null;
     const { user, body }=ctx.request;
@@ -141,34 +143,22 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   };
 
-
-  const activateBadge = async (ctx) => {
-    let {data ,badgeData, badgesExists, removeBadges }  = {};
+  const removeBadge = async (ctx) => {
+    let data  = {};
     let error = null;
-    const { user, body }=ctx.request;
+    const { user, query }=ctx.request;
     const userId = _.get(user, "userId");
+    const { badgeId } = query
     log( "userId :" , userId)
     try {
-      badgeData=body.map(element =>({
-         ...element, userId
-      }))
-      badgesExists = await BadgeStatus.findAll({
+      data = await BadgeStatus.destroy({
         where:
         { 
           userId: userId,
+          badgeId:badgeId,
           badgeStatus:badgeConstants.ACTIVATE
-        }
+         },
       })
-      if(badgesExists){
-        removeBadges = await BadgeStatus.destroy({
-          where: {
-            userId: userId,
-            badgeStatus: badgeConstants.ACTIVATE
-          },
-        });
-      }
-      data = await BadgeStatus.bulkCreate(badgeData,
-      )
       } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -176,6 +166,76 @@ const getAllBadges = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   };
+
+
+
+  // const activateBadge = async (ctx) => {
+  //   let {data ,badgeData, badgesExists, removeBadges }  = {};
+  //   let error = null;
+  //   const { user, body }=ctx.request;
+  //   const userId = _.get(user, "userId");
+  //   log( "userId :" , userId)
+  //   try {
+  //     badgeData=body.map(element =>({
+  //        ...element, userId
+  //     }))
+  //     badgesExists = await BadgeStatus.findAll({
+  //       where:
+  //       { 
+  //         userId: userId,
+  //         badgeStatus:badgeConstants.ACTIVATE
+  //       }
+  //     })
+  //     if(badgesExists){
+  //       removeBadges = await BadgeStatus.destroy({
+  //         where: {
+  //           userId: userId,
+  //           badgeStatus: badgeConstants.ACTIVATE
+  //         },
+  //       });
+  //     }
+  //     data = await BadgeStatus.bulkCreate(badgeData,
+  //     )
+  //     } catch (err) {
+  //     error = err;
+  //     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  //   }
+  //   ctx.body = responseHelper.buildResponse(error, data);
+  //   ctx.response.status = HttpStatusCodes.SUCCESS;
+  // };
+
+  const deactivateBadge = async (ctx) => {
+    let {data, removeBadgeData }  = {};
+    let error = null;
+    const { user, query }=ctx.request;
+    const userId = _.get(user, "userId");
+    const { badgeId } = query
+    log( "userId :" , userId)
+    try {
+      data = await BadgeStatus.update({
+        badgeStatus:badgeConstants.DEACTIVATE },
+      {
+        where:
+        { 
+          userId: userId,
+          badgeId:badgeId,
+        }
+      })
+     removeBadgeData = await UserTracking.destroy({
+          where: {
+            userId: userId,
+            badgeId: badgeId,
+          },
+        });
+      log(removeBadgeData)  
+      } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
 
 
   const activeBadgeStatus = async (ctx) => {
@@ -335,10 +395,12 @@ module.exports = {
   individualBadge:individualBadge,
   getGoalbadge:getGoalbadge,
   getAllUserGoals:getAllUserGoals,
-  badgeStatus:badgeStatus,
+  // badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
   getAllBadgeStatus:getAllBadgeStatus,
   activateBadge:activateBadge,
+  removeBadge:removeBadge,
+  deactivateBadge:deactivateBadge,
   // activeBadgeStatus:activeBadgeStatus,
   completedBadges:completedBadges,
   badgeComplete:badgeComplete,

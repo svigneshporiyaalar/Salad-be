@@ -66,7 +66,6 @@ exports.getBadgeDetails = async (badgeList) => {
       where:{
         badgeId:badgeList,
       },
-      attributes : ["name","badgeId","frequency" , "grantBadge", "type"]
     })
     return badgeDetails
   } catch (err) {

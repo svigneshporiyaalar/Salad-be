@@ -8,7 +8,7 @@ const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userOnboard });
 
 
-router.post("/primaryGoal" , userToken, primaryGoal ); //ok A17
+router.put("/primaryGoal" , userToken, primaryGoal ); //ok A17
 
 router.post("/integration" , userToken, addIntegration ); //A29
 
@@ -24,7 +24,7 @@ router.put("/lunar-cycle" , userToken, lunarCycle ); //A14
 
 router.get("/badge-details" , userToken, getUserBadges ); //ok A21 ,A24, B01
 
-router.get("/individual/badge-details" , userToken, individualBadge ); //C04
+router.get("/individual/badge-details" , userToken, individualBadge ); //C04 ,06,07,08,09,10
 
 router.put("/complete" , userToken, completeOnboard ); //AFTER A25
 
