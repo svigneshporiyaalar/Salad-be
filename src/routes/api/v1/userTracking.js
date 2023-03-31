@@ -4,7 +4,7 @@ const { dateTrack,dailyTrack, updateDayTracking, lastPeriod,trackDailyMood,
      postDailyMood,postSymptom, removeSymptom,todayWorkoutComplete, badgeTracker, 
      trackWeeklyMood, postSleep, trackWeeklySleep, productivityList, postProductivity, 
      trackWeeklyProductivity,activeAndEarned, nextUpBadges} = require('../../../controllers/trackingController');
-const { symptomList, moodList, badgeRunway, badgeArchived } = require('../../../controllers/UserController');
+const { symptomList, moodList, badgeRunway, badgeArchived } = require('../../../controllers/userController');
 const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
