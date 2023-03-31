@@ -477,49 +477,36 @@ const activeAndEarned = async (ctx) => {
 }
 
 const nextUpBadges = async (ctx) => {
-  let {data, statusData, badgeList, badgeDetails, badgeHistory } ={}
+  let {data, badgeList, userPhase, badgeHistory } ={}
   let error = null
   const { user  }=ctx.request;
   const userId = _.get(user, "userId");
   try{
+    userPhase= await getMenstrualPhase(userId)
     badgeHistory = await BadgeStatus.findAll({
       raw:true,
       where:{
         userId:userId,
-        badgeStatus: [badgeConstants.COMPLETED || badgeConstants.ACTIVATE]
+        badgeStatus: { [Op.in]: [badgeConstants.COMPLETED , badgeConstants.ACTIVATE]}
       },
     })
-    log(badgeHistory)
     badgeList= badgeHistory.map((element) =>{
       return element.badgeId
     })
     log(badgeList)
-
-    statusData = await BadgeStatus.findAll({
-      raw:true,
-      where:{
-        userId:userId,
-        badgeStatus: badgeConstants.ACTIVATE
-      },
-    })
-    badgeList= statusData.map((element) =>{
-      return element.badgeId
-    })
-    badgeDetails = await getBadgeDetails(badgeList)
-    data = await UserTracking.findAll({
+    data = await Badge.findAll({
       where:
       { 
-        userId: userId,
-        badgeId:badgeList,
-        isDayWorkoutComplete:badgeConstants.TRUE
+        name:{ [Op.ne]: [badgeList] },
+
       },
-      order:[["createdAt", "DESC"]]
     })
+    log(data)
         } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data, badgeDetails, earnedBadges});
+  ctx.body = responseHelper.buildResponse(error, {userPhase,badgeHistory, data});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 }
 

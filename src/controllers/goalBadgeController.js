@@ -121,13 +121,27 @@ const getAllBadges = async (ctx) => {
   }
   
   const activateBadge = async (ctx) => {
-    let data  = {};
+    let {data, badgeCount, count}  = {};
     let error = null;
     const { user, body }=ctx.request;
     const { badgeId, badge } = body
     const userId = _.get(user, "userId");
     log( "userId :" , userId)
     try {
+      badgeCount = await BadgeStatus.findAndCountAll({
+        raw:true,
+        where:
+        { 
+          userId: userId,
+          badgeStatus:badgeConstants.ACTIVATE
+        }
+      })
+      count= badgeCount.count
+    if(count === 3)  {
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0021" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST
+      return; 
+    } else{
      data = await BadgeStatus.create(
       { 
         badgeId:badgeId,
@@ -135,6 +149,7 @@ const getAllBadges = async (ctx) => {
         badge:badge,
         badgeStatus: badgeConstants.ACTIVATE,
       })
+    }
     } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
