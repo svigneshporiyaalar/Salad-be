@@ -11,7 +11,7 @@ module.exports = {
     },
     {
       goalId: '1b16eae5-5073-4966-978f-79569af028b2',
-      goal: 'Lose weight safely',
+      goal: 'Loose weight safely',
       createdAt: new Date(),
       updatedAt: new Date()
     },
@@ -29,20 +29,12 @@ module.exports = {
   },
   {
     goalId: '1b16eae5-5073-4966-978f-79569af028b5',
-    goal: 'improve flexibility',
+    goal: 'General fitness goals',
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  {
-    goalId: '1b16eae5-5073-4966-978f-79569af028b5',
-    goal: 'Take a tech brake',
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  
   ]);
   },
-
   async down (queryInterface, Sequelize) {
     return queryInterface.bulkDelete('goals', null, {});
 

@@ -2,55 +2,59 @@ module.exports = (sequelize, Sequelize) => {
     return sequelize.define("badge", {
       badgeId: {
         type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
       },
       name: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      description: {
+      frequency : {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      daysFollowed : {
-        type: Sequelize.INTEGER,
       },
       grantBadge : {
-        type: Sequelize.INTEGER,
-      },
-      badgeRunway : {
-        type: Sequelize.INTEGER,
-      },
-      timeOfTheDay : {
-        type: Sequelize.TIME,
-      },
-      frequency: {
         type: Sequelize.STRING,
       },
-      menstrualPhase: {
+      badgeRunway : {
+        type: Sequelize.STRING,
+      },
+      timeOfTheDay : {
+        type: Sequelize.STRING,
+      },
+      phase: {
         type: Sequelize.STRING,
       },
       difficultyLevel : {
-        type: Sequelize.INTEGER, 
+        type: Sequelize.STRING, 
+      },
+      onboarding : {
+        type: Sequelize.STRING, 
+      },
+      excludes : {
+        type: Sequelize.JSON, 
+      },
+      naturalProgression: {
+        type: Sequelize.STRING,
+      },
+      trackParameter: {
+        type: Sequelize.STRING,
+      },
+      defaultTrack: {
+        type: Sequelize.INTEGER,
+      },
+      possibleTrackRange: {
+        type: Sequelize.STRING,
+      },
+      trackChangeValue: {
+        type: Sequelize.FLOAT,
       },
       type : {
         type: Sequelize.STRING, 
       },
-      cycleDays: {
-        type: Sequelize.STRING,
+      media : {
+        type: Sequelize.JSON, 
       },
-      onboarding : {
-        type: Sequelize.TEXT, 
-      },
-      naturalProgressionIntermediate: {
-        type: Sequelize.STRING,
-      },
-      naturalProgressionAdvanced: {
-        type: Sequelize.STRING,
-      },
-      naturalRegression: {
-        type: Sequelize.STRING,
+      meta : {
+        type: Sequelize.JSON, 
       },
       status: {
         type: Sequelize.STRING,

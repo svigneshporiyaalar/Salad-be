@@ -12,13 +12,14 @@ router.get("/allGoals/admin" , isAdmin, getAllGoals);
 
 router.get("/inactive" , isAdmin, inactiveGoals);
 
+router.put("/remove", isAdmin , removeGoal )
+
+router.put("/update", isAdmin , updateGoal )
+
 router.get("/allGoals" , userToken, getAllUserGoals);
 
 router.put("/complete", userToken , goalComplete )
 
-router.put("/remove", isAdmin , removeGoal )
-
-router.put("/update", isAdmin , updateGoal )
 
 
 

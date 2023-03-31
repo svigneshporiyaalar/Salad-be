@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  return sequelize.define("moodTracking",
+  return sequelize.define("sleepTracker",
     {
       id: {
         type: Sequelize.INTEGER,
@@ -8,13 +8,13 @@ module.exports = (sequelize, Sequelize) => {
       },
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
       },
       date: {
         type: Sequelize.DATEONLY,
       },
-      symptoms: {
-        type: Sequelize.INTEGER,
+      hoursOfSleep: {
+        type: Sequelize.TIME,
       },
-    });
+  },
+  );
 };

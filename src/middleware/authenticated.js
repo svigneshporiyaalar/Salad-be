@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const authConfig = require("../config/auth.config");
 const _ = require("lodash");
-const { ERR_SBEE_0998 } = require("../constants/ApplicationErrorConstants");
+const { ERR_SBEE_0998, ERR_SBEE_0996 } = require("../constants/ApplicationErrorConstants");
 const db = require("../models");
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
@@ -12,6 +12,8 @@ const secret = process.env.JWT_SECRET1
 const usersecret = process.env.JWT_SECRET2
 const partnersecret = process.env.JWT_SECRET3
 const aSecret = process.env.JWT_SECRET4
+const refreshSecret = process.env.JWT_SECRET5
+
 
 
 
@@ -45,6 +47,22 @@ const verifyToken = async (ctx, next) => {
   }
 };
 
+const verifyRefreshtoken = async (ctx, next) => {
+  if (!ctx.headers.authorization) {
+    ctx.throw(401, ERR_SBEE_0996);
+  }
+  const token = ctx.headers.authorization.split(" ")[1];
+  console.log(token)
+  try {
+    ctx.request.user = jwt.verify(token, refreshSecret);
+    console.log("Refresh token verified", ctx.request.user);
+    await next();
+  } catch (err) {
+    ctx.throw(err.status || 401, err.text);
+  }
+};
+
+
 const userToken = async (ctx, next) => {
   if (!ctx.headers.authorization) {
     ctx.throw(401, ERR_SBEE_0998);
@@ -69,7 +87,7 @@ const partnerToken = async (ctx, next) => {
   console.log(token)
   try {
     ctx.request.partner = jwt.verify(token, partnersecret);
-    console.log("REACHED", ctx.request.partner);
+    console.log("Partner token verified ", ctx.request.partner);
     await next();
   } catch (err) {
     ctx.throw(err.status || 401, err.text);
@@ -91,21 +109,6 @@ const isAdmin = async (ctx, next) => {
   }
 };
 
-
-// const isPartner = async (ctx, next) => {
-//   try {
-//     const user = await User.findByPk(ctx.request.user.id);
-//     const roles = await user.getRoles();
-//     const roleNames = _.map(roles, (role) => role.name);
-//     if (_.includes(roleNames, "partner")) {
-//       await next();
-//     } else {
-//       ctx.throw(401, "Require partner role!");
-//     }
-//   } catch (err) {
-//     ctx.throw(err.status || 403, err.text);
-//   }
-// };
 
 const validateDuplicate = async (ctx, next) => {
   const { email, contactNumber } = ctx.request.body;
@@ -146,6 +149,7 @@ const validateDuplicate = async (ctx, next) => {
 
 module.exports = {
   verifyToken: verifyToken,
+  verifyRefreshtoken:verifyRefreshtoken,
   userToken:userToken,
   partnerToken: partnerToken,
   isAdmin: isAdmin,

@@ -1,14 +1,14 @@
 module.exports = (sequelize, Sequelize) => {
-    return sequelize.define("feedback", {
-      feedbackId: {
+    return sequelize.define("productivity", {
+      id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      tag: {
-        type: Sequelize.STRING,
+      points: {
+        type: Sequelize.INTEGER,
       },
-      description: {
+      tag: {
         type: Sequelize.STRING,
       },
     });

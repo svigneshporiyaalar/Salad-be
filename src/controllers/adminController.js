@@ -77,13 +77,15 @@ const adminSignin = async (ctx) => {
         [Op.or]: [{ email: email || "" }],
       },
     });
-    if (!data) {
-      ctx.throw(404, ERR_SBEE_0999);
+    if (data=== null) {
+      ctx.body = responseHelper.errorResponse({ code: ERR_SBEE_0999 });
+      ctx.response.status = HttpStatusCodes.NOT_FOUND;
       return;
     }
     validPassword = bcrypt.compareSync(password, data.password);
     if (!validPassword) {
-      ctx.throw(401, ERR_SBEE_0016);
+      ctx.body = responseHelper.errorResponse({ code: ERR_SBEE_0016 });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
       return;
     }
     token = jwt.sign(
@@ -515,11 +517,12 @@ const feedbackList = async (ctx) => {
     let error = null;
     const { admin, body} = ctx.request;
     const  adminId  = _.get(admin, "id")
-    const { feedback } = body
+    const { tag , description } = body
     log(chalk.bold("adminId :",adminId))
-      try {
+    try {
       data = await Feedback.create({
-        feedback: feedback
+        tag:tag,
+        description:description
       });
     } catch (err) {
       error = err;
@@ -534,7 +537,7 @@ const feedbackList = async (ctx) => {
     let error = null;
     const { admin, query} = ctx.request;
     const  adminId  = _.get(admin, "id")
-    const { feedbackId } = query
+    let { feedbackId } = query
     log(chalk.bold("adminId :",adminId))
       try {
       data = await Feedback.destroy({

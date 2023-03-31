@@ -1,18 +1,23 @@
 const HttpStatusCodes = require("../constants/HttpStatusCodes");
 const responseHelper = require("../helpers/responseHelper");
 const db = require("../models");
-const { ERR_SBEE_0011 } = require("../constants/ApplicationErrorConstants");
 const { Op } = require("sequelize");
 const _ = require("lodash");
 const chalk = require("chalk");
 const moment = require('moment')
+const log = console.log
 const badgeConstants = require("../constants/badgeConstants");
+const userConstants = require("../constants/userConstants")
+const { getMenstrualPhase, getBadgeDetails } = require("../helpers/userHelper");
+const { USR_SBEE_0008, USR_SBEE_0013 } = require("../constants/userConstants");
 const User = db.user;
 const Badge = db.badge;
+const BadgeStatus = db.badgeStatus;
 const BirthControl = db.birthControl
 const UserOnboard = db.userOnboard;
 const UserIntegration = db.userIntegration
-const log = console.log
+const UserpartnerTracker = db.userPartnerTracker;
+
 
 const primaryGoal = async (ctx) => {
   let data = {};
@@ -21,11 +26,14 @@ const primaryGoal = async (ctx) => {
   const { goal, goalId } = body;
   const userId = _.get(user, "userId" );
   try {
-    data = await UserOnboard.create({
+    data = await UserOnboard.update({
       activeGoal: goal,
       goalId: goalId,
-      userId: userId,
       goalStatus: badgeConstants.INPROGRESS
+    },
+    { 
+      where :
+      { userId: userId }
     });
   } catch (err) {
     error = err;
@@ -45,7 +53,7 @@ const addIntegration = async (ctx) => {
     data = await UserIntegration.create({
       userId: userId,
       integration: integration,
-      status: "active",
+      status: badgeConstants.ACTIVE,
     });
   } catch (err) {
     error = err;
@@ -63,7 +71,7 @@ const removeIntegration = async (ctx) => {
   const userId = _.get(user, "userId" );
   try {
     data = await UserIntegration.update({
-      status: "inactive",
+      status: badgeConstants.INACTIVE,
     },{
       where :
       {
@@ -84,18 +92,17 @@ const editProfile = async (ctx) => {
   let {data, userData , uptData } = {};
   let error = null;
   const {user, body}=ctx.request;
-  const {  email, age, height,medicalHistoryId, 
-    weight, DOB , reason} = body;
+  const {  email, height, medicalHistoryId, 
+    weight, DOB , allowReminder } = body;
   const userId = _.get(user, "userId");
   try {
     uptData = await UserOnboard.update(
       {
         height: height,
         weight: weight,
-        age: age,
         birthDate:DOB,
         medicalHistoryId:medicalHistoryId,
-        reason: reason
+        allowReminder:allowReminder
       },
       {
         where: {
@@ -126,17 +133,26 @@ const editProfile = async (ctx) => {
 };
 
 const getProfile = async (ctx) => {
-  let {data, userData} = {};
+  let {data, userData, birthControl, newData, onboardData} = {};
   let error = null;
   const { user }=ctx.request;
   const userId = _.get(user, "userId");
   try {
-    data = await UserOnboard.findOne(
-      {
+    data = await UserOnboard.findOne({
+      raw:true,
         where: {
           userId: userId,
         },
       });
+    birthControl = data.birthControlId 
+    newData = await BirthControl.findOne({
+      raw:true,
+      where:{
+        id: birthControl,
+      },
+      attributes: [ ['id', 'birthControlId'], 'tag', 'description'] ,
+    })
+    onboardData ={ ...data , ...newData}
     userData = await User.findOne(
       {
         where: {
@@ -147,7 +163,7 @@ const getProfile = async (ctx) => {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, {data , userData});
+  ctx.body = responseHelper.buildResponse(error, {onboardData , userData});
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
 
@@ -158,23 +174,83 @@ const profileImage = async (ctx) => {
   const { imageURL } = body;
   const userId = _.get(user, "userId");
   try {
-    data = await User.update(
-      {
+    data = await User.update({
         profileImage: imageURL,
       },
       {
         where: {
           userId: userId,
         },
-      }
-    );
+      });
+      log(data)
+     if(data == 1){
+      message= USR_SBEE_0013
+     }else{
+      message= USR_SBEE_0008
+     } 
   } catch (err) {
     error = err;
     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-  ctx.body = responseHelper.buildResponse(error, data);
+  ctx.body = responseHelper.buildResponse(error, { message });
   ctx.response.status = HttpStatusCodes.SUCCESS;
 };
+
+const notificationData = async (ctx) => {
+  let { pokeData, requestData } = {};
+  let error = null;
+  const { user }=ctx.request;
+  const userId = _.get(user, "userId");
+  const phoneNumber = _.get(user, "phoneNumber");
+  try {
+    pokeData = await UserpartnerTracker.findAll({
+      raw:true,
+        where: {
+          userId: userId,
+          action:userConstants.POKED
+        },
+      });
+    requestData = await Userpartner.findAll({
+      raw:true,
+      where: {
+        partnerNumber: phoneNumber,
+        action:userConstants.REQUESTED
+      },
+    });
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+  ctx.body = responseHelper.buildResponse(error, {pokeData, requestData});
+  ctx.response.status = HttpStatusCodes.SUCCESS;
+};
+
+
+const getUserBadges = async (ctx) => {
+  let {data , badgeList, badgeData } ={}
+  let error = null
+  const {user}=ctx.request;
+  const userId = _.get(user, "userId");
+  try{
+    data = await BadgeStatus.findAll({
+      raw:true,
+      where:{
+        userId:userId,
+        badgeStatus: badgeConstants.ACTIVATE
+      },
+    })
+    badgeList= data.map((element) =>{
+      return element.badgeId
+    })
+    badgeData = await getBadgeDetails(badgeList)
+    } catch (err) {
+      error = err;
+      log(err)
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, {data,badgeData});
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  }
 
 
 const updateActiveGoal = async (ctx) => {
@@ -389,8 +465,10 @@ module.exports = {
   updateActiveGoal: updateActiveGoal,
   completeOnboard:completeOnboard,
   getProfile:getProfile,
+  notificationData:notificationData,
   birthControlList:birthControlList,
   medicalHistoryList:medicalHistoryList,
   addIntegration:addIntegration,
-  removeIntegration:removeIntegration
+  removeIntegration:removeIntegration,
+  getUserBadges:getUserBadges
 };
