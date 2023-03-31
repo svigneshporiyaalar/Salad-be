@@ -17,13 +17,13 @@ router.get("/user/badges", isAdmin, userBadges )
 
 router.get("/feedback-list", isAdmin , feedbackList )
 
-router.post("/new/feedback", isAdmin , addFeedback )
+router.post("/new-feedback", isAdmin , addFeedback )
 
-router.delete("/remove/feedback", isAdmin , deleteFeedback )
+router.delete("/remove-feedback", isAdmin , deleteFeedback )
 
-router.get("/view/items", isAdmin , getAllItems )
+router.get("/items-list", isAdmin , getAllItems )
 
-router.get("/view/badge-items", isAdmin , getBadgeItems )
+router.get("/badge/items-list", isAdmin , getBadgeItems )
 
 router.delete("/remove/item", isAdmin , deleteItems )
 

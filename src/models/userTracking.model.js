@@ -12,14 +12,23 @@ module.exports = (sequelize, Sequelize) => {
       badgeId: {
         type: Sequelize.UUID,
       },
-      description: {
+      badgeName: {
         type: Sequelize.STRING,
       },
-      day: {
+      itemId: {
+        type: Sequelize.UUID,
+      },      
+      date: {
         type: Sequelize.DATEONLY,
       },
       time: {
         type: Sequelize.TIME,
+      },
+      trackParameter: {
+        type: Sequelize.STRING,
+      },
+      defaultTrack: {
+        type: Sequelize.INTEGER,
       },
       difficultyLevel: {
         type: Sequelize.INTEGER,
@@ -30,11 +39,10 @@ module.exports = (sequelize, Sequelize) => {
       postWorkoutMood: {
         type: Sequelize.INTEGER,
       },
-      badgeStatus: {
-        type: Sequelize.STRING,
-        defaultValue: "inprogress"
-      },
-    },
+      isDayWorkoutComplete: {
+        type: Sequelize.BOOLEAN,  
+    }
+  },
     {
       timestamps: true,
     }

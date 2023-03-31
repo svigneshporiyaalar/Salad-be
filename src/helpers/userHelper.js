@@ -1,54 +1,96 @@
 const db = require('../models');
-const Role = db.role;
-const Op = db.Sequelize.Op;
+const moment = require('moment')
+const HttpStatusCodes = require("../constants/HttpStatusCodes");
+const badgeConstants = require('../constants/badgeConstants');
+const UserOnboard = db.userOnboard;
+const Badge = db.badge
+const BadgeStatus = db.badgeStatus
 
-const userHelper = (page, limit, q) => {
-  const findCondition = {
-    include: [Role],
-  };
 
-  if (page && limit) {
-    (findCondition.offset = (+page - 1) * +limit),
-      (findCondition.limit = +limit),
-      (findCondition.subQuery = false);
-  }
 
-  if (q) {
-    findCondition.where = {
-      [Op.and]: [
-        { '$roles.name$': 'user' },
-        {
-          [Op.or]: [
-            {
-              email: db.sequelize.where(
-                db.sequelize.fn('LOWER', db.sequelize.col('email')),
-                'LIKE',
-                '%' + q.toLowerCase() + '%'
-              ),
-            },
-            {
-              firstname: db.sequelize.where(
-                db.sequelize.fn('LOWER', db.sequelize.col('firstname')),
-                'LIKE',
-                '%' + q.toLowerCase() + '%'
-              ),
-            },
-            {
-              lastname: db.sequelize.where(
-                db.sequelize.fn('LOWER', db.sequelize.col('lastname')),
-                'LIKE',
-                '%' + q.toLowerCase() + '%'
-              ),
-            },
-          ],
+
+
+exports.getMenstrualPhase = async(userId) => {
+  let {data, periodStart,  periodEnd, cycle, nextPeriodStart,follicularStart, 
+    follicularEnd, ovulationStart , ovulationEnd,lutealStart, lutealEnd } = {};
+  let { today, condition, isMenstruation, isFollicular, isLuteal, isOvulation}  ={}
+  let error = null;
+  try {
+    today = moment.utc(new Date()).format('YYYY-MM-DD HH:mm')
+    data = await UserOnboard.findOne({
+        raw:true, 
+        where: {
+          userId: userId,
         },
-      ],
-    };
-  } else {
-    findCondition.where = { '$roles.name$': 'user' };
+        attributes: ['lastPeriodStart','lastPeriodEnd', 
+         ['menstrualCycle', 'periodCycle'] , 'birthControlId' ]
+      });
+      periodStart = moment.utc(data.lastPeriodStart).format('YYYY-MM-DD HH:mm')
+      periodEnd = moment.utc(data.lastPeriodEnd).format('YYYY-MM-DD HH:mm')
+      cycle= data.periodCycle
+      if(cycle === 29.5 ){
+        follicularStart = moment.utc(periodStart).add(5,'d').format('YYYY-MM-DD HH:mm')
+        follicularEnd = moment.utc(periodStart).add(13,'d').format('YYYY-MM-DD HH:mm')
+        ovulationStart = moment.utc(periodStart).add(14,'d').format('YYYY-MM-DD HH:mm')
+        ovulationEnd = moment.utc(periodStart).add(17,'d').format('YYYY-MM-DD HH:mm')
+        lutealStart = moment.utc(periodStart).add(18,'d').format('YYYY-MM-DD HH:mm')
+        lutealEnd = moment.utc(periodStart).add(29,'d').add(12 ,'h').format('YYYY-MM-DD HH:mm')
+      }
+      else{
+       follicularStart = moment.utc(periodEnd, 'YYYY-MM-DD').add(1,'d').format('YYYY-MM-DD HH:mm')
+       follicularEnd = moment.utc(nextPeriodStart, 'YYYY-MM-DD').subtract(17,'d').format('YYYY-MM-DD HH:mm')
+       ovulationStart = moment.utc(nextPeriodStart).subtract(16,'d').format('YYYY-MM-DD HH:mm')
+       ovulationEnd = moment.utc(nextPeriodStart).subtract(12,'d').format('YYYY-MM-DD HH:mm')
+       lutealStart = moment.utc(nextPeriodStart).subtract(11,'d').format('YYYY-MM-DD HH:mm')
+       lutealEnd = moment.utc(nextPeriodStart).subtract(1,'d').format('YYYY-MM-DD HH:mm')
+      }
+      isFollicular =moment(today).isBetween(follicularStart , follicularEnd ,undefined, '[]'); 
+      isOvulation =moment(today).isBetween(ovulationStart , ovulationEnd ,undefined, '[]'); 
+      isLuteal =moment(today).isBetween(lutealStart , lutealEnd ,undefined, '[]'); 
+      isMenstruation =moment(today).isBetween(periodStart , periodEnd ,undefined, '[]'); 
+      condition ={ isFollicular,isOvulation,isLuteal,isMenstruation}
+      return condition
+  } catch (err) {
+    error = err;
+    console.log(err)
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
   }
-
-  return findCondition;
 };
 
-module.exports = userHelper;
+exports.getBadgeDetails = async (badgeList) => {
+  let badgeDetails ={}
+  let error = null
+  try{
+    badgeDetails = await Badge.findAll({
+      raw:true,
+      where:{
+        badgeId:badgeList,
+      },
+    })
+    return badgeDetails
+  } catch (err) {
+    error = err;
+    ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  }
+}
+
+
+exports.getActiveBadgestatus = async(userId) => {
+  let statusData ={}
+  let error = null
+  try
+  {
+   statusData = await BadgeStatus.findAndCountAll({
+   raw:true,
+     where:{
+      userId:userId,
+      badgeStatus: badgeConstants.ACTIVATE
+  },
+})
+return statusData
+} catch (err) {
+  error = err;
+  ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+}
+}
+

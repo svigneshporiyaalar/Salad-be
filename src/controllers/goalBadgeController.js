@@ -5,10 +5,13 @@ const { Op } = require("sequelize");
 const _ = require("lodash");
 const log =console.log
 const badgeConstants = require("../constants/badgeConstants");
+const { getMenstrualPhase, getActiveBadgestatus } = require("../helpers/userHelper");
 const Badge = db.badge;
 const Goal = db.goal;
 const BadgeStatus = db.badgeStatus;
 const UserOnboard = db.userOnboard;
+const UserTracking = db.userTracking
+
 
 
 
@@ -50,6 +53,40 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
 
+  const individualBadge = async (ctx) => {
+    let {data, activeBadgeCount, userPhase, 
+      badgeStatus, isBadgeActivated}  ={}
+    let error = null
+    const { user, query }=ctx.request;
+    const { badgeId } = query
+    const userId = _.get(user, "userId");
+    console.log( "userId :" , userId)
+    try{
+      userPhase= await getMenstrualPhase(userId)
+       data = await Badge.findOne({
+        where :{
+          badgeId: badgeId,
+        }
+      })
+      isBadgeActivated = await BadgeStatus.findOne({
+        raw:true,
+        where:{
+          userId:userId,
+          badgeId:badgeId,
+        },
+      })
+      badgeStatus = await getActiveBadgestatus(userId)
+      activeBadgeCount= badgeStatus.count
+    } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+      ctx.body = responseHelper.buildResponse(error, {userPhase, data, 
+        activeBadgeCount, isBadgeActivated});
+      ctx.response.status = HttpStatusCodes.SUCCESS;
+    }
+  
+
  const getGoalbadge = async (ctx) => {
     let {data , badgeData, badgeIds } ={}
     let error = null
@@ -64,6 +101,7 @@ const getAllBadges = async (ctx) => {
           goalId: goalId,
         }
       })
+      log(data)
       badgeIds= data.map((element) =>{
         return element.badgeId
       })
@@ -82,22 +120,36 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   }
   
-  const badgeStatus = async (ctx) => {
-    let data  = {};
+  const activateBadge = async (ctx) => {
+    let {data, badgeCount, count}  = {};
     let error = null;
     const { user, body }=ctx.request;
-    const { badgeId, badge , goalId } = body
+    const { badgeId, badge } = body
     const userId = _.get(user, "userId");
     log( "userId :" , userId)
     try {
+      badgeCount = await BadgeStatus.findAndCountAll({
+        raw:true,
+        where:
+        { 
+          userId: userId,
+          badgeStatus:badgeConstants.ACTIVATE
+        }
+      })
+      count= badgeCount.count
+    if(count === 3)  {
+      ctx.body = responseHelper.errorResponse({ code: "ERR_SBEE_0021" });
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST
+      return; 
+    } else{
      data = await BadgeStatus.create(
       { 
         badgeId:badgeId,
-        goalId: goalId,
         userId:userId,
         badge:badge,
         badgeStatus: badgeConstants.ACTIVATE,
       })
+    }
     } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -106,18 +158,22 @@ const getAllBadges = async (ctx) => {
     ctx.response.status = HttpStatusCodes.SUCCESS;
   };
 
-
-  const activateBadge = async (ctx) => {
-    let {data ,badgeData }  = {};
+  const removeBadge = async (ctx) => {
+    let data  = {};
     let error = null;
-    const { user, body }=ctx.request;
+    const { user, query }=ctx.request;
     const userId = _.get(user, "userId");
+    const { badgeId } = query
     log( "userId :" , userId)
     try {
-      badgeData=body.map(element =>({
-         ...element, userId
-      }))
-      data = await BadgeStatus.bulkCreate(badgeData)
+      data = await BadgeStatus.destroy({
+        where:
+        { 
+          userId: userId,
+          badgeId:badgeId,
+          badgeStatus:badgeConstants.ACTIVATE
+         },
+      })
       } catch (err) {
       error = err;
       ctx.response.status = HttpStatusCodes.BAD_REQUEST;
@@ -125,6 +181,76 @@ const getAllBadges = async (ctx) => {
     ctx.body = responseHelper.buildResponse(error, data);
     ctx.response.status = HttpStatusCodes.SUCCESS;
   };
+
+
+
+  // const activateBadge = async (ctx) => {
+  //   let {data ,badgeData, badgesExists, removeBadges }  = {};
+  //   let error = null;
+  //   const { user, body }=ctx.request;
+  //   const userId = _.get(user, "userId");
+  //   log( "userId :" , userId)
+  //   try {
+  //     badgeData=body.map(element =>({
+  //        ...element, userId
+  //     }))
+  //     badgesExists = await BadgeStatus.findAll({
+  //       where:
+  //       { 
+  //         userId: userId,
+  //         badgeStatus:badgeConstants.ACTIVATE
+  //       }
+  //     })
+  //     if(badgesExists){
+  //       removeBadges = await BadgeStatus.destroy({
+  //         where: {
+  //           userId: userId,
+  //           badgeStatus: badgeConstants.ACTIVATE
+  //         },
+  //       });
+  //     }
+  //     data = await BadgeStatus.bulkCreate(badgeData,
+  //     )
+  //     } catch (err) {
+  //     error = err;
+  //     ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+  //   }
+  //   ctx.body = responseHelper.buildResponse(error, data);
+  //   ctx.response.status = HttpStatusCodes.SUCCESS;
+  // };
+
+  const deactivateBadge = async (ctx) => {
+    let {data, removeBadgeData }  = {};
+    let error = null;
+    const { user, query }=ctx.request;
+    const userId = _.get(user, "userId");
+    const { badgeId } = query
+    log( "userId :" , userId)
+    try {
+      data = await BadgeStatus.update({
+        badgeStatus:badgeConstants.DEACTIVATE },
+      {
+        where:
+        { 
+          userId: userId,
+          badgeId:badgeId,
+        }
+      })
+     removeBadgeData = await UserTracking.destroy({
+          where: {
+            userId: userId,
+            badgeId: badgeId,
+          },
+        });
+      log(removeBadgeData)  
+      } catch (err) {
+      error = err;
+      ctx.response.status = HttpStatusCodes.BAD_REQUEST;
+    }
+    ctx.body = responseHelper.buildResponse(error, data);
+    ctx.response.status = HttpStatusCodes.SUCCESS;
+  };
+
 
 
   const activeBadgeStatus = async (ctx) => {
@@ -198,7 +324,7 @@ const getAllBadges = async (ctx) => {
     const { user }=ctx.request;
     const userId = _.get(user, "userId");
     try{
-      data = await BadgeStatus.findOne({
+      data = await BadgeStatus.findAll({
         where:
         { 
           userId: userId,
@@ -281,13 +407,16 @@ const getAllBadges = async (ctx) => {
 
 module.exports = {
   getAllBadges:getAllBadges,
+  individualBadge:individualBadge,
   getGoalbadge:getGoalbadge,
   getAllUserGoals:getAllUserGoals,
-  badgeStatus:badgeStatus,
+  // badgeStatus:badgeStatus,
   getBadgeStatus:getBadgeStatus,
   getAllBadgeStatus:getAllBadgeStatus,
   activateBadge:activateBadge,
-  activeBadgeStatus:activeBadgeStatus,
+  removeBadge:removeBadge,
+  deactivateBadge:deactivateBadge,
+  // activeBadgeStatus:activeBadgeStatus,
   completedBadges:completedBadges,
   badgeComplete:badgeComplete,
   goalComplete:goalComplete

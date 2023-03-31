@@ -7,7 +7,7 @@ const { errorHandler } = require('./middleware');
 const cors = require('@koa/cors');
 const logger = require("koa-logger");
 const { cronFile } = require("./services/cronService");
-const PORT = 8030;
+const PORT = 8040;
 
 
 const app = new Koa();

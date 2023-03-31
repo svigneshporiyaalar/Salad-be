@@ -1,37 +1,57 @@
 const Router = require('koa-router');
 const { v1 } = require('../../../constants/RouterConstants');
-const { getBadgeStatus } = require('../../../controllers/goalBadgeController');
-const { everyDayTracking,dateTrack,dailyTrack, updateDayTracking,
-     lastPeriod,trackMood,trackDailyMood,trackFeedback,
-     removeFeedback} = require('../../../controllers/trackingController');
-const { feedbackList } = require('../../../controllers/userController');
+const { dateTrack,dailyTrack, updateDayTracking, lastPeriod,trackDailyMood,
+     postDailyMood,postSymptom, removeSymptom,todayWorkoutComplete, badgeTracker, 
+     trackWeeklyMood, postSleep, trackWeeklySleep, productivityList, postProductivity, 
+     trackWeeklyProductivity,activeAndEarned, nextUpBadges} = require('../../../controllers/trackingController');
+const { symptomList, moodList, badgeRunway, badgeArchived } = require('../../../controllers/UserController');
 const { userToken } = require('../../../middleware/authenticated');
 const router = new Router({ prefix: v1.userTracking });
 
 
-router.post("/everyday" , userToken, everyDayTracking );
+router.get("/badge-runway", userToken, badgeRunway )  //ok
 
-router.put("/updatetrack" , userToken, updateDayTracking );
+router.put("/badge-archived", userToken, badgeArchived )  //ok 
 
-router.get("/dailytrack" , userToken, dailyTrack );
+router.get("/symptom-list", userToken, symptomList )  //ok B07
 
-router.get("/datetrack" , userToken, dateTrack );
+router.get("/mood-list", userToken, moodList )
 
-router.post("/feedback" ,userToken, trackFeedback );
+router.get("/weekly-mood" , userToken, trackWeeklyMood ); // ok B02
 
-router.delete("/remove/feedback" ,userToken, removeFeedback );
+router.get("/everyday-mood" ,  userToken, trackDailyMood );
 
-router.get("/moodtrack" , userToken, trackMood );
+router.post("/daily-mood" ,userToken, postDailyMood );
 
-router.get("/daily/moodtrack" ,  userToken, trackDailyMood );
+router.post("/daily-symptom" ,userToken, postSymptom ); //ok
 
-router.get("/lastperiod" , userToken, lastPeriod );
+router.delete("/remove-symptom" ,userToken, removeSymptom );
 
-router.get("/badgeStatus", userToken, getBadgeStatus)
+router.get("/daily-workout" , userToken, dailyTrack ); //ok
 
-router.get("/feedback-list", userToken, feedbackList )
+router.get("/range-workout" , userToken, dateTrack );
 
-router.get("/activated-badge/status" , userToken , getBadgeStatus);
+router.post("/everyday/work-out" , userToken, todayWorkoutComplete ); //ok
+
+router.put("/work-out/update" , userToken, updateDayTracking );
+
+router.get("/lastperiod" , userToken, lastPeriod );   //ok B04,B05,B06
+
+router.get("/badge-status", userToken, badgeTracker ) //ok B03
+
+router.get("/badges/active-earned", userToken, activeAndEarned ) //ok
+
+router.get("/badges/next-up", userToken, nextUpBadges ) //ok
+
+router.post("/daily-sleep" ,userToken, postSleep);   //ok B02
+
+router.get("/weekly-sleep" ,userToken, trackWeeklySleep); //ok C05
+
+router.get("/productivity-list" ,userToken, productivityList); //ok
+
+router.post("/daily-productivity" ,userToken, postProductivity); //ok
+
+router.get("/weekly-productivity" ,userToken, trackWeeklyProductivity); //ok C04
 
 
 
